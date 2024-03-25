@@ -1,2 +1,20 @@
-Secrets.plist
+*/Secrets.plist
 .env
+# Xcode
+.DS_Store
+build/
+DerivedData/
+
+# CocoaPods
+Pods/
+Podfile.lock
+
+# Carthage
+Carthage/Checkouts
+Carthage/Build
+
+# Swift Package Manager
+.build/
+
+# macOS
+*.swp
