@@ -9,7 +9,7 @@ import SwiftUI
 
 struct TransactionCellView: View {
     @Environment(TransactionsModel.self) private var model
-    
+    @Environment(NetworkCard.self) private var card
     let title: String
     let from: String
     let to: String
@@ -18,7 +18,7 @@ struct TransactionCellView: View {
     
     let symbol: String?
     
-    var evmColor: Color { model.evm.color }
+    var evmColor: Color { card.color }
     
     var isCell = true
     
@@ -40,7 +40,7 @@ struct TransactionCellView: View {
 //
     var body: some View {
         HStack(alignment: .center) {
-            TransactionIcon(symbol: symbol, evm: model.evm)
+            TransactionIcon(symbol: symbol, networkColor: evmColor)
             HStack(alignment: .top){
                 VStack(alignment: .leading, spacing: 2) {
                     Text(titleText)

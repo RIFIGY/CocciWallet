@@ -30,7 +30,7 @@ struct CodeScannerView: ViewModifier {
         }
         .optional(option) {  view, option in
             view
-                .toolbar {
+            .toolbar {
                 if option != .new {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button(systemName: "qrcode.viewfinder") {

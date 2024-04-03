@@ -8,6 +8,7 @@
 import SwiftUI
 import Charts
 import Web3Kit
+import OffChainKit
 
 struct PriceChart: View {
     @Environment(PriceModel.self) private var priceModel
@@ -16,12 +17,17 @@ struct PriceChart: View {
     
     var contract: String? = nil
     var full: Bool = false
-
-    var prices: CoinGecko.Prices? {
-        priceModel.priceHistory[evm.coingecko ?? ""]
+    
+    var coingeckoId: String? {
+        CoinGecko.AssetPlatform.NativeCoin(chainID: evm.chain)
     }
 
-    var priceArray: [CoinGecko.Price] {
+    var prices: CoinGecko.PriceHistory? {
+        nil
+//        priceModel.priceHistory[coingeckoId ?? ""]
+    }
+
+    var priceArray: [CoinGecko.PriceHistory.Price] {
         (prices?.prices ?? []).sorted{ $0.date > $1.date }
     }
     

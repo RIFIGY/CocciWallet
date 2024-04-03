@@ -9,7 +9,7 @@ import SwiftUI
 import CardSpacing
 
 struct WalletHolderView: View {
-    let wallet: WalletModel
+    let wallet: Wallet
     let totalBalance: Double
 
     var cardHeight: CGFloat = 160
@@ -25,8 +25,8 @@ struct WalletHolderView: View {
     var cardStack: some View {
         VStack(spacing: -cardHeight * 0.72){
             ForEach(Array(cards.enumerated()), id: \.element.id) { index, card in
-                CardView(color: card.color ?? .ETH) {
-                    Text(card.name)
+                CardView(color: card.color) {
+                    Text(card.title)
                 }
                 .frame(height: cardHeight)
 //                .matchedGeometryEffect(id: card.id + "_animation", in: animation)//, isSource: true)
@@ -75,32 +75,6 @@ struct WalletHolderView: View {
 }
 
 
-enum WalletKey: String, CaseIterable, Identifiable, Codable {
-
-    case watch, privateKey, mnemonic
-    var id: String { rawValue }
-    var systemImage: String {
-        switch self {
-        case .watch:
-            "magnifyingglass"
-        case .privateKey:
-            "key"
-        case .mnemonic:
-            "list.bullet.rectangle"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .watch:
-            Color.blue
-        case .privateKey:
-            Color.purple
-        case .mnemonic:
-            Color.orange
-        }
-    }
-}
 struct WalletCover: View {
     let cardHeight: CGFloat
     let padding: CGFloat
@@ -154,5 +128,5 @@ struct WalletCover: View {
 
 import Web3Kit
 #Preview {
-    WalletHolderView(wallet: .init(.rifigy), totalBalance: 324.23, animation: Namespace().wrappedValue)
+    WalletHolderView(wallet: .rifigy, totalBalance: 324.23, animation: Namespace().wrappedValue)
 }

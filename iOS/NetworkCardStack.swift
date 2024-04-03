@@ -8,23 +8,24 @@
 import SwiftUI
 import CardSpacing
 import Web3Kit
+import OffChainKit
 
 
 struct NetworkCardStack<Header:View, Footer:View>: View {
-    @AppStorage("currency") var currency: String = "usd"
+    @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
 
-    @Bindable var wallet: WalletModel
+    @Bindable var wallet: Wallet
     
     let animation: Namespace.ID
-    @Binding var showDetail: Bool
 
     let header: Header
     let footer: Footer
     
     var delete: (NetworkCard) -> Void
     
+    @State private var showDetail = false
     @State private var selected: NetworkCard?
 
     var body: some View {
@@ -36,43 +37,56 @@ struct NetworkCardStack<Header:View, Footer:View>: View {
             header: header,
             footer: footer
         ) { card in
-            NetworkCardView(card: card, price: price(card.evm), animation: animation)
+            NetworkCardView(
+                card: card,
+                price: priceModel.price(chain: card.chain, currency: currency),
+                animation: animation
+            )
                 .task {
                     await update(card: card)
                 }
         } cardDetail: { card in
-            NetworkWalletView(card: card)
-                .task {
-                    await fetchPrice(for: card)
+            NetworkWalletView(card: card) {
+                wallet.save()
+            } remove: {
+                withAnimation{
+                    wallet.remove(card)
+                    selected = nil
                 }
+            }
+            .environment(wallet)
+            .navigationBarBackButton(wallet.name, color: card.color)
         } cardIcon: { card in
-            cardIcon(card)
+            CardIcon(color: card?.color, symbol: card?.symbol)
         }
     }
     
     private func update(card: NetworkCard) async {
-        let client = network.getClient(card.evm)
-        let address = wallet.address
-        
-        await card.update(with: client, address: address)
+        let client = network.getClient(card)
+        let updated = await card.update(with: client)
+        if updated {
+            wallet.save()
+            await fetchPrice(for: card)
+        }
     }
     
     private func fetchPrice(for card: NetworkCard) async {
-        guard let platform = card.evm.coingecko else {return}
-        let platformContracts = [ (platform, card.erc20Interactions ) ]
+        guard let platform = CoinGecko.AssetPlatform.PlatformID(chainID: card.chain) else {return}
+        let contracts = card.tokenInfo.contractInteractions
         
-        await priceModel.fetchPrices(platformContracts: platformContracts)
+        await priceModel.fetchPrices(contracts: contracts, platform: platform, currency: currency)
     }
 
+}
+
+struct CardIcon: View {
+    let color: Color?
+    let symbol: String?
     
-    private func price(_ evm: EVM) -> (Double, String)? {
-        priceModel.price(evm: evm, currency: currency)
-    }
-    
-    func cardIcon(_ card: NetworkCard?) -> some View {
+    var body: some View {
         ZStack {
-            Rectangle().fill(card?.color ?? .ETH)
-            Text(card?.evm.symbol ?? "").fontWeight(.semibold)
+            Rectangle().fill(color ?? .ETH)
+            Text(symbol ?? "").fontWeight(.semibold)
                 .font(.caption)
                 .foregroundStyle(.white)
         }
@@ -80,7 +94,7 @@ struct NetworkCardStack<Header:View, Footer:View>: View {
 }
 
 #Preview {
-    NetworkCardStack(wallet: .init(.rifigy), animation: Namespace().wrappedValue, showDetail: .constant(false), header: EmptyView(), footer: EmptyView()) { _ in }
+    NetworkCardStack(wallet: .rifigy, animation: Namespace().wrappedValue, header: EmptyView(), footer: EmptyView()) { _ in }
         .environment(NetworkManager())
         .environment(PriceModel.preview)
 }

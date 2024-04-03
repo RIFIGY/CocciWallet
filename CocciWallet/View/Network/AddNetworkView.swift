@@ -7,58 +7,85 @@
 
 import SwiftUI
 import Web3Kit
+import OffChainKit
 
 struct AddNetworkView: View {
-    @AppStorage("currency") private var currency: String = "usd"
-    @Environment(NetworkManager.self) private var network
-    @Environment(PriceModel.self) private var priceModel
-    @Environment(WalletModel.self) private var wallet
-    
-    @Binding var showNewNetwork: Bool
-    
-    var body: some View {
-        List {
-            ForEach(EVM.selection) { evm in
-                HStack{
-                    IconView(symbol: evm.symbol ?? "generic", size: 25, glyph: true)
-                    Button(evm.name ?? evm.chain.description) {
-                        add(evm: evm, custom: false)
-                    }
-                    .foregroundStyle(evm.color)
-                }
-            }
+    @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
+    @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIDs: String = "ethereum"
 
-            Section {
-                NavigationLink {
-                    CustomNetworkView { evm in
-                        add(evm: evm, custom: true)
-                    }
-                } label: {
+    @Environment(NetworkManager.self) private var networkManager
+    @Environment(PriceModel.self) private var priceModel
+    
+    @Bindable var wallet: Wallet
+    
+    @Environment(\.dismiss) private var dismiss
+        
+    var body: some View {
+        NavigationStack {
+            List {
+                ForEach(EVM.selection) { evm in
+                    let color = Color(hex: evm.hexColor) ?? .ETH
                     HStack{
-//                        IconView(symbol: "generic", size: 25, glyph: true)
-                        Text("Custom Network")
-                            .foregroundStyle(Color.ETH)
+                        IconImage(symbol: evm.symbol, glyph: .white)
+                        Button(evm.name) {
+                            add(evm, false)
+                        }
+                        .foregroundStyle(Color(hex: evm.hexColor) ?? .ETH)
+                    }
+                }
+
+                Section {
+                    NavigationLink {
+                        AddCustomNetworkView { evm in
+                            add(evm, true)
+                        }
+                    } label: {
+                        HStack{
+    //                        IconView(symbol: "generic", size: 25, glyph: true)
+                            Text("Custom Network")
+                                .foregroundStyle(Color.ETH)
+                        }
+                    }
+                    Button("Local"){
+                        add(.custom, true)
                     }
                 }
             }
         }
     }
-    
-    func add(evm: EVM, custom: Bool) {
-        wallet.add(evm, custom: custom)
-        network.add(evm: evm)
-        self.showNewNetwork = false
-        Task {
-            await priceModel.fetchPrice(for: evm, currency: currency)
+
+    func add(_ evm: EVM, _ isCustom: Bool) {
+        let network = NetworkCard(evm: evm, address: wallet.address)
+        
+        let cards = wallet.cards + wallet.custom
+        guard !cards.contains(where: {$0.title == network.title})
+        else {return}
+        wallet.add(network)
+        
+        if let coingeckoID = CoinGecko.AssetPlatform.NativeCoin(chainID: evm.chain) {
+            guard !self.coinIDs.contains(coingeckoID) else {return}
+            self.coinIDs = self.coinIDs + ",\(coingeckoID)"
         }
+        dismiss()
+    }
+    
+    func add(blockchain: Blockchain) {}
+}
+
+fileprivate extension EVM {
+    static var custom: EVM {
+        .init(rpc: URL(string: "HTTP://127.0.0.1:7545")!, chain: 1337, name: "Ganache", symbol: "TEST", explorer: "etherscan.io", hexColor: nil, isCustom: true)
     }
 }
 
 
-
 #Preview {
-    AddNetworkView(showNewNetwork: .constant(false))
+    AddNetworkView(wallet: .rifigy)
         .environment(NetworkManager())
         .environment(PriceModel.preview)
-        .environment(WalletModel(.rifigy))
+        .environment(Wallet.rifigy)
+}
+
+#Preview {
+    Image(systemName: "a")
 }

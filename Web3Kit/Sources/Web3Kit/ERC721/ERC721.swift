@@ -9,7 +9,7 @@ import Foundation
 import BigInt
 
 public protocol ERC721Protocol: ERC {
-    var baseURI: URL? {get}
+    associatedtype T : ERC721TokenProtocol
 }
 
 public protocol ERC721TokenProtocol: Codable, Identifiable, Equatable, Hashable {
@@ -19,6 +19,7 @@ public protocol ERC721TokenProtocol: Codable, Identifiable, Equatable, Hashable 
     var tokenId: BigUInt {get}
     var uri: URL? {get}
     var metadata: Data? {get}
+
 }
 
 extension ERC721TokenProtocol {
@@ -28,26 +29,19 @@ extension ERC721TokenProtocol {
 
 
 public struct ERC721: ERC721Protocol {
+    public typealias T = Token
+    
     public let contract: String
     public let name: String?
     public let symbol: String?
     public let description: String?
     public var baseURI: URL? = nil
     
-//    public init(contract: String, name: String?, symbol: String?, description: String? = nil) {
-//        self.contract = contract
-//        self.name = name
-//        self.symbol = symbol
-//        self.description = description
-//    }
-
     public struct Token: ERC721TokenProtocol {
         public let token: ERC721
         public let tokenId: BigUInt
-        public let uri: URL?
-        public let metadata: Data?
-        
-
+        public var uri: URL? = nil
+        public var metadata: Data? = nil
         
         public typealias Metadata = OpenSeaMetadata
 
@@ -56,7 +50,10 @@ public struct ERC721: ERC721Protocol {
             return try decoder.decode(Metadata.self, from: metadata)
         }
         
-        
     }
     
+}
+
+public protocol ERC721Enumerable: ERC721Protocol {
+    var baseURI: URL? {get}
 }

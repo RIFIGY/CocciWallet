@@ -54,7 +54,7 @@ struct YearlySection<T:TransactionProtocol>: View where T.Sorter == Date {
                     .foregroundStyle(.primary)
                 }
             }
-            .fullScreenCover(isPresented: showYears) {
+            .navigationDestination(isPresented: showYears) {
                 if let selected {
                     NavigationStack {
                         YearDetailView(

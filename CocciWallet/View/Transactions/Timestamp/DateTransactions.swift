@@ -14,6 +14,7 @@ struct DateTransactions<T:TransactionProtocol>: View where T.Sorter == Date {
     @State var model: TransactionsModel
     let transactions: [T]
     
+    
     var latestTransactions: [T] {
         let oneMonthAgo = Calendar.current.date(byAdding: .month, value: -1, to: Date()) ?? Date()
         return transactions.filter { $0.sorter >= oneMonthAgo }
@@ -65,7 +66,7 @@ struct DateTransactions<T:TransactionProtocol>: View where T.Sorter == Date {
                         .foregroundStyle(.primary)
                     }
                 }
-                .fullScreenCover(item: $selected) { tx in
+                .navigationDestination(item: $selected) { tx in
                     NavigationStack {
                         TransactionDetailView(tx: tx)
                             .environment(model)
@@ -119,7 +120,36 @@ struct DateTransactions<T:TransactionProtocol>: View where T.Sorter == Date {
     
 }
 
+import OffChainKit
+import BigInt
 
+extension Etherscan.Transaction: TransactionProtocol {
+
+    public var sorter: Date {
+        self.date
+    }
+    
+    public var subtitle: String {
+        date.formatted(date: .numeric, time: .omitted)
+    }
+    
+    public var bigValue: BigUInt? {
+        guard let value else {return nil}
+        return BigUInt(value)
+    }
+    
+    public var toAddressString: String {
+        self.to
+    }
+    
+    public var fromAddressString: String {
+        self.from ?? ""
+    }
+    
+    public var id: Date { self.date }
+    
+    
+}
 
 
 //

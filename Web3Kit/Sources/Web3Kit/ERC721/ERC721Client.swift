@@ -10,66 +10,64 @@ import BigInt
 import web3
 
 public protocol ERC721Client {
-    func getERC721Balance(contract: String, address: String) async throws -> BigUInt
-    func getERC721Contract(for contract: String) async throws -> ERC721
-    func getERC721TransferEvents(for address: String) async throws -> [ERC721Transfer]
-    func getERC721URI(contract: String, tokenId: BigUInt) async throws -> URL
+    associatedtype E721 : ERC721Protocol
+    associatedtype Transfer : ERC721TransferProtocol
     
-//    func getERC721Metadata(contract: String, tokenId: BigUInt) async throws -> Data
+    func getTokenBalance(contract: String, address: String) async throws -> BigUInt
+    func getTokenContract(address contract: String) async throws -> E721
+    func getTokenTransferEvents(for address: String) async throws -> [Transfer]
+    func getTokenURI(contract: String, tokenId: BigUInt) async throws -> URL
+    func ownerOf(tokenId: BigUInt, in contract: String) async throws -> String
+    func totalSupply(contract: String) async throws -> BigUInt 
 
 }
-
 extension ERC721Client {
     
-    public func getToken(erc721: ERC721, tokenId: BigUInt) async throws -> ERC721.Token {
-        let uri = try? await getERC721URI(contract: erc721.contract, tokenId: tokenId)
-        var metadata: Data?
-        if let uri {
-            do {
-                let gateway = IPFS.gateway(uri: uri)
-                let (data, _) = try await URLSession.shared.data(from: gateway)
-                metadata = data
-            } catch {}
-        }
-        return .init(token: erc721, tokenId: tokenId, uri: uri, metadata: metadata)
-    }
-    
-    public func getERC721Tokens(contract: String, tokenIds: [BigUInt]) async throws -> [ERC721.Token] {
-        let contract = try await self.getERC721Contract(for: contract)
-        return try await self.getERC721Tokens(erc721: contract, tokenIds: tokenIds)
-    }
-    
-    public func getERC721Tokens(erc721: ERC721, tokenIds: [BigUInt]) async throws -> [ERC721.Token] {
-        try await withThrowingTaskGroup(of: ERC721.Token?.self, returning: [ERC721.Token].self) { group in
+    public func getTokenURIs(contract: String, tokenIds: [BigUInt]) async -> [ (BigUInt, URL) ] {
+        await withTaskGroup(of: (BigUInt, URL)?.self) { group in
             tokenIds.forEach { tokenId in
                 group.addTask {
-                    return try? await self.getToken(erc721: erc721, tokenId: tokenId)
+                    if let uri = try? await self.getTokenURI(contract: contract, tokenId: tokenId) {
+                        return (tokenId, uri)
+                    } else {
+                        return nil
+                    }
                 }
             }
-            return try await group.reduce(into: [ERC721.Token]()) { partialResult, token in
-                if let token {
-                    partialResult.append(token)
+            return await group.reduce(into: [ (BigUInt, URL) ]()) { partialResult, result in
+                if let result {
+                    partialResult.append(result)
                 }
             }
         }
     }
     
-    public func fetchNFTs(in tokens: [String : [BigUInt] ] ) async throws -> [ERC721 : [ERC721.Token] ] {
-        try await withThrowingTaskGroup(of: [ERC721.Token].self) { group in
+    public func fetchNFTs(in tokens: [String : [BigUInt] ] ) async -> [E721 : [ (BigUInt, URL) ] ] {
+        await withTaskGroup(of: (E721?,[ (BigUInt, URL) ] ).self) { group in
             for (contract, tokenIds) in tokens {
                 group.addTask {
-                    try await getERC721Tokens(contract: contract, tokenIds: tokenIds)
+                    async let URIs = await self.getTokenURIs(contract: contract, tokenIds: tokenIds)
+                    async let contract = try? await self.getTokenContract(address: contract)
+                    
+                    return await (contract, URIs)
                 }
             }
             
-            let nfts = try await group.reduce(into: [ERC721.Token]()) { partialResult, token in
-                partialResult.append(contentsOf: token)
+            return await group.reduce(into: [ E721 : [ (BigUInt, URL) ] ]()) { partialResult, result in
+                if let contract = result.0 {
+                    partialResult[contract] = result.1
+                }
             }
-            return Dictionary(grouping: nfts, by: { $0.token })
         }
     }
-}
+    
+    public func fetchNFTs(transfers: [any ERC721TransferProtocol], owner address: String) async -> [E721 : [ (BigUInt, URL) ] ] {
+        let interactions = self.filter(transfers: transfers, for: address)
+        return await fetchNFTs(in: interactions)
 
+    }
+}
+//
 extension ERC721Client {
     public func filter(transfers: [any ERC721TransferProtocol], for address: String) -> [String: [BigUInt]] {
         var currentHeldNFTs: [String: [BigUInt]] = [:]
@@ -105,41 +103,4 @@ extension ERC721Client {
     }
 }
 
-
-public protocol ERC721TransferProtocol: ERCTransfer {
-    var tokenId: BigUInt {get}
-}
-
-public typealias ERC721Transfer = ERC721Events.Transfer
-
-extension ERC721Events.Transfer: ERC721TransferProtocol {
-    public var sorter: String { self.log.blockNumber.stringValue }
-    public var id: String {
-        self.log.transactionHash ?? "\(toAddress)_\(fromAddress)_\(tokenId.description)_\(log.data)"
-    }
-    public var toAddress: String {
-        self.to.asString()
-    }
-    
-    public var fromAddress: String {
-        self.from.asString()
-    }
-    
-    public var bigValue: BigUInt? {
-        nil
-    }
-    
-    public var contract: String {
-        self.log.address.asString()
-    }
-    
-    public var title: String {
-        "NFT Transfer"
-    }
-    
-    public var subtitle: String {
-        self.contract
-    }
-    
-    
-}
+//

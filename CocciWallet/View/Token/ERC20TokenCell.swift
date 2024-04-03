@@ -7,24 +7,31 @@
 
 import SwiftUI
 import Web3Kit
+import OffChainKit
 
 struct ERC20TokenCell: View {
+    @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     @Environment(PriceModel.self) private var priceModel
-
     let contract: String
     let name: String?
     let symbol: String?
     let decimals: UInt8
     let balance: BigUInt?
-    let evm: EVM
     
-    var icon: Icon? {
-        Icon.getIcon(for: symbol)
-    }
+    let network: Color
+    let chain: Int
+    var useNetworkColor: Bool = false
+        
+    let icon: Icon?
     
     var color: Color {
-        icon?.hexColor ?? evm.color
+        if useNetworkColor {
+            network
+        } else {
+            icon?.color ?? network
+        }
     }
+    
     
     var value: Double? {
         balance?.value(decimals: decimals)
@@ -32,9 +39,11 @@ struct ERC20TokenCell: View {
     
     var body: some View {
         HStack {
-            IconView(symbol: symbol ?? "", size: 30, color: color)
+            IconImage(symbol: symbol, size: 42, override: color)
             VStack(alignment: .leading) {
                 Text(name ?? "Name")
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.6)
                 Text(symbol ?? "Symbol")
                     .font(.caption2)
                     .foregroundStyle(.secondary)
@@ -44,12 +53,16 @@ struct ERC20TokenCell: View {
                 if let value {
                     VStack(alignment: .trailing) {
                         Text(value, format: .number.precision(.fractionLength(2)))
-                        if let price = priceModel.price(evm: evm, contract: contract) {
-                            Text(price.0 * value, format: .currency(code: price.1))
+                        if let price = priceModel.price(chain: chain, contract: contract, currency: currency) {
+                            Text(price * value, format: .currency(code: currency))
+                                .foregroundStyle(.secondary)
+                        } else {
+                            Text("--")
                         }
                     }
+                    .padding(.leading, 4)
                 } else {
-                    Text("--")
+                    Text("0")
                 }
             }
             .foregroundStyle(color)
@@ -61,17 +74,22 @@ struct ERC20TokenCell: View {
 import Web3Kit
 import BigInt
 extension ERC20TokenCell {
-    init(_ contract: any Web3Kit.ERC20Protocol, balance: BigUInt?, evm: EVM) {
+    init<C:ERC20Protocol>(_ contract: C, balance: BigUInt?, chain: Int, network: Color, useNetworkColor: Bool = false) {
         self.name = contract.name
         self.symbol = contract.symbol
         self.decimals = contract.decimals
         self.balance = balance
         self.contract = contract.contract
-        self.evm = evm
+        self.useNetworkColor = useNetworkColor
+        self.icon = Icon(symbol: contract.symbol)
+        self.chain = chain
+        self.network = network
     }
 }
 
 #Preview {
-    ERC20TokenCell(ERC20.USDC, balance: 353823, evm: .ETH)
-        .environment(PriceModel() )
+    List {
+        ERC20TokenCell(ERC20.USDC, balance: 353823, chain: 1, network: .ETH)
+    }
+    .environment(PriceModel() )
 }

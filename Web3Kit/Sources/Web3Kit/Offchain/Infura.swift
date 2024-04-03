@@ -12,16 +12,13 @@ public struct Infura {
     fileprivate let base = ".infura.io/"
     
     private let session: URLSession
-    private let cache: (any Cache)?
     
     public init(
         api_key: String,
-        session: URLSession,
-        cache: (any Cache)? = nil
+        session: URLSession
     ){
         self.API_KEY = api_key
         self.session = session
-        self.cache = cache
     }
     
     public func URL(evm: EVM, websocket: Bool = false) -> Foundation.URL? {

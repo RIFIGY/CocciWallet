@@ -27,6 +27,8 @@ public enum Theme: Hashable, Equatable {
     }
 }
 
+
+
 public extension View {
     @ViewBuilder
     func theme(_ theme: Theme, autoColor: Color? = nil) -> some View {

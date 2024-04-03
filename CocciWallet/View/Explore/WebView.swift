@@ -14,7 +14,7 @@ struct WebLink: View {
     @State private var showLink = false
 
     var body: some View {
-        #if canImport(WebKit)
+        #if os(iOS)
         Button("Etherscan Details") {
             showLink = true
         }
@@ -22,12 +22,12 @@ struct WebLink: View {
             WebView(url)
         }
         #else
-        Link("Etherscan Details", destination: etherscanURL)
+        Link("Etherscan Details", destination: url)
         #endif
     }
 }
 
-#if canImport(WebKit)
+#if os(iOS)
 import WebKit
 
 

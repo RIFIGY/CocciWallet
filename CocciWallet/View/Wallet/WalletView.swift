@@ -6,50 +6,54 @@
 //
 
 import SwiftUI
-import Web3Kit
-import BigInt
-import CardSpacing
 
 struct WalletView: View {
     @Environment(WalletHolder.self) private var manager
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
     
-    @Bindable var wallet: WalletModel
+    @Bindable var wallet: Wallet
     @Binding var showSettings: Bool
     
     @State private var showNewNetwork = false
-    @State private var showDetails = false
+    @State private var showWallets = false
     @Namespace private var animation
 
     var body: some View {
-        NetworkCardStack(
-            wallet: wallet,
-            animation: animation,
-            showDetail: $showDetails,
-            header: header,
-            footer: footer,
-            delete: remove
-        )
-        .sheet(isPresented: $showNewNetwork) {
-            NavigationStack {
-                AddNetworkView(showNewNetwork: $showNewNetwork)
-                    .environment(priceModel)
-                    .environment(wallet)
+        Group {
+            if wallet.settings.displayAsCards {
+                NetworkCardStack(
+                    wallet: wallet,
+                    animation: animation,
+                    header: header,
+                    footer: footer,
+                    delete: wallet.remove
+                )
+            } else {
+                NetworkCardList(
+                    wallet: wallet,
+                    showSettings: $showSettings,
+                    showNewNetwork: $showNewNetwork,
+                    showWallets: $showWallets
+                )
             }
         }
-
+        .sheet(isPresented: $showNewNetwork) {
+            AddNetworkView(wallet: wallet)
+                .environment(priceModel)
+        }
+        .sheet(isPresented: $showWallets) {
+            NavigationStack {
+                SelectWalletView()
+                    .environment(manager)
+            }
+                .presentationDetents([.medium, .large])
+        }
         #if os(iOS)
         .navigationBarTitleDisplayMode(.inline)
         #endif
     }
-
-    func remove(network card: NetworkCard) {
-        wallet.remove(card.evm)
-    }
-    
-        
-        
+            
     var footer: some View {
         Button("Add"){
             showNewNetwork = true
@@ -60,24 +64,23 @@ struct WalletView: View {
 
     var header: some View {
         HStack {
-            Text("Networks")
+            Text(wallet.name)
                 .font(.largeTitle.weight(.bold))
             Spacer()
             HStack {
                 HeaderButton(systemName: "wallet.pass") {
                     withAnimation {
+                        showWallets = true
     //                    manager.selected = nil
                     }
                 }
-                HeaderButton(systemName: "gear") {
+                HeaderButton(systemName: "gearshape") {
                     showSettings = true
                 }
             }
         }
         .padding(.horizontal)
     }
-
-
 }
 
 

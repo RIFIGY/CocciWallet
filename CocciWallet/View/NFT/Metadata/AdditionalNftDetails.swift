@@ -25,22 +25,24 @@ struct Trait<C:Any>: Identifiable, Equatable, Hashable {
 struct AdditionalNftDetails: View {
     
     let details: [String:Any]
+    
+    init(details: [String : Any]) {
+        self.details = details.filter {
+            $0.0.lowercased() != "name" && $0.0.lowercased() != "description" && $0.0.lowercased() != "tokenid"
+        }
+    }
+
     @State private var selectedURL: Trait<URL>?
 
     
     var body: some View {
-        if let additionalURLs {
-            AttributeGrid(items: urlList, collumns: 5) { name, url in
-                let url = url as? URL
-                let media = url?.media ?? .unknown
-                let name = name.replacingOccurrences(of: "_url", with: " ").replacingOccurrences(of: "_", with: " ").capitalized
-                return Button {
-                    if let url {
-                        self.selectedURL = .init(name: name, value: url)
-                    }
+        if !URLs.isEmpty {
+            AttributeGrid(items: URLs, columns: 4) { name, url in
+                Button {
+                    self.selectedURL = .init(name: name, value: url)
                 } label: {
-                    AttributeGrid<EmptyView>.Cell(name: name) {
-                        Image(systemName: media.systemName)
+                    AttributeCell(name: name) {
+                        Image(systemName: url.media.systemName)
                     }
                 }
             }
@@ -49,24 +51,25 @@ struct AdditionalNftDetails: View {
             }
         }
         
-        if !additionalStrings.isEmpty {
-            AttributeGrid(items: additionalStrings)
+        if !strings.isEmpty {
+            AttributeGrid(strings: strings)
         }
     }
     
-    
-    var additionalURLs: [(name: String, url: URL)]? {
+
+    var URLs: [(String, URL)] {
         details.compactMap { key, value in
             guard let stringValue = value as? String,
             let url = checkURL(string: stringValue) else {return nil}
-            return (key, url)
+            let name = key.replacingOccurrences(of: "_url", with: " ").replacingOccurrences(of: "_", with: " ").capitalized
+            return (name, url)
         }
     }
     
-    var additionalStrings: [ (String,String) ] {
+    var strings: [ (String,String) ] {
         details.compactMap { key, value in
             guard let stringValue = value as? String else {return nil}
-            if let url = checkURL(string: stringValue) {
+            if let _ = checkURL(string: stringValue) {
                 return nil
             } else {
                 return (key, stringValue)
@@ -86,10 +89,7 @@ struct AdditionalNftDetails: View {
         
     }
     
-    var urlList: [ (String, URL) ] {
-        guard let additionalURLs else {return []}
-        return additionalURLs.compactMap{ ($0.name, $0.url) }
-    }
+
 }
 
 

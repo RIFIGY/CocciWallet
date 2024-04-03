@@ -9,10 +9,8 @@ import Foundation
 import web3
 
 public protocol WalletGeneratorProtocol {
-//    associatedtype Storage : EthereumMultipleKeyStorageProtocol
     associatedtype W : Identifiable where W.ID == String
 
-//    var storage: Storage {get}
     var blockHD: String {get}
     
     func creatAccount(name: String, password: String) throws -> W.ID

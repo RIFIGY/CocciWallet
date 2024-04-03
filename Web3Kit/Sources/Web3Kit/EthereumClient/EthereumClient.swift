@@ -10,16 +10,15 @@ import BigInt
 import Logging
 import web3
 
-open class EthereumClient: EthereumClientProtocol {
-    
-    internal let client: any EthereumClientProtocol
-    internal let cache: (any Cache)?
+open class EthereumClient<C:EthereumClientProtocol> {
+    public typealias Account = C.Account
+    public typealias Client = C
+    public let node: Client
     public let chain: Int
     public let rpc: URL
     
-    public init(client: any EthereumClientProtocol, chain: Int, rpc: URL, cache: (any Cache)?) {
-        self.client = client
-        self.cache = cache
+    public init(client: Client, chain: Int, rpc: URL) {
+        self.node = client
         self.chain = chain
         self.rpc = rpc
     }
@@ -29,34 +28,13 @@ open class EthereumClient: EthereumClientProtocol {
     }
 }
 
-extension EthereumClient {
-
+public class EthClient: EthereumClient<EthereumHttpClient> {
+    
 }
 
-extension EthereumClient {
-    
-    public func send(_ amount: BigUInt, to: String, from account: EthereumAccount, gasPrice: BigUInt?, gasLimit: BigUInt?) async throws -> String {
-        try await client.send(amount, to: to, from: account, gasPrice: gasPrice, gasLimit: gasLimit)
+extension EthereumClient where C == EthereumHttpClient {
+    public convenience init(rpc: URL, chain: Int, logger: Logger? = nil) {
+        let client = EthereumHttpClient(url: rpc, logger: logger, network: .custom(chain.description) )
+        self.init(client: client, chain: chain, rpc: rpc)
     }
-    
-    public func getReceipt(txHash: String) async throws -> EthereumTransactionReceipt {
-        try await client.getReceipt(txHash: txHash)
-    }
-    
-    public func getBalance(address: String, block: Int?) async throws -> BigUInt {
-        try await client.getBalance(address: address, block: block)
-    }
-    
-    public func getGasPrice() async throws -> BigUInt {
-        try await client.getGasPrice()
-    }
-    
-    public typealias T = EthereumTransaction
-    
-    public func estimateGas(for tx: Any) async throws -> BigUInt {
-        guard let tx = tx as? EthereumTransaction else {throw Error.badType}
-        return try await client.estimateGas(for: tx)
-        
-    }
-    
 }

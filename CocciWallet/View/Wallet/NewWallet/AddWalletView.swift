@@ -13,7 +13,7 @@ typealias WalletGenerator = EthereumWalletGenerator<Wallet>
 
 struct AddWalletView: View {
 
-    var generator: WalletGenerator!
+    var generator: WalletGenerator = WalletGenerator(storage: KeychainSwift.shared)
     var wallet: (Wallet) -> Void
     
     var body: some View {
@@ -45,18 +45,6 @@ struct AddWalletView: View {
         }
     }
 }
-//
-//extension AddWalletView {
-//    init(storage: any Web3Kit.WalletStore, wallet: @escaping (Wallet) -> Void) {
-//        self.generator = .init(storage: storage)
-//        self.wallet = wallet
-//    }
-
-//}
-
-
-
-
 
 enum WalletOption: String, CaseIterable, Identifiable, Hashable {
     case new, privateKey, watch
@@ -101,7 +89,6 @@ enum WalletOption: String, CaseIterable, Identifiable, Hashable {
 }
 
 
-//#Preview {
-//    AddWalletView()
-//        .environment(WalletManager())
-//}
+#Preview {
+    AddWalletView { _ in }
+}

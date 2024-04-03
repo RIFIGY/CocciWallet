@@ -57,6 +57,6 @@ struct ExploreView: View {
 //    }
 }
 
-#Preview {
-    ExploreView(wallet: .rifigy)
-}
+//#Preview {
+//    ExploreView(wallet: .rifigy)
+//}

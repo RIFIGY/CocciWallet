@@ -7,12 +7,15 @@
 
 import SwiftUI
 import Web3Kit
+import OffChainKit
 
 struct SearchERC20View: View {
-    
+    @Environment(\.dismiss) private var dismiss
+    @Environment(NetworkManager.self) private var network
     @State private var result: (any ERC20Protocol)? = nil
     
-    var chosen: (any ERC20Protocol) async -> Void
+    let chain: Int
+    var chosen: (any ERC20Protocol) async -> Bool
     
     @State private var contract: String = ""
     @State private var symbol: String = ""
@@ -22,41 +25,30 @@ struct SearchERC20View: View {
     @State private var isSearching = false
     
     var icon: Icon? {
-        Icon.getIcon(for: result?.symbol)
+        Icon(symbol: result?.symbol)
     }
+    
+    @State private var validContract = false
+    @State private var showError = false
     
     var body: some View {
         NavigationStack {
             List {
                 HStack {
-                    IconView(symbol: symbol, size: 75)
+                    IconView(symbol: result?.symbol ?? symbol, size: 75)
                     Spacer()
                 }
                 .frame(height: 75)
                 .listRowBackground(Color.clear)
-                Section {
-                    TextField("0x....", text: $contract)
-                        .onSubmit(search)
-                } header: {
-                    HStack {
-                        Text("Contract Address")
-                            .font(.caption2)
-                        Spacer()
-                        #if !os(tvOS)
-                        Button(systemName: "circle") {
-                            #if os(macOS)
-                            if let paste = NSPasteboard.general.string(forType: .string) {
-                                self.contract = paste
-                            }
-                            #else
-                            if let paste = UIPasteboard.general.string {
-                                self.contract = paste
-                            }
-                            #endif
-                        }
-                        #endif
-                    }
-                }
+                EthTextField(
+                    placeholder: "0x...",
+                    header: "Contract Address",
+                    toolbar: false,
+                    color: icon?.color,
+                    input: $contract,
+                    isValid: $validContract
+                )
+
                 Section {
                     if let symbol = result?.symbol {
                         Text(symbol)
@@ -91,38 +83,60 @@ struct SearchERC20View: View {
                         .font(.caption2)
                 }
             }
-            .onChange(of: contract) { oldValue, newValue in
-                if newValue.count == 42, !isSearching {
+//            .onChange(of: contract) { oldValue, newValue in
+//                if newValue.count == 42, !isSearching {
+//                    search()
+//                }
+//            }
+            .onChange(of: validContract) { oldValue, newValue in
+                if newValue {
                     search()
+                } else if oldValue {
+                    self.result = nil
                 }
             }
             .toolbar {
                 ToolbarItem(placement: .automatic) {
                     Button("Add"){
-                        if let result, !name.isEmpty, decimals != 0, !symbol.isEmpty, !contract.isEmpty {
-                            Task {
-                                await chosen(result)
+                        Task {
+                            if let result {
+                                if await chosen(result) {
+                                    dismiss()
+                                } else {
+                                    showError = true
+                                }
+                            } else if !name.isEmpty, decimals != 0, !symbol.isEmpty, !contract.isEmpty {
+                                showError = true
                             }
+                            
                         }
                     }
+                    .fontWeight(.semibold)
+                    .foregroundStyle(icon?.color ?? .ETH)
                     .disabled(result == nil)
                 }
             }
+            .alert("Existing Token", isPresented: $showError) {
+                Button("Ok", role: .cancel) {}
+            } message: {
+                Text("You already have this Token in your list")
+            }
 //            .navigationBarTitleDisplayMode(.inline)
 //            .toolbarBackground(icon?.hexColor == nil ? .hidden:.visible, for: .navigationBar)
-            .toolbarBackground(icon?.hexColor ?? Color.blue)
+//            .toolbarBackground(icon?.hexColor ?? Color.blue)
         }
         
     }
     
     func search(){
         print("Searching \(contract)")
+        guard let client = network.getClient(chain: chain) else {return}
         self.isSearching = true
         Task {
             do {
-//                let result = try await manager.client.getERC20Contract(for: contract) 
+                let result = try await client.node.getContract(address: contract)
                 withAnimation {
-//                    self.result = result
+                    self.result = result
                 }
                 self.isSearching = false
             } catch {
@@ -134,7 +148,7 @@ struct SearchERC20View: View {
 }
 
 #Preview {
-    SearchERC20View { contract in
-        
+    SearchERC20View(chain: 1) { contract in
+        true
     }
 }

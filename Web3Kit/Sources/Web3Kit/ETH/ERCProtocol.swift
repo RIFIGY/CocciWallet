@@ -16,3 +16,4 @@ public protocol ERC: Identifiable, Codable, Equatable, Hashable {
 extension ERC {
     public var id: String { contract }
 }
+

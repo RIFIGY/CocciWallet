@@ -73,7 +73,7 @@ extension EthereumHttpClient {
     }
     
     private func encodeSwapFunction(amountOutMin: BigUInt, path: [EthereumAddress], to: EthereumAddress, deadline: BigUInt) -> Data? {
-        let uniswapRouterAddress = EthereumAddress("UniswapRouterV2Address") // Replace with actual Uniswap Router V2 address
+        let uniswapRouterAddress = EthereumAddress(Uniswap.t.rawValue) // Replace with actual Uniswap Router V2 address
         let swapFunction = SwapExactETHForTokens(contract: uniswapRouterAddress, amountOutMin: amountOutMin, path: path, to: to, deadline: deadline)
         
         do {
@@ -85,4 +85,10 @@ extension EthereumHttpClient {
             return nil
         }
     }
+}
+
+enum Uniswap: String {
+    case v2 = "0x1"
+    case v3 = "0x2"
+    case t = "0x3"
 }

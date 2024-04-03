@@ -6,7 +6,16 @@
 //
 
 import SwiftUI
-//import Cocoa
+
+//
+//#if os(iOS)
+//import UIKit
+//#elseif os(watchOS)
+//import WatchKit
+//#elseif os(macOS)
+//import AppKit
+//#endif
+
 #if canImport(UIKit)
 import UIKit
 public typealias PlatformColor = UIColor
@@ -40,3 +49,10 @@ extension Color {
     }
     
 }
+
+
+public extension Color {
+    static let ETH = Color(hex: "#627eea")!
+}
+
+

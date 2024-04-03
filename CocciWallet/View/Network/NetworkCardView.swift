@@ -8,36 +8,41 @@
 import SwiftUI
 import Web3Kit
 import CardSpacing
+import OffChainKit
 
 struct NetworkCardView: View {
-    @AppStorage("show_card_balance") private var showBalance = true
+    @AppStorage(AppStorageKeys.showNetworkPriceHeader) private var showPrice = true
+    @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     let card: NetworkCard
-    var price: (Double,String)?
+    var price: Double?
     let animation: Namespace.ID
     
-    var evm: EVM { card.evm }
+    var color: Color { card.color }
     
     var balanceString: String {
-        card.balance?.string(decimals: 5) ?? "00"
+        card.value?.string(decimals: 5) ?? "00"
     }
     
-    var symbol: String { evm.symbol ?? "generic" }
+    var symbol: String { card.symbol ?? "generic" }
     
     var body: some View {
-        CardView(color: evm.color) {
+        CardView(color: color) {
             HStack {
-                IconView(symbol: symbol, size: 42, glyph: true)
-                Text(card.name)
+//                IconView(symbol: symbol, size: 42, glyph: true)
+                Text(card.title)
                     .bold()
                     .font(.title)
             }
                 .foregroundStyle(.white)
         } topTrailing: {
-            if let price {
-                Text(price.0, format: .currency(code: price.1))
-            } else if showBalance {
-                Text(balanceString + (card.evm.symbol ?? ""))
+            Group {
+                if let price, showPrice {
+                    Text(price, format: .currency(code: currency))
+                } else if !showPrice {
+                    Text(balanceString + " " + (card.symbol ?? ""))
+                }
             }
+            .foregroundStyle(.white)
         } bottomLeading: {
             Text(card.address)
 //                .font(.callout)
@@ -52,6 +57,41 @@ struct NetworkCardView: View {
                 .stroke(.secondary, lineWidth: 0.8)
         )
 
+    }
+}
+
+struct BlockchainCardView: View {
+    @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
+    @AppStorage("show_card_balance") private var showBalance = true
+    @Environment(PriceModel.self) private var priceModel
+    let chain: Blockchain
+    
+    var price: Double? {
+        priceModel.price(coin: chain.name.lowercased(), currency: currency)
+    }
+    
+    var body: some View {
+        CardView(color: chain.color) {
+            HStack {
+                IconView(symbol: chain.crypto.symbol, size: 42, glyph: .white)
+                Text(chain.name)
+                    .bold()
+                    .font(.title)
+            }
+                .foregroundStyle(.white)
+        } topTrailing: {
+            Group {
+                if let price {
+                    Text(price, format: .currency(code: currency))
+                }
+            }
+            .foregroundStyle(.white)
+        } bottomLeading: {
+            
+        } bottomTrailing: {
+            
+        }
+        
     }
 }
 

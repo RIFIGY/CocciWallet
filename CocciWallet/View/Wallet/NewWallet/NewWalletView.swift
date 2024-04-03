@@ -31,7 +31,6 @@ struct NewWalletView: View {
     @State private var errorMessage: String = "Wallet Error"
     
     @State private var input = ""
-    @State private var password = ""
     @State private var name = ""
     
     #if os(iOS)
@@ -41,43 +40,41 @@ struct NewWalletView: View {
     var placeholder: String {
         switch option {
         case .new:
-            "Name"
+            "My Wallet"
         case .privateKey:
-            "Private Key"
+            "0x...."
         case .watch:
-            "Address"
+            "0x...."
         }
     }
 
+    @State private var validAddress = false
 
     var body: some View {
         Form{
             if option != .new {
-                HStack {
-                    TextField(placeholder, text: $input)
-                    #if !os(tvOS)
-                    ButtonCorner(systemImage: "doc.on.clipboard.fill", color: .ETH) {
-                        paste()
-                    }
-                    #endif
-                }
+                EthTextField(
+                    placeholder: placeholder,
+                    header: option == .privateKey ? "Private Key" : "Address",
+                    input: $input,
+                    isValid: $validAddress
+                )
             }
-            if option != .watch {
-                TextField("Password (optional)", text: $password)
+            Section("Name") {
+                TextField("My Wallet", text: $name)
             }
-            TextField("Name (optional)", text: $name)
-            ImportButtton(title: title, action: cta)
+            Section {
+                ImportButtton(title: title, action: cta)
+                    .frame(maxWidth: .infinity)
+                    .listRowBackground(Color.clear)
+            }
         }
-        .padding(.horizontal)
         .alert("Wallet Error", isPresented: $showError) {
             Button("Cancel", role: .cancel) {}
         } message: {
             Text(errorMessage)
         }
         .navigationTitle("\(title) Wallet")
-        #if os(iOS)
-        .qrScanSheet(showScanner: $showingScanner, input: $input, walletOption: option)
-        #endif
     }
 
 
@@ -87,9 +84,9 @@ struct NewWalletView: View {
             let address: String
                 switch option {
                 case .new:
-                    address = try generator.creatAccount(name: name, password: password)
+                    address = try generator.creatAccount(name: name, password: "")
                 case .privateKey:
-                    address = try generator.importAccount(privateKey: input, password: password, name: name)
+                    address = try generator.importAccount(privateKey: input, password: "", name: name)
                 case .watch:
                     address = try generator.watchAddress(input, name: name)
                 }
@@ -130,16 +127,34 @@ struct ImportButtton: View {
     var action: ()->Void
     
     var body: some View {
+
         Button(title) {
             action()
         }
-          .buttonStyle(.borderedProminent)
-          .tint(.blue)
-          .font(.largeTitle)
-          .padding(.bottom)
+        .font(.title2.weight(.semibold))
+        .foregroundStyle(.white)
+        .padding()
+        .background(Color.blue)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+
     }
 }
-//#Preview {
-//    NewWalletView(option: .new)
-//        .environment(WalletManager(wallets: [.rifigy]))
-//}
+
+import KeychainSwift
+#Preview {
+    NavigationStack {
+        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .new){_ in}
+    }
+}
+
+#Preview {
+    NavigationStack {
+        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .privateKey){_ in}
+    }
+}
+
+#Preview {
+    NavigationStack {
+        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .watch){_ in}
+    }
+}

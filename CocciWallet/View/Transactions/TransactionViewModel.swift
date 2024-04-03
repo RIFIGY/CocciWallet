@@ -7,6 +7,7 @@
 
 import SwiftUI
 import Web3Kit
+import OffChainKit
 
 typealias TransactionProtocol = Web3Kit.TransactionProtocol
 
@@ -15,17 +16,17 @@ class TransactionsModel {
     
     let address: String
     let price: (Double, String)?
-    let evm: EVM
-    var symbol: String? { evm.symbol }
+//    let evm: EVM
+    var symbol: String? 
     let decimals: UInt8
     let erc: [any ERC]
     
-    init(address: String, price: (Double, String)?, evm: EVM, decimals: UInt8 = 18, erc: [any ERC] = []) {
+    init(address: String, price: (Double, String)?, decimals: UInt8 = 18, erc: [any ERC] = []) {
         self.address = address
         self.price = price
         self.decimals = decimals
         self.erc = erc
-        self.evm = evm
+//        self.evm = evm
     }
 }
 
@@ -74,12 +75,12 @@ extension TransactionIcon {
         self.content = Image(systemName: systemImage).resizable()
     }
     
-    init(symbol: String?, evm: EVM, size: CGFloat = 24, padding: CGFloat? = nil) where I == IconView<Image> {
-        let icon = Icon.getIcon(for: symbol)
-        self.color = icon?.hexColor ?? evm.color
+    init(symbol: String?, networkColor: Color, size: CGFloat = 24, padding: CGFloat? = nil) where I == IconView {
+        let icon = Icon(symbol: symbol)
+        self.color = icon?.color ?? networkColor
         self.size = size
         self.padding = padding
-        let sym = icon?.symbol ?? evm.symbol ?? "generic"
-        self.content = IconView(symbol: sym, size: size + 6 , glyph: true)
+        let sym = icon?.symbol ?? symbol ?? "generic"
+        self.content = IconView(symbol: sym, size: size + 6 , glyph: .white)
     }
 }
