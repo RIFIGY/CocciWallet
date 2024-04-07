@@ -20,7 +20,7 @@ struct NetworkCardList: View {
     @Bindable var wallet: Wallet
 
     @State private var selected: NetworkCard?
-    @State private var selectedToken: Balance?
+    @State private var selectedToken: Balance<ERC20, ERC20Transfer>?
     @Binding var showSettings: Bool
     @Binding var showNewNetwork: Bool
     @Binding var showWallets: Bool
@@ -216,7 +216,7 @@ fileprivate struct Destination: View {
     }
 }
 
-fileprivate struct Balance: Identifiable, Hashable {
+fileprivate struct Balance<E:ERC20Protocol, T:ERCTransfer>: Identifiable, Hashable {
     static func == (lhs: Balance, rhs: Balance) -> Bool {
         lhs.id == rhs.id
     }
@@ -226,10 +226,10 @@ fileprivate struct Balance: Identifiable, Hashable {
     }
     
     var id: String { token.contract }
-    let token: any ERC20Protocol
+    let token: E
     let balance: BigUInt
     let price: Double?
-    let transfers: [any ERCTransfer]?
+    let transfers: [T]?
     let chain: Int
     let network: Color
 }

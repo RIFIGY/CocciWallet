@@ -10,9 +10,10 @@ import BigInt
 import Web3Kit
 import OffChainKit
 
-struct ERC20DetailView: View {
+struct ERC20DetailView<E:ERC20Protocol, T:ERCTransfer>: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
 
+    let contract: E
     let address: String
     let name: String?
     let symbol: String?
@@ -21,7 +22,7 @@ struct ERC20DetailView: View {
     var balance: BigUInt?
     var price: Double?
     
-    let transactions: [any ERCTransfer]
+    let transactions: [T]
     
     let chain: Int
     let network: Color
@@ -90,6 +91,7 @@ struct ERC20DetailView: View {
                 .networkTheme(chain: chain, symbol: self.symbol, color: color, decimals: decimals)
 
                 if !transactions.isEmpty {
+                    ERCTransactions(transfers: [contract], transactions: transactions, address: address, symbol: symbol)
 //                    TransactionList(transactions: transactions, decimals: decimals)
                 }
             }
@@ -119,7 +121,8 @@ struct ERC20DetailView: View {
 }
 
 extension ERC20DetailView {
-    init<C:ERC20Protocol>(_ contract: C, balance: BigUInt?, price: Double? = nil, tx: [any ERCTransfer], network: Color, chain: Int ) {
+    init(_ contract: E, balance: BigUInt?, price: Double? = nil, tx: [T], network: Color, chain: Int ) {
+        self.contract = contract
         self.address = contract.contract
         self.name = contract.name
         self.symbol = contract.symbol
@@ -138,7 +141,7 @@ extension ERC20DetailView {
         ERC20.USDC,
         balance: 20000000,
         price: 1.00,
-        tx: [],
+        tx: [ERC20Transfer](),
         network: .ETH,
         chain: 1
     )

@@ -10,7 +10,6 @@ import AppIntents
 import WidgetKit
 
 
-
 struct NFTIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "NFT"
     static var description = IntentDescription("Display NFT")

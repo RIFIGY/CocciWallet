@@ -8,7 +8,7 @@
 import Foundation
 import Web3Kit
 import KeychainSwift
-import web3
+//import web3
 import OffChainKit
 
 @Observable

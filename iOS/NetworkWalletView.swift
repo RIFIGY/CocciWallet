@@ -22,7 +22,7 @@ struct NetworkWalletView: View {
         VStack {
             NetworkGridView(model: card)
             if !card.transactions.isEmpty, card.chain > 0 {
-                DateTransactions(model: .init(address: card.address, price: price(card) ), transactions: card.transactions)
+                DateTransactions(address: card.address, transactions: card.transactions, symbol: card.symbol)
             }
         }
         .toolbar {

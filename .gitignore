@@ -5,6 +5,7 @@
 build/
 DerivedData/
 */.xcuserstate
+*/Package.resolved
 # CocoaPods
 Pods/
 Podfile.lock

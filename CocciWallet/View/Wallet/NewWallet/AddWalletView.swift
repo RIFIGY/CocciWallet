@@ -8,8 +8,9 @@
 import SwiftUI
 import Web3Kit
 import KeychainSwift
+import ChainKit
 
-typealias WalletGenerator = EthereumWalletGenerator<Wallet>
+typealias WalletGenerator = PrivateKeyGenerator<Web3Kit.EthereumAccount>
 
 struct AddWalletView: View {
 

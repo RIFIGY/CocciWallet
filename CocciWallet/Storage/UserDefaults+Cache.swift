@@ -6,8 +6,6 @@
 //
 
 import Foundation
-import BigInt
-import Web3Kit
 
 extension UserDefaults {
     

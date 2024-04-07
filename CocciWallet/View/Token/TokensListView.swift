@@ -38,9 +38,7 @@ struct TokensListView<Client:ERC20Client>: View {
                         selected = token.0
                     }
             }
-//                Section("Latest"){
-//                    ERCTransactions(model: .init(address: Wallet.rifigy.address, price: nil, evm: evm), transfers: transfers)
-//                }
+            ERCTransactions(transfers: Array(transfers.keys), transactions: transfers.flatMap{$0.value}, address: model.address, symbol: nil)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {

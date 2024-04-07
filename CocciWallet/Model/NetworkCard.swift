@@ -74,6 +74,10 @@ extension NetworkCard {
         print(printer)
 
         await withTaskGroup(of: Void.self) { group in
+            
+            group.addTask {
+                await self.fetchTransactions()
+            }
             group.addTask {
                 await self.fetch(with: client.node)
             }

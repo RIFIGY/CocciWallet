@@ -36,6 +36,10 @@ extension Color {
 
 extension Color {
     
+    static var app: Color {
+        .sky
+    }
+    
     static var systemGray: Color {
         #if canImport(UIKit)
         #if os(tvOS)

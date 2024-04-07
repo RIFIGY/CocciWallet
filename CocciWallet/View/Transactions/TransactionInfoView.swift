@@ -28,7 +28,7 @@ struct TransactionInfoView: View {
                     .font(.system(size: 64))
                 Group {
                     Text(tx.title)
-                    if let date = tx.date {
+                    if let date = tx.timestamp {
                         Text(date.formatted(date: .numeric, time: .standard))
                     }
                 }
@@ -167,5 +167,5 @@ struct TransactionInfoCell: View {
 }
 
 #Preview {
-    TransactionInfoView(tx: CocciWallet.Transaction.generatedDummyData.first!)
+    TransactionInfoView(tx: Transaction.generatedDummyData.first!)
 }

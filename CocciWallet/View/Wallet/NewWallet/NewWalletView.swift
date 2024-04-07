@@ -84,11 +84,12 @@ struct NewWalletView: View {
             let address: String
                 switch option {
                 case .new:
-                    address = try generator.creatAccount(name: name, password: "")
+                    address = try generator.create(password: "").string
                 case .privateKey:
-                    address = try generator.importAccount(privateKey: input, password: "", name: name)
+                    address = try generator.importWallet(input, passsword: "").string
                 case .watch:
-                    address = try generator.watchAddress(input, name: name)
+                    #warning("add validate")
+                    address = input
                 }
             
             var type: WalletKey {
@@ -102,7 +103,7 @@ struct NewWalletView: View {
                 address: address,
                 name: name, 
                 type: type,
-                blockHD: generator.blockHD
+                blockHD: ""
             )
             
             self.wallet(wallet)
@@ -140,21 +141,21 @@ struct ImportButtton: View {
     }
 }
 
-import KeychainSwift
-#Preview {
-    NavigationStack {
-        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .new){_ in}
-    }
-}
-
-#Preview {
-    NavigationStack {
-        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .privateKey){_ in}
-    }
-}
-
-#Preview {
-    NavigationStack {
-        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .watch){_ in}
-    }
-}
+//import KeychainSwift
+//#Preview {
+//    NavigationStack {
+//        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .new){_ in}
+//    }
+//}
+//
+//#Preview {
+//    NavigationStack {
+//        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .privateKey){_ in}
+//    }
+//}
+//
+//#Preview {
+//    NavigationStack {
+//        NewWalletView(generator: WalletGenerator(storage: KeychainSwift.shared), option: .watch){_ in}
+//    }
+//}

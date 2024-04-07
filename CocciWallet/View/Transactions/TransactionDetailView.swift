@@ -8,10 +8,9 @@
 import SwiftUI
 
 struct TransactionDetailView: View {
-    @Environment(TransactionsModel.self) private var model
     let tx: any TransactionProtocol
     
-    var address: String { model.address.lowercased() }
+    let address: String
     
     var with: String {
         isOutGoing ? tx.toAddressString : tx.fromAddressString
@@ -35,9 +34,8 @@ struct TransactionDetailView: View {
             Section{
                 NavigationLink {
                     TransactionInfoView(tx: tx)
-                        .environment(model)
                 } label: {
-                    Cell(tx: tx, price: model.price?.0, address: address)
+                    Cell(tx: tx, price: 0, address: address)
                 }
             }
             if !history.isEmpty {
@@ -102,7 +100,7 @@ struct TransactionDetailView: View {
 
 extension TransactionDetailView.Cell {
     init(tx: any TransactionProtocol, price: Double?, address: String) {
-        if let date = tx.sorter as? Date {
+        if let date = tx.timestamp {
             self.title = date.formatted(date: .numeric, time: .omitted)
         } else {
             self.title = "Transfer"
@@ -122,5 +120,5 @@ extension TransactionDetailView.Cell {
 }
 
 #Preview {
-    TransactionDetailView(tx: CocciWallet.Transaction.generatedDummyData.first!)
+    TransactionDetailView(tx: Transaction.generatedDummyData.first!, address: Wallet.rifigy.address)
 }
