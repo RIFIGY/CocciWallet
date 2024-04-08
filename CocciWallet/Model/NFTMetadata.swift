@@ -9,7 +9,7 @@ import Foundation
 import Web3Kit
 import BigInt
 import OffChainKit
-
+import ChainKit
 
 @Observable
 class NFTMetadata: Codable {
@@ -41,8 +41,8 @@ class NFTMetadata: Codable {
         try? decodeMetadata()
     }
     
-    convenience init(contract: any ERC721Protocol, tokenId: BigUInt, uri: URL?, json: Data? = nil) {
-        self.init(tokenId: tokenId, contract: contract.contract, contractName: contract.name, symbol: contract.symbol, uri: uri, json: json)
+    convenience init(contract: any Contract, tokenId: BigUInt, uri: URL?, json: Data? = nil) {
+        self.init(tokenId: tokenId, contract: contract.contract.string, contractName: contract.name, symbol: contract.symbol, uri: uri, json: json)
     }
     
     func fetch() async {

@@ -6,20 +6,36 @@
 //
 
 import Foundation
+import ChainKit
 
 extension NetworkCard {
     static let ETH: NetworkCard = {
-        let card = NetworkCard(evm: .ETH, address: Wallet.rifigy.address)
-        card.nftInfo.tokens = [.Munko: [ .munko2309, .munko2310 ] ]
-        card.balance = 400_000_000_000_000_000
-        card.tokenInfo.balances = [ .USDC : 1_000_000_000]
-//        card.nftInfo.nfts = [.init(nft: .munko2309)]
-        return card
+//        let card = NetworkCard(chain: 1, rpc: URL(string: "https://google.com")!)
+//        card.balance = 400_000_000_000_000_000
+//        card.nfts = .preview
+//        card.tokens = .preview
+        return NetworkCard(evm: .ETH, address: Wallet.rifigy.address)
     }()
 }
 
+extension Tokens  {
+    static var preview: Tokens {
+        let tokens = Tokens()
+        tokens.balances = [ .USDC : 1_000_000_000]
+        return tokens
+    }
+}
+
+extension NFTs  {
+    static var preview: NFTs {
+        let vm = NFTs()
+        vm.tokens = [ .Munko : [.munko2309, .munko2310] ]
+        return vm
+    }
+}
+
 extension NetworkEntity {
-    static let ETH = NetworkEntity(id: NetworkCard.ETH.id, title: NetworkCard.ETH.title, chain: NetworkCard.ETH.chain, symbol: NetworkCard.ETH.symbol)
+    static let ETH = NetworkEntity(id: NetworkCard.ETH.id, title: NetworkCard.ETH.name, chain: NetworkCard.ETH.chain, symbol: NetworkCard.ETH.nativeCoin.symbol)
 }
 
 struct LocalChain {

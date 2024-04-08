@@ -23,7 +23,7 @@ struct AddNetworkView: View {
     var body: some View {
         NavigationStack {
             List {
-                ForEach(EVM.selection) { evm in
+                ForEach(EthereumNetwork.selection) { evm in
                     let color = Color(hex: evm.hexColor) ?? .ETH
                     HStack{
                         IconImage(symbol: evm.symbol, glyph: .white)
@@ -54,11 +54,11 @@ struct AddNetworkView: View {
         }
     }
 
-    func add(_ evm: EVM, _ isCustom: Bool) {
+    func add(_ evm: EthereumNetwork, _ isCustom: Bool) {
         let network = NetworkCard(evm: evm, address: wallet.address)
         
         let cards = wallet.cards + wallet.custom
-        guard !cards.contains(where: {$0.title == network.title})
+        guard !cards.contains(where: {$0.chain == network.chain})
         else {return}
         wallet.add(network)
         
@@ -72,8 +72,8 @@ struct AddNetworkView: View {
     func add(blockchain: Blockchain) {}
 }
 
-fileprivate extension EVM {
-    static var custom: EVM {
+fileprivate extension EthereumNetwork {
+    static var custom: EthereumNetwork {
         .init(rpc: URL(string: "HTTP://127.0.0.1:7545")!, chain: 1337, name: "Ganache", symbol: "TEST", explorer: "etherscan.io", hexColor: nil, isCustom: true)
     }
 }

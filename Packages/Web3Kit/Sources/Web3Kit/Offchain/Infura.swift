@@ -21,7 +21,7 @@ public struct Infura {
         self.session = session
     }
     
-    public func URL(evm: EVM, websocket: Bool = false) -> Foundation.URL? {
+    public func URL(evm: EthereumNetwork, websocket: Bool = false) -> Foundation.URL? {
         guard let chain = evm.infuraChain else {return nil}
         return URL(chain: chain, websocket: websocket)
     }
@@ -100,7 +100,7 @@ extension Infura {
 
 }
 
-extension EVM {
+extension EthereumNetwork {
     public var infuraChain: Infura.Chain? {
         .init(chainId: self.chain)
     }

@@ -8,10 +8,15 @@
 import Foundation
 import Logging
 
+
+public extension Coin {
+    static let Ethereum = Coin(derivation: 60, symbol: "ETH", name: "Ethereum", decimals: 18)
+}
+
 public struct Ethereum: CoinType {
     public var name: String { "Ethereum" }
     public var symbol: String { "ETH" }
-    public var id: UInt32 { 60 }
+    public var derivation: UInt32 { 60 }
 }
 
 public struct EthereumAddress: Address {

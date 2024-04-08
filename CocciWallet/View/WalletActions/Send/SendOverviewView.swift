@@ -21,7 +21,7 @@ struct SendOverviewView: View {
 
     
     
-    var evm: EVM { model.evm }
+    var evm: EthereumNetwork { model.evm }
     var from: String { model.address }
     var decimals: UInt8 { model.decimals }
         

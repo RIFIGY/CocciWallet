@@ -8,14 +8,15 @@
 import SwiftUI
 import Web3Kit
 import OffChainKit
+import ChainKit
 
 struct SearchERC20View: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(NetworkManager.self) private var network
-    @State private var result: (any ERC20Protocol)? = nil
+    @State private var result: (any Contract)? = nil
     
     let chain: Int
-    var chosen: (any ERC20Protocol) async -> Bool
+    var chosen: (any Contract) async -> Bool
     
     @State private var contract: String = ""
     @State private var symbol: String = ""

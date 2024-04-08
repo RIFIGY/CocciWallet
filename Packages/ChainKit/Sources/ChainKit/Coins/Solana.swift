@@ -11,7 +11,7 @@ import Logging
 public struct Solana: CoinType {
     public var name: String { "Solana" }
     public var symbol: String { "SOL" }
-    public var id: UInt32 { 501 }
+    public var derivation: UInt32 { 501 }
 }
 
 public struct SolanaAddress: Address {

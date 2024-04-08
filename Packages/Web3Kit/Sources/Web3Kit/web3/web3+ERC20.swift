@@ -8,6 +8,7 @@
 import Foundation
 import web3
 import BigInt
+import ChainKit
 
 extension EthereumHttpClient: ERC20Client {
     
@@ -20,14 +21,14 @@ extension EthereumHttpClient: ERC20Client {
         )
     }
     
-    public func getContract(address contract: String) async throws -> ERC20 {
+    public func getContract(address contract: String) async throws -> ChainKit.ERC20 {
         let validatedContract = try validate(contract)
 
         async let name: String? = try? await erc20.name(tokenContract: validatedContract)
         async let symbol: String? = try? await erc20.symbol(tokenContract: validatedContract)
         async let decimals: UInt8 = try await erc20.decimals(tokenContract: validatedContract)
 
-        return try await ERC20(contract: contract, name: name, symbol: symbol, decimals: decimals)
+        return try await ERC20(contract: .init(contract), name: name ?? "", symbol: symbol ?? "", decimals: decimals)
     }
     
     public func getTransferEvents(for address: String) async throws -> [ERC20Transfer] {

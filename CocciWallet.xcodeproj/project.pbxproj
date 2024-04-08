@@ -195,6 +195,9 @@
 		4CD341712BACC1B600F9DE93 /* ERCTransactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD341702BACC1B600F9DE93 /* ERCTransactions.swift */; };
 		4CD341732BACEB7400F9DE93 /* AddNetworkView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD341722BACEB7400F9DE93 /* AddNetworkView.swift */; };
 		4CD341752BACEE5F00F9DE93 /* NetworkCardStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD341742BACEE5F00F9DE93 /* NetworkCardStack.swift */; };
+		4CD979292BC38CE100893F56 /* EthereumNetworkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD979282BC38CE100893F56 /* EthereumNetworkCard.swift */; };
+		4CD9792A2BC38CE100893F56 /* EthereumNetworkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD979282BC38CE100893F56 /* EthereumNetworkCard.swift */; };
+		4CD9792B2BC38CE100893F56 /* EthereumNetworkCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD979282BC38CE100893F56 /* EthereumNetworkCard.swift */; };
 		4CDB50392B9D075C0066F615 /* ContentViewMac.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDB50382B9D075C0066F615 /* ContentViewMac.swift */; };
 		4CDF6A4E2BBE37630097F3B7 /* ColorTheme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1164942BBD017400657D83 /* ColorTheme.swift */; };
 		4CDF6A532BBE83D50097F3B7 /* TransactionsListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CDF6A522BBE83D50097F3B7 /* TransactionsListView.swift */; };
@@ -366,6 +369,7 @@
 		4CD341702BACC1B600F9DE93 /* ERCTransactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ERCTransactions.swift; sourceTree = "<group>"; };
 		4CD341722BACEB7400F9DE93 /* AddNetworkView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddNetworkView.swift; sourceTree = "<group>"; };
 		4CD341742BACEE5F00F9DE93 /* NetworkCardStack.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkCardStack.swift; sourceTree = "<group>"; };
+		4CD979282BC38CE100893F56 /* EthereumNetworkCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EthereumNetworkCard.swift; sourceTree = "<group>"; };
 		4CDB50382B9D075C0066F615 /* ContentViewMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewMac.swift; sourceTree = "<group>"; };
 		4CDB503F2B9E2C330066F615 /* Web3Kit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Web3Kit; sourceTree = "<group>"; };
 		4CDF6A522BBE83D50097F3B7 /* TransactionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsListView.swift; sourceTree = "<group>"; };
@@ -666,6 +670,7 @@
 				4C9862102BA6B5B3002EBE73 /* Wallet.swift */,
 				4CA785432BB880C100E25D6D /* Network.swift */,
 				4C98620E2BA69E6B002EBE73 /* NetworkCard.swift */,
+				4CD979282BC38CE100893F56 /* EthereumNetworkCard.swift */,
 				4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */,
 				4C118D182BB3C34900800F6F /* Tokens.swift */,
 				4C118D1A2BB3C37000800F6F /* NFTs.swift */,
@@ -1033,6 +1038,7 @@
 				4CA785652BB8945F00E25D6D /* BigUInt+Extension.swift in Sources */,
 				4CA785772BB8CD5600E25D6D /* ContractEntity.swift in Sources */,
 				4C4757092BB9F91800F92E63 /* PriceModel+Preview.swift in Sources */,
+				4CD9792A2BC38CE100893F56 /* EthereumNetworkCard.swift in Sources */,
 				4C47570A2BB9F91800F92E63 /* ERC721+Preview.swift in Sources */,
 				4CF6F10C2BBB343E00A7DF4A /* PriceModel.swift in Sources */,
 				4C47570B2BB9F91800F92E63 /* NFTs+Preview.swift in Sources */,
@@ -1107,6 +1113,7 @@
 				4C1164932BBCFF0900657D83 /* NFTImageView.swift in Sources */,
 				4C2C271F2BB7E01100F635B6 /* NftProvider.swift in Sources */,
 				4CA785582BB8941100E25D6D /* Tokens.swift in Sources */,
+				4CD9792B2BC38CE100893F56 /* EthereumNetworkCard.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1177,6 +1184,7 @@
 				4C5F40432BC33F9C00085AB5 /* NetworkEntity.swift in Sources */,
 				4C5F40442BC33F9C00085AB5 /* NftEntity.swift in Sources */,
 				4C5F40452BC33F9C00085AB5 /* ContractEntity.swift in Sources */,
+				4CD979292BC38CE100893F56 /* EthereumNetworkCard.swift in Sources */,
 				4C5F40462BC33F9C00085AB5 /* WalletEntity.swift in Sources */,
 				4CFAE3162BB1DF8100100A68 /* CryptoFormatStyle.swift in Sources */,
 				4C4757032BB9F7D400F92E63 /* Network+Preview.swift in Sources */,

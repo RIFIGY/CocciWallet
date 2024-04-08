@@ -54,9 +54,9 @@ extension View {
     func networkTheme(card: NetworkCard) -> some View {
         self.environment(\.networkTheme, .init(
             chain: card.chain,
-            symbol: card.symbol,
+            symbol: card.nativeCoin.symbol,
             color: card.color,
-            decimals: card.decimals
+            decimals: card.nativeCoin.decimals
         ))
     }
     
@@ -65,14 +65,14 @@ extension View {
 }
 
 #if canImport(Web3Kit)
-import Web3Kit
+import ChainKit
 import OffChainKit
 extension View {
     
     @ViewBuilder
-    func networkTheme(chain: Int, token: any ERC20Protocol, networkColor: Color) -> some View {
+    func networkTheme(chain: Int, token: any Contract, networkColor: Color) -> some View {
         var color: Color? {
-            guard let symbol = token.symbol, let color = Icon(symbol: symbol)?.color
+            guard !token.symbol.isEmpty, let color = Icon(symbol: token.symbol)?.color
             else {return nil}
             return color
         }

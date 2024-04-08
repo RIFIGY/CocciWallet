@@ -8,6 +8,7 @@
 import SwiftUI
 import BigInt
 import Web3Kit
+import ChainKit
 
 struct TokensListView<Client:ERC20Client>: View {
 
@@ -25,7 +26,7 @@ struct TokensListView<Client:ERC20Client>: View {
     var sortedBalances: [(contract: Contract, balance: BigUInt)] {
         balances.map {
             ($0.key, $0.value)
-        }.sorted { $0.contract.id < $1.contract.id }
+        }.sorted { $0.contract.contract.string < $1.contract.contract.string }
     }
     
     @State private var selected: Contract?
@@ -61,8 +62,8 @@ struct TokensListView<Client:ERC20Client>: View {
         }
     }
     
-    func addToken(_ token: any ERC20Protocol) async -> Bool {
-        !model.contractInteractions.map{$0.lowercased()}.contains(token.contract.lowercased())
+    func addToken(_ token: any ChainKit.Contract) async -> Bool {
+        !model.contractInteractions.map{$0.lowercased()}.contains(token.contract.string.lowercased())
     }
     
 }

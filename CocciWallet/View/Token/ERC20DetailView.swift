@@ -9,8 +9,9 @@ import SwiftUI
 import BigInt
 import Web3Kit
 import OffChainKit
+import ChainKit
 
-struct ERC20DetailView<E:ERC20Protocol, T:ERCTransfer>: View {
+struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
 
     let contract: E
@@ -123,7 +124,7 @@ struct ERC20DetailView<E:ERC20Protocol, T:ERCTransfer>: View {
 extension ERC20DetailView {
     init(_ contract: E, balance: BigUInt?, price: Double? = nil, tx: [T], network: Color, chain: Int ) {
         self.contract = contract
-        self.address = contract.contract
+        self.address = contract.contract.string
         self.name = contract.name
         self.symbol = contract.symbol
         self.decimals = contract.decimals

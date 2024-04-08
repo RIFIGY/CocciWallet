@@ -8,13 +8,11 @@
 import Foundation
 import Web3Kit
 import BigInt
+import ChainKit
  
 @Observable
 class TokenVM<Client:ERC20Client>: Codable {
-    
-    typealias ERC20 = Client.E
-    typealias ERC20Transfer = Client.T
-    
+        
     let address: String
     var balances: [ERC20 : BigUInt] = [:]
     var events: [ERC20Transfer] = []
@@ -35,15 +33,14 @@ class TokenVM<Client:ERC20Client>: Codable {
     
     var transfers: [ERC20 : [ERC20Transfer] ] {
         .init(grouping: events, by: { event in
-            balances.keys.first{$0.contract.lowercased() == event.contract.lowercased()}!
-            
+            balances.keys.first{$0.contract.string.lowercased() == event.contract.lowercased()}!
         })
     }
     
     func totalValue(chain: Int, _ priceModel: PriceModel, currency: String) -> Double {
         balances.compactMap { contract, balance in
             let value = balance.value(decimals: contract.decimals)
-            let price = priceModel.price(chain: chain, contract: contract.contract, currency: currency)
+            let price = priceModel.price(chain: chain, contract: contract.contract.string, currency: currency)
             if let price {
                 return price * value
             } else {

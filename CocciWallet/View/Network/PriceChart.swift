@@ -13,7 +13,7 @@ import OffChainKit
 struct PriceChart: View {
     @Environment(PriceModel.self) private var priceModel
     
-    let evm: EVM
+    let evm: EthereumNetwork
     
     var contract: String? = nil
     var full: Bool = false

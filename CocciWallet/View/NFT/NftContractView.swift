@@ -172,13 +172,13 @@ class ERC721Model {
 }
 
 
-import Web3Kit
+import ChainKit
 extension NftContractView {
-    init(_ contract: any ERC721Protocol) {
-        self.address = contract.contract
+    init(_ contract: any Contract) {
+        self.address = contract.contract.string
         self.name = contract.name
         self.symbol = contract.symbol
-        self._model = .init(wrappedValue: .init(contract: contract.contract))
+        self._model = .init(wrappedValue: .init(contract: contract.contract.string))
 //        self.description = contract.description
     }
 }

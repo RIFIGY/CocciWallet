@@ -7,8 +7,9 @@
 
 import SwiftUI
 import Web3Kit
+import ChainKit
 
-struct ERCTransactions<E:ERC, T:ERCTransfer>: View {
+struct ERCTransactions<E:Contract, T:ERCTransfer>: View {
     let transfers: [E]
     let transactions: [T]
 
@@ -35,7 +36,7 @@ struct ERCTransactions<E:ERC, T:ERCTransfer>: View {
                     .toolbarRole(.editor)
                     #endif
                 } label: {
-                    if let erc20 = transfers.first(where: {$0.contract.lowercased() == tx.contract.lowercased()}) as? ERC20 {
+                    if let erc20 = transfers.first(where: {$0.contract.string.lowercased() == tx.contract.lowercased()}) as? ERC20 {
                         TransactionCellView(tx: tx, symbol: erc20.symbol, decimals: erc20.decimals, isCell: false)
                     } else {
                         TransactionCellView(tx: tx, symbol: symbol, isCell: false)

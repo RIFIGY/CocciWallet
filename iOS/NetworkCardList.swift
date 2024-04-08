@@ -10,6 +10,7 @@ import OffChainKit
 import CardSpacing
 import Web3Kit
 import BigInt
+import ChainKit
 
 struct NetworkCardList: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
@@ -43,7 +44,7 @@ struct NetworkCardList: View {
                             self.selectedToken = Balance(
                                 token: contract,
                                 balance: balance,
-                                price: priceModel.price(chain: card.chain, contract: contract.contract, currency: currency),
+                                price: priceModel.price(chain: card.chain, contract: contract.contract.string, currency: currency),
                                 transfers: card.tokenInfo.transfers[contract],
                                 chain: card.chain,
                                 network: card.color
@@ -216,7 +217,7 @@ fileprivate struct Destination: View {
     }
 }
 
-fileprivate struct Balance<E:ERC20Protocol, T:ERCTransfer>: Identifiable, Hashable {
+fileprivate struct Balance<E:Contract, T:ERCTransfer>: Identifiable, Hashable {
     static func == (lhs: Balance, rhs: Balance) -> Bool {
         lhs.id == rhs.id
     }
@@ -225,7 +226,7 @@ fileprivate struct Balance<E:ERC20Protocol, T:ERCTransfer>: Identifiable, Hashab
         hasher.combine(id)
     }
     
-    var id: String { token.contract }
+    var id: String { token.contract.string }
     let token: E
     let balance: BigUInt
     let price: Double?

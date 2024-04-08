@@ -7,6 +7,8 @@
 
 import SwiftUI
 import Web3Kit
+import ChainKit
+
 
 struct NftListView<Client:ERC721Client>: View {
     @Environment(\.dismiss) private var dismiss
@@ -41,8 +43,8 @@ struct NftListView<Client:ERC721Client>: View {
         Array(repeating: .init(.flexible()), count: collumnCount)
     }
     
-    func name(_ contract: any ERC721Protocol) -> String {
-        contract.name ?? contract.symbol ?? contract.contract.shortened()
+    func name(_ contract: any Contract) -> String {
+        contract.title
     }
     
     @ViewBuilder

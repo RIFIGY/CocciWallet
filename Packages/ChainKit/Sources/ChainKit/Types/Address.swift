@@ -14,6 +14,17 @@ public protocol Address: Codable, Hashable, Identifiable, Equatable, Expressible
     init(publicKey: Data)
 }
 
+extension Address {
+    
+    init?<A:AccountProtocol>(_ account: A.Type = A.self, privateKey: Data) {
+        if let publicKey = try? A.generatePublicKey(from: privateKey) {
+            self.init(publicKey: publicKey)
+        } else {
+            return nil
+        }
+    }
+}
+
 public extension Address {
     var id: String { string }
     
@@ -41,6 +52,8 @@ public extension WIFAddress {
         let address = data.encodeBase58Check
         self.init(address)
     }
+    
+
 }
 
 

@@ -15,7 +15,7 @@ struct AddCustomNetworkView: View {
     @State private var symbol: String = ""
     @State private var rpc: URL?
     
-    var network: (EVM) -> Void
+    var network: (EthereumNetwork) -> Void
     
     var body: some View {
         Form {
@@ -38,7 +38,7 @@ struct AddCustomNetworkView: View {
         guard let rpc, let chainId, validValues else {return}
         let name = name.isEmpty ? "Chain \(chainId)" : name
         let symbol = symbol.isEmpty ? "COIN" : symbol
-        let evm = EVM(rpc: rpc, chain: chainId, name: name, symbol: symbol, explorer: nil, hexColor: nil, isCustom: true)
+        let evm = EthereumNetwork(rpc: rpc, chain: chainId, name: name, symbol: symbol, explorer: nil, hexColor: nil, isCustom: true)
         
         self.network(evm)
         
@@ -51,7 +51,7 @@ struct CustomNetworkView: View {
     @Binding var symbol: String
     @Binding var rpc: URL?
 
-    var network: (EVM) -> Void = {_ in }
+    var network: (EthereumNetwork) -> Void = {_ in }
     
     @State private var validRpc = false
     

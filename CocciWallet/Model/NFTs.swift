@@ -8,12 +8,13 @@
 import Foundation
 import Web3Kit
 import BigInt
+import ChainKit
 
 @Observable
 class NftVM<Client:ERC721Client>: Codable {
     
-    typealias Contract = Client.E721
-    typealias Transfer = Client.Transfer
+    typealias Contract = ChainKit.ERC721
+    typealias Transfer = Web3Kit.ERC721Transfer
     
     let address: String
     var transfers: [Transfer] = []

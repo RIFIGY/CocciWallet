@@ -8,6 +8,7 @@
 import Foundation
 import AppIntents
 import Web3Kit
+import ChainKit
 
 struct ContractEntity: AppEntity, Identifiable, Codable {
     var id: String { contract }
@@ -77,9 +78,9 @@ struct TokenQuery: EntityQuery {
 }
 
 extension ContractEntity {
-    init(contract: any ERC) {
-        self.contract = contract.contract
-        self.name = contract.name ?? contract.symbol ?? contract.contract
+    init(contract: any Contract) {
+        self.contract = contract.contract.string
+        self.name = contract.title
         self.symbol = contract.symbol
     }
 }

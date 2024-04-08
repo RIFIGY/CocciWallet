@@ -137,5 +137,5 @@ extension RpcTextField {
 }
 
 #Preview {
-    RpcTextField(rpc: .constant(EVM.ETH.rpc), chain: 1, validURL: .constant(false))
+    RpcTextField(rpc: .constant(EthereumNetwork.ETH.rpc), chain: 1, validURL: .constant(false))
 }

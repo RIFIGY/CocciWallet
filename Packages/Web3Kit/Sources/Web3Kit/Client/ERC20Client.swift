@@ -7,23 +7,22 @@
 
 import Foundation
 import BigInt
+import ChainKit
 
 public protocol ERC20Client {
-    
-    associatedtype T : ERCTransfer
-    associatedtype E : ERC20Protocol
+
     
     func getBalance(contract: String, address: String) async throws -> BigUInt
-    func getContract(address contract: String) async throws -> E
-    func getTransferEvents(for address: String) async throws -> [T]
+    func getContract(address contract: String) async throws -> ERC20
+    func getTransferEvents(for address: String) async throws -> [ERC20Transfer]
     
 }
 
 extension ERC20Client {
     
-    public func fetchBalances(for address: String, in contracts: [String]) async throws -> [(E, BigUInt)] {
+    public func fetchBalances(for address: String, in contracts: [String]) async throws -> [(ERC20, BigUInt)] {
         
-        try await withThrowingTaskGroup(of: (E,BigUInt)?.self) { group in
+        try await withThrowingTaskGroup(of: (ERC20,BigUInt)?.self) { group in
             
             contracts.forEach { contract in
                 group.addTask {
@@ -34,7 +33,7 @@ extension ERC20Client {
                 }
             }
             
-            return try await group.reduce(into: [ (E, BigUInt) ]()) { partialResult, balance in
+            return try await group.reduce(into: [ (ERC20, BigUInt) ]()) { partialResult, balance in
                 if let balance {
                     partialResult.append(balance)
                 }

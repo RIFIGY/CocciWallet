@@ -8,19 +8,14 @@
 import Foundation
 import Web3Kit
 import BigInt
+import ChainKit
 
-extension NftVM where Client == EthClient.Client {
-    static var preview: NftVM {
-        let vm = NftVM(address: Wallet.rifigy.address)
-        vm.tokens = [ .Munko : [.munko2309, .munko2310] ]
-        return vm
-    }
-}
+
 
 extension NFTMetadata {
     
-    fileprivate convenience init(contract: any ERC721Protocol, tokenId: BigUInt, uri: URL?, json: Data? = nil, imageURL: URL? = nil) {
-        self.init(tokenId: tokenId, contract: contract.contract, contractName: contract.name, symbol: contract.symbol, uri: uri, json: json)
+    fileprivate convenience init(contract: any Contract, tokenId: BigUInt, uri: URL?, json: Data? = nil, imageURL: URL? = nil) {
+        self.init(tokenId: tokenId, contract: contract.contract.string, contractName: contract.name, symbol: contract.symbol, uri: uri, json: json)
         self.imageURL = imageURL
     }
     
@@ -28,7 +23,7 @@ extension NFTMetadata {
         contract: ERC721.Munko,
         tokenId: 2309,
         uri: URL(string: "ipfs://bafybeihbys33ageiel4lcfvfbppwnsayzwtesz4hcuq7iv4hhcjqc2lhte/2309"),
-        json: ERC721.Token.Metadata.muko2309MetadataJSON,
+        json: OpenSeaMetadata.muko2309MetadataJSON,
         imageURL: URL(string: "ipfs://bafybeigzet2egu5qjmpsi3odlvmbwmipkqkyccuyufi4qe4cw7c62rhwki/e703713595264f15bb3363380a1fe55bee7798a85705495aa607d4b3c420b8ae.jpg")!
     )
     
@@ -36,7 +31,7 @@ extension NFTMetadata {
         contract: ERC721.Munko,
         tokenId: 2310,
         uri: URL(string: "ipfs://bafybeihbys33ageiel4lcfvfbppwnsayzwtesz4hcuq7iv4hhcjqc2lhte/2310"),
-        json: ERC721.Token.Metadata.munko2310MetadataJSON,
+        json: OpenSeaMetadata.munko2310MetadataJSON,
         imageURL: URL(string: "ipfs://bafybeigzet2egu5qjmpsi3odlvmbwmipkqkyccuyufi4qe4cw7c62rhwki/d9c8d4b7886844779f25fb44fc721117eb0d290415c54a03926e3f0d0f3e1590.jpg")
     )
 }

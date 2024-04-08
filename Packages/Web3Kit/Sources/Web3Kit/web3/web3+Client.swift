@@ -34,7 +34,7 @@ extension web3.EthereumHttpClient: EthereumClientProtocol  {
 
     
     public func estimateGas(for tx: Any) async throws -> BigUInt {
-        guard let tx = tx as? EthereumTransaction else { throw EthereumClient<EthereumHttpClient>.Error.badType }
+        guard let tx = tx as? EthereumTransaction else { throw EthereumClient.Error.badType }
         return try await self.eth_estimateGas(tx)
     }
     

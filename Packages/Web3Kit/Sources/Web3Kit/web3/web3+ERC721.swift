@@ -8,6 +8,7 @@
 import Foundation
 import web3
 import BigInt
+import ChainKit
 
 extension EthereumHttpClient: ERC721Client {
     
@@ -23,17 +24,16 @@ extension EthereumHttpClient: ERC721Client {
     
 
     
-    public func getTokenContract(address contract: String) async throws -> ERC721 {
-        let contract = try validate(contract)
+    public func getTokenContract(address contract: String) async throws -> ChainKit.ERC721 {
+        let validatedContract = try validate(contract)
 
-        async let name: String? = try? await erc721Metadata.name(contract: contract)
-        async let symbol: String? = try? await erc721Metadata.symbol(contract: contract)
+        async let name: String? = try? await erc721Metadata.name(contract: validatedContract)
+        async let symbol: String? = try? await erc721Metadata.symbol(contract: validatedContract)
 
         return await ERC721(
-            contract: contract.asString(),
-            name: name,
-            symbol: symbol,
-            description: nil
+            contract: .init(contract),
+            name: name ?? "",
+            symbol: symbol ?? ""
         )
 
     }

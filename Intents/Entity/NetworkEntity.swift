@@ -10,7 +10,7 @@ import AppIntents
 
 
 struct NetworkEntity: AppEntity {
-    let id: UUID
+    let id: String
 
     let title: String
     let chain: Int
@@ -59,8 +59,8 @@ struct NetworkQuery: EntityQuery {
 extension NetworkEntity {
     init(network: Network, chain: Int) {
         self.id = network.id
-        self.title = network.title
-        self.symbol = network.symbol
+        self.title = network.name
+        self.symbol = network.nativeCoin.symbol
         self.chain = chain
     }
     

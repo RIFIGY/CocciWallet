@@ -2,14 +2,10 @@
 // https://docs.swift.org/swift-book
 
 import SwiftUI
+import web3
 
-
-
-
-//public func TestColor(named name: String = "Test") -> Color? {
-//    guard let color = UIColor(named: name, in: .module, compatibleWith: nil)
-//        else {return nil}
-//    return Color(color)
-////    Color(name)
-////  UIImage(named: name, in: Bundle.module, compatibleWith: nil)
-//}
+public extension String {
+    var isEthereumAddress: Bool {
+        self.web3.isAddress
+    }
+}

@@ -7,18 +7,15 @@
 
 import Foundation
 import Web3Kit
+import ChainKit
 
-extension EthClient {
-    static let local: EthClient = .init(rpc: URL(string: "HTTP://127.0.0.1:7545")!, chain: 1337)
+extension EthereumClient {
+    static let local: Web3Kit.EthereumClient = .init(rpc: URL(string: "HTTP://127.0.0.1:7545")!, chain: 1337)
 }
 
-extension TokenVM where Client == EthClient.Client {
-    
-    static let preview: TokenVM<EthClient.Client> = .init(address: Wallet.rifigy.address)
-    
-}
+
 
 extension ContractEntity {
-    static let usdc = ContractEntity(contract: ERC20.USDC.contract, name: ERC20.USDC.name!, symbol: ERC20.USDC.symbol)
+    static let usdc = ContractEntity(contract: ERC20.USDC.contract.string, name: ERC20.USDC.name, symbol: ERC20.USDC.symbol)
 }
 

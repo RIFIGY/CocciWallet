@@ -11,7 +11,7 @@ import Logging
 public struct Dogecoin: CoinType {
     public var name: String { "Dogecoin" }
     public var symbol: String { "DOGE" }
-    public var id: UInt32 { 3 }
+    public var derivation: UInt32 { 3 }
 }
 
 public struct DogecoinAddress: WIFAddress {

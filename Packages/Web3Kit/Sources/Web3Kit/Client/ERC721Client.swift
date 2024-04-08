@@ -8,14 +8,13 @@
 import Foundation
 import BigInt
 import web3
+import ChainKit
 
 public protocol ERC721Client {
-    associatedtype E721 : ERC721Protocol
-    associatedtype Transfer : ERC721TransferProtocol
     
     func getTokenBalance(contract: String, address: String) async throws -> BigUInt
-    func getTokenContract(address contract: String) async throws -> E721
-    func getTokenTransferEvents(for address: String) async throws -> [Transfer]
+    func getTokenContract(address contract: String) async throws -> ChainKit.ERC721
+    func getTokenTransferEvents(for address: String) async throws -> [ERC721Transfer]
     func getTokenURI(contract: String, tokenId: BigUInt) async throws -> URL
     func ownerOf(tokenId: BigUInt, in contract: String) async throws -> String
     func totalSupply(contract: String) async throws -> BigUInt 
@@ -42,8 +41,8 @@ extension ERC721Client {
         }
     }
     
-    public func fetchNFTs(in tokens: [String : [BigUInt] ] ) async -> [E721 : [ (BigUInt, URL) ] ] {
-        await withTaskGroup(of: (E721?,[ (BigUInt, URL) ] ).self) { group in
+    public func fetchNFTs(in tokens: [String : [BigUInt] ] ) async -> [ChainKit.ERC721 : [ (BigUInt, URL) ] ] {
+        await withTaskGroup(of: (ChainKit.ERC721?,[ (BigUInt, URL) ] ).self) { group in
             for (contract, tokenIds) in tokens {
                 group.addTask {
                     async let URIs = await self.getTokenURIs(contract: contract, tokenIds: tokenIds)
@@ -53,7 +52,7 @@ extension ERC721Client {
                 }
             }
             
-            return await group.reduce(into: [ E721 : [ (BigUInt, URL) ] ]()) { partialResult, result in
+            return await group.reduce(into: [ ChainKit.ERC721 : [ (BigUInt, URL) ] ]()) { partialResult, result in
                 if let contract = result.0 {
                     partialResult[contract] = result.1
                 }
@@ -61,13 +60,13 @@ extension ERC721Client {
         }
     }
     
-    public func fetchNFTs(transfers: [any ERC721TransferProtocol], owner address: String) async -> [E721 : [ (BigUInt, URL) ] ] {
+    public func fetchNFTs(transfers: [any ERC721TransferProtocol], owner address: String) async -> [ChainKit.ERC721 : [ (BigUInt, URL) ] ] {
         let interactions = self.filter(transfers: transfers, for: address)
         return await fetchNFTs(in: interactions)
 
     }
 }
-//
+
 extension ERC721Client {
     public func filter(transfers: [any ERC721TransferProtocol], for address: String) -> [String: [BigUInt]] {
         var currentHeldNFTs: [String: [BigUInt]] = [:]
@@ -104,3 +103,22 @@ extension ERC721Client {
 }
 
 //
+//public protocol ERC721TokenProtocol: NFTProtocol {
+//    var contract: EthereumAddress {get}
+//    var tokenId: BigUInt {get}
+//    var uri: URL? {get}
+//}
+//extension ERC721TokenProtocol {
+//    public var id: String { contract.string + "_" + tokenId.description }
+//}
+//
+//public struct ERC721Token<C:Contract>: ERC721TokenProtocol {
+//    public let token: C
+//    public let contract: EthereumAddress
+//    public let tokenId: BigUInt
+//    public let uri: URL?
+//}
+//public typealias NFT = ERC721Token
+//public extension ERC721 {
+//    typealias Token = ERC721Token
+//}

@@ -15,19 +15,17 @@ class NetworkCard: Network {
     var chain: Int
     var rpc: URL
     var settings: Settings
-    private(set) var tokenInfo: TokenVM<EthClient.Client>
-    private(set) var nftInfo: NftVM<EthClient.Client>
+    private(set) var tokenInfo: TokenVM<EthereumClient.Client>
+    private(set) var nftInfo: NftVM<EthereumClient.Client>
     
-    var lastUpdate: Date?
-    var isUpdating = false
     
-    public init(evm: EVM, address: String, decimals: UInt8 = 18) {
+    public init(evm: EthereumNetwork, address: String, decimals: UInt8 = 18) {
         self.chain = evm.chain
         self.rpc = evm.rpc
         self.settings = .init()
         self.tokenInfo = .init(address: address)
         self.nftInfo = .init(address: address)
-        super.init(address: address, decimals: decimals, title: evm.name, symbol: evm.symbol, explorer: evm.explorer, hexColor: evm.hexColor, isCustom: evm.isCustom)
+        super.init(network: evm)
     }
     
     enum CodingKeys: String, CodingKey {
@@ -44,8 +42,8 @@ class NetworkCard: Network {
         chain = try container.decode(Int.self, forKey: ._chain)
         rpc = try container.decode(URL.self, forKey: ._rpc)
         settings = try container.decode(Settings.self, forKey: ._settings)
-        tokenInfo = try container.decode(TokenVM<EthClient.Client>.self, forKey: ._tokenInfo)
-        nftInfo = try container.decode(NftVM<EthClient.Client>.self, forKey: ._nftInfo)
+        tokenInfo = try container.decode(TokenVM<EthereumClient.Client>.self, forKey: ._tokenInfo)
+        nftInfo = try container.decode(NftVM<EthereumClient.Client>.self, forKey: ._nftInfo)
 
         try super.init(from: decoder)
     }
@@ -67,16 +65,14 @@ class NetworkCard: Network {
 extension NetworkCard {
 
 
-    private var printer: String { title + ": " + address.suffix(5) }
-    func update(with client: EthClient) async -> Bool {
+    func update(with client: EthereumClient) async -> Bool {
         guard needUpdate(), !isUpdating else {return false}
         isUpdating = true
-        print(printer)
 
         await withTaskGroup(of: Void.self) { group in
             
             group.addTask {
-                await self.fetchTransactions()
+                await self.fetchTransactions(for: "")
             }
             group.addTask {
                 await self.fetch(with: client.node)
@@ -91,18 +87,13 @@ extension NetworkCard {
 
         self.lastUpdate = .now
         self.isUpdating = false
-        print("Fetched \(printer)")
         return true
     }
     
-    private func needUpdate() -> Bool {
-        guard let lastUpdate = lastUpdate else { return true }
-        return lastUpdate < Date.now.addingTimeInterval(-3600)
-    }
     
     private func fetch(with client: any EthereumClientProtocol) async {
         do {
-            self.balance = try await client.getBalance(address: address, block: nil)
+            self.balance = try await client.getBalance(address: "", block: nil)
             print("\tBalance: " + (value?.string() ?? "0") )
         } catch {}
     }

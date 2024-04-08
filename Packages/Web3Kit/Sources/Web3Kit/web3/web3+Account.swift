@@ -10,7 +10,6 @@ import ChainKit
 import web3
 import Logging
 
-//public typealias EthereumAddress = web3.EthereumAddress
 
 extension web3.EthereumAddress: ChainKit.Address {
     public init(publicKey: Data) {

@@ -71,15 +71,15 @@ struct ERC20TokenCell: View {
 }
 
 
-import Web3Kit
+import ChainKit
 import BigInt
 extension ERC20TokenCell {
-    init<C:ERC20Protocol>(_ contract: C, balance: BigUInt?, chain: Int, network: Color, useNetworkColor: Bool = false) {
+    init<C:Contract>(_ contract: C, balance: BigUInt?, chain: Int, network: Color, useNetworkColor: Bool = false) {
         self.name = contract.name
         self.symbol = contract.symbol
         self.decimals = contract.decimals
         self.balance = balance
-        self.contract = contract.contract
+        self.contract = contract.contract.string
         self.useNetworkColor = useNetworkColor
         self.icon = Icon(symbol: contract.symbol)
         self.chain = chain

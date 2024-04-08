@@ -8,6 +8,7 @@
 import Foundation
 import BigInt
 import Web3Kit
+import ChainKit
 
 typealias Storage = UserDefaults
 
@@ -49,13 +50,13 @@ extension Storage {
 
     func nftContracts(for wallet: Wallet.ID, in network: NetworkEntity) -> [ERC721] {
         guard let wallet = self.wallet(id: wallet),
-                let card = (wallet.cards + wallet.custom ).first(where: {$0.title == network.title} ) else {return [.Munko]}
+                let card = (wallet.cards + wallet.custom ).first(where: {$0.name == network.title} ) else {return [.Munko]}
         
         return Array(card.nftInfo.tokens.keys)
     }
     
 
-    func nfts(in network: UUID?, owner wallet: Wallet.ID) -> [NFTMetadata] {
+    func nfts(in network: String?, owner wallet: Wallet.ID) -> [NFTMetadata] {
         guard let wallet = self.wallet(id: wallet) else {return []}
         let allCards = (wallet.cards + wallet.custom)
         if let network, let card = allCards.first(where: {$0.id == network}) {
@@ -65,16 +66,16 @@ extension Storage {
         }
     }
     
-    func nfts(for contract: String, in network: UUID, owner wallet: Wallet.ID) -> [NFTMetadata] {
+    func nfts(for contract: String, in network: String, owner wallet: Wallet.ID) -> [NFTMetadata] {
         guard let wallet = self.wallet(id: wallet),
               let card = (wallet.cards + wallet.custom ).first(where: {$0.id == network} ) else {return []}
         
-        guard let erc = card.nftInfo.tokens.keys.first(where: {$0.id == contract} ) else {return [] }
+        guard let erc = card.nftInfo.tokens.keys.first(where: {$0.id.string == contract} ) else {return [] }
         
         return card.nftInfo.tokens[erc] ?? []
     }
     
-    func tokenContracts(for wallet: Wallet.ID, in network: UUID?) -> [ ERC20 ] {
+    func tokenContracts(for wallet: Wallet.ID, in network: String?) -> [ ERC20 ] {
         guard let wallet = self.wallet(id: wallet) else {return []}
         let allCards = (wallet.cards + wallet.custom)
         
@@ -85,11 +86,11 @@ extension Storage {
         }
     }
     
-    func balance(of contract: String, in wallet: Wallet.ID, on network: UUID?) -> Double? {
+    func balance(of contract: String, in wallet: Wallet.ID, on network: String?) -> Double? {
         guard let wallet = self.wallet(id: wallet),
               let card = (wallet.cards + wallet.custom ).first(where: {$0.id == network} ) else {return nil}
         
-        guard let erc = card.tokenInfo.balances.keys.first(where: {$0.id == contract} ) else {return nil }
+        guard let erc = card.tokenInfo.balances.keys.first(where: {$0.id.string == contract} ) else {return nil }
 
         
         return card.tokenInfo.balances[erc]?.value(decimals: erc.decimals)

@@ -59,7 +59,7 @@ extension WalletAction {
                 NavigationStack {
                     Group {
                         switch destination {
-                        case .receive: AddressView(address: address, name: card.title)
+                        case .receive: AddressView(address: address, name: card.name)
                         case .send: WalletSendView(address: address, card: card, decimals: decimals)
                         case .swap: SwapView()
                         case .stake: StakeView()

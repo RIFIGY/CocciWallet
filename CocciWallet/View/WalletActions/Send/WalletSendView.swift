@@ -238,7 +238,7 @@ extension WalletSendView {
          card: NetworkCard,
          decimals: UInt8
     ) {
-        let evm = EVM(rpc: card.rpc, chain: card.chain, name: card.title, symbol: card.symbol, explorer: card.explorer, hexColor: card.color.hexString, isCustom: card.isCustom)
+        let evm = EthereumNetwork(rpc: card.rpc, chain: card.chain, name: card.title, symbol: card.symbol, explorer: card.explorer, hexColor: card.color.hexString, isCustom: card.isCustom)
 
         self._model = .init(wrappedValue: .init(
             

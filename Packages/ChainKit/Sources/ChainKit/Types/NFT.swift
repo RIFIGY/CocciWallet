@@ -6,17 +6,29 @@
 //
 
 import Foundation
+import BigInt
 
-protocol NFT: Identifiable, Codable {
-    var name: String? {get}
-    var symbol: String? {get}
+public protocol NFTProtocol: Identifiable, Codable, Hashable, Equatable {
+    var tokenId: BigUInt { get }
+}
+extension NFTProtocol {
+//    static func ==(rh)
 }
 
-public protocol Token: Coin {
-    var platform: any CoinType { get }
-    var decimals: UInt8 {get}
+
+
+protocol OrdinalProtocol: NFTProtocol {
+    var contract: String {get}
+    var satoshi: BigUInt {get}
 }
-public extension Token {
-    var name: String { platform.name }
-    var symbol: String { platform.symbol }
+
+
+public struct Ordinal: OrdinalProtocol {
+    public var id: String { contract + "_" + tokenId.description }
+    public var tokenId: BigUInt { satoshi }
+    public let satoshi: BigUInt
+    public let contract: String
 }
+
+
+

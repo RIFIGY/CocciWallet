@@ -12,7 +12,7 @@ struct NftGridCell: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(NetworkCard.self) private var card
 
-    let model: NftVM<EthClient.Client>
+    let model: NftVM<EthereumClient.Client>
     let favorite: NftEntity?
     let color: Color
     var imageSize: CGFloat = 160
@@ -58,22 +58,22 @@ struct NftGridCell: View {
 }
 
 
-#Preview("Cell"){
-    NftGridCell(model: .preview, favorite: .munko2309, color: .ETH)
-}
+//#Preview("Cell"){
+//    NftGridCell(model: .preview, favorite: .munko2309, color: .ETH)
+//}
 
-#Preview("ScrollView") {
-    NavigationStack {
-        ScrollView(.vertical) {
-            VStack {
-                Grid{
-                    GridRow {
-                        NftGridCell(model: .preview, favorite: .munko2309, color: .ETH)
-                    }
-                }
-            }
-            .frame(maxWidth: .infinity)
-        }
-        .background(Color.systemGray)
-    }
-}
+//#Preview("ScrollView") {
+//    NavigationStack {
+//        ScrollView(.vertical) {
+//            VStack {
+//                Grid{
+//                    GridRow {
+//                        NftGridCell(model: .preview, favorite: .munko2309, color: .ETH)
+//                    }
+//                }
+//            }
+//            .frame(maxWidth: .infinity)
+//        }
+//        .background(Color.systemGray)
+//    }
+//}

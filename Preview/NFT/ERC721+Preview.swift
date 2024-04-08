@@ -9,7 +9,7 @@ import Foundation
 import Web3Kit
 import BigInt
 import UIKit
-
+import ChainKit
 
 extension ERC721 {
     
@@ -30,8 +30,8 @@ extension ERC721 {
 
 extension OpenSeaMetadata {
     
-    static var munko2309Metadata: OpenSeaMetadata { try! JSONDecoder().decode(ERC721.Token.Metadata.self, from: muko2309MetadataJSON) }
-    static var munko2310Metadata: OpenSeaMetadata { try! JSONDecoder().decode(ERC721.Token.Metadata.self, from: munko2310MetadataJSON) }
+    static var munko2309Metadata: OpenSeaMetadata { try! JSONDecoder().decode(OpenSeaMetadata.self, from: muko2309MetadataJSON) }
+    static var munko2310Metadata: OpenSeaMetadata { try! JSONDecoder().decode(OpenSeaMetadata.self, from: munko2310MetadataJSON) }
 
     static let muko2309MetadataJSON:Data = """
     {

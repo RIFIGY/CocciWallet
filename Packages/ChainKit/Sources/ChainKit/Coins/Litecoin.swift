@@ -2,44 +2,52 @@
 //  File.swift
 //  
 //
-//  Created by Michael on 4/4/24.
+//  Created by Michael on 4/6/24.
 //
 
 import Foundation
 import Logging
 
-public struct Bitcoin: CoinType {
-    public var name: String { "Bitcoin" }
-    public var symbol: String { "BTC" }
-    public var id: UInt32 { 0 }
+public struct Litecoin: CoinType {
+    public var name: String { "Litecoin" }
+    public var symbol: String { "LTC" }
+    public var derivation: UInt32 { 2 }
 }
 
-public struct BitcoinAddress: WIFAddress {
-    public static let prefix: UInt8 = 0x00
+public struct LitecoinAddress: WIFAddress {
+    public static var prefix: UInt8 = 0x30
+    
+    
     private let raw: String
+    public var string: String { raw }
+    public var data: Data? { raw.decodeBase58Check }
     
     public init(_ string: String) {
         self.raw = string.lowercased()
     }
-    
-    public var string: String { raw }
-    public var data: Data? { raw.decodeBase58Check }
+
+    public init(publicKey: Data) {
+        let hash = publicKey.sha256.ripemd160
+        let data = Data([0x30]) + hash
+        let address = data.encodeBase58Check
+        self.init(address)
+    }
+
 }
 
-public class BitcoinAccount: WIFAccount {
+public class LitecoinAccount: WIFAccount {
     
     private let privateKey: Data
     private let publicKey: Data
-    public static let prefix: UInt8 = 0x80
-
+    
     private let logger: Logger
     
-    public lazy var address: BitcoinAddress = BitcoinAddress(publicKey: self.publicKey)
+    public lazy var address: LitecoinAddress = LitecoinAddress(publicKey: self.publicKey)
     
 //    required public init(privateKey: Data, logger: Logger? = nil) throws {
 //        self.privateKey = privateKey
 //        self.publicKey = try Self.generatePublicKey(from: privateKey)
-//        self.logger = logger ?? Logger(label: "chankit.bitcoin-account")
+//        self.logger = logger ?? Logger(label: "chankit.litecoin-account")
 //    }
     required public init(addressString: String, keyStorage: any PrivateKeyStorageProtocol, keystorePassword password: String, logger: Logging.Logger? = nil) throws {
         do {
@@ -52,4 +60,8 @@ public class BitcoinAccount: WIFAccount {
             throw AccountError.loadAccountError
         }
     }
+}
+
+extension LitecoinAccount {
+    public static let prefix: UInt8 = 0xb0
 }

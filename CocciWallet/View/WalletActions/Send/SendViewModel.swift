@@ -12,7 +12,7 @@ import web3
 
 @Observable
 class SendViewModel {
-    let evm: EVM
+    let evm: Web3Kit.EthereumNetwork
     var address: String
     let decimals: UInt8
     
@@ -34,7 +34,7 @@ class SendViewModel {
     var done = false
     
 
-    init(evm: EVM, address: String, decimals: UInt8) {
+    init(evm: Web3Kit.EthereumNetwork, address: String, decimals: UInt8) {
         self.evm = evm
         self.address = address
         self.decimals = decimals
