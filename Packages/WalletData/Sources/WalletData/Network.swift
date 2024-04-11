@@ -27,6 +27,7 @@ public class Network<N:ChainKit.BlockchainClientProtocol>: Codable {
     public var nfts: [Token<Address> : [NFT] ]
     public var tokens: [Token<Address> : BigUInt ]
     
+    
     public var settings: Settings
     public var lastUpdate: Date?
     

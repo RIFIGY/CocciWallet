@@ -17,7 +17,7 @@ struct NFTWidgetView: View {
     var intent: NFTIntent { entry.intent }
     
     var nft: NftEntity? { intent.nft }
-    var uiImage: UIImage? { entry.uiImage }
+    var uiImage: PlatformImage? { entry.uiImage }
 
     var showBackground: Bool { intent.showBackground }
     

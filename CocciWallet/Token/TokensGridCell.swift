@@ -15,7 +15,7 @@ struct TokensGridCell: View {
     @Environment(\.networkTheme) private var networkTheme
 //    let tokens: Tokens
     let balances: [ERC20 : BigUInt]
-    var transfers: [ERC20Transfer] = []
+    var transfers: [ERC20Transfer]
 
     let address: EthereumAddress
     var totalTokens: Int {
@@ -23,8 +23,12 @@ struct TokensGridCell: View {
     }
 
     var tokenValue: Double {
-        0
-//        tokens.totalValue(chain: networkTheme.chain, priceModel, currency: currency)
+        balances.reduce(into: 0.0) { total, entry in
+            let (contract, balance) = entry
+            let price = priceModel.price(contract: contract.contract.string, currency: currency)
+            let value = balance.value(decimals: contract.decimals) * (price ?? 0)
+            total += value
+        }
     }
     
     @State private var showTokens = false
@@ -40,7 +44,7 @@ struct TokensGridCell: View {
         }
         .navigationDestination(isPresented: $showTokens) {
             TokensListView(network: networkTheme.color, address: address, balances: balances, transfers: transfers)
-                .navigationBarBackButton(nil, color: networkTheme.color)
+//                .navigationBarBackButton(nil, color: networkTheme.color)
         }
     }
 }

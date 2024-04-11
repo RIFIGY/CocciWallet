@@ -14,6 +14,7 @@ class Navigation {
     var selected: Wallet?
     var selectedNetwork: EthereumNetworkCard?
     
+    var showNewNetwork = false
     var showSettings = false
     var showWallets = false
     

@@ -15,41 +15,125 @@ struct TransactionInfoView: View {
     var symbol: String?
     
     var body: some View {
-        List {
-            VStack {
-                HStack {
-                    Text(tx.amount?.string(decimals: 4) ?? "")
-                        .fontWeight(.bold)
-                    if let symbol = symbol {
-                        Text(symbol)
-                            .font(.largeTitle)
-                    }
+        Group {
+            #if os(macOS)
+            HSplitView {
+                txInfo
+                    .layoutPriority(1)
+
+                Form {
+                    ChainScanInfo(tx: tx)
                 }
-                    .font(.system(size: 64))
-                Group {
-                    Text(tx.title)
-                    if let date = tx.timestamp {
-                        Text(date.formatted(date: .numeric, time: .standard))
-                    }
-                }
-                .foregroundStyle(.secondary)
+                .formStyle(.grouped)
+                .padding()
+                .frame(minWidth: 300, idealWidth: 350, maxHeight: .infinity, alignment: .top)
             }
-            .listRowInsets(EdgeInsets())
-            .listRowBackground(Color.clear)
-            Section {
+            #else
+            WidthThresholdReader { proxy in
+                if proxy.isCompact {
+                    Form {
+                        txInfo
+                        ChainScanInfo(tx: tx)
+                    }
+                } else {
+                    HStack(spacing: 0) {
+                        txInfo
+                            .padding(.horizontal)
+                        Spacer()
+                        Divider().ignoresSafeArea()
+                        Form {
+                            ChainScanInfo(tx: tx)
+                        }
+                        .formStyle(.grouped)
+                        .frame(width: 350)
+                    }
+                }
+            }
+            #endif
+        }
+        .toolbar {
+            ToolbarTitleMenu {
+                Button {
+
+                } label: {
+                    Label("My Action", systemImage: "star")
+                }
+            }
+        }
+        .navigationTitle(tx.title)
+        #if os(iOS)
+        .navigationBarTitleDisplayMode(.inline)
+        .toolbarRole(.editor)
+        #endif
+    }
+    
+    var txInfo: some View {
+        VStack {
+            HStack {
+                Text(tx.amount?.string(decimals: 4) ?? "")
+                    .fontWeight(.bold)
+                if let symbol = symbol {
+                    Text(symbol)
+                        .font(.largeTitle)
+                }
+            }
+                .font(.system(size: 64))
+            Group {
+                Text(tx.title)
+                if let date = tx.timestamp {
+                    Text(date.formatted(date: .numeric, time: .standard))
+                }
+            }
+            .foregroundStyle(.secondary)
+//            Section {
                 Cell(title: "From:", value: tx.from.string)
                 Cell(title: "To:", value: tx.to.string)
-            } header: {
-                HStack{
-                    Text("Block Info")
-                    Spacer()
-                }
-                .padding(.top)
-            }
-            ChainScanInfo(tx: tx)
-
+//            } header: {
+//                HStack{
+//                    Text("Block Info")
+//                    Spacer()
+//                }
+//                .padding(.top)
+//            }
+            Spacer()
         }
     }
+        
+//        List {
+//            VStack {
+//                HStack {
+//                    Text(tx.amount?.string(decimals: 4) ?? "")
+//                        .fontWeight(.bold)
+//                    if let symbol = symbol {
+//                        Text(symbol)
+//                            .font(.largeTitle)
+//                    }
+//                }
+//                    .font(.system(size: 64))
+//                Group {
+//                    Text(tx.title)
+//                    if let date = tx.timestamp {
+//                        Text(date.formatted(date: .numeric, time: .standard))
+//                    }
+//                }
+//                .foregroundStyle(.secondary)
+//            }
+//            .listRowInsets(EdgeInsets())
+//            .listRowBackground(Color.clear)
+//            Section {
+//                Cell(title: "From:", value: tx.from.string)
+//                Cell(title: "To:", value: tx.to.string)
+//            } header: {
+//                HStack{
+//                    Text("Block Info")
+//                    Spacer()
+//                }
+//                .padding(.top)
+//            }
+//            ChainScanInfo(tx: tx)
+//
+//        }
+//    }
     
 
 }

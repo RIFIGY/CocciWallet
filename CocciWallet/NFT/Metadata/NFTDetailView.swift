@@ -10,7 +10,7 @@ import SwiftUI
 struct NFTDetailView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
-    @Environment(EthereumNetworkCard.self) private var card
+//    @Environment(EthereumNetworkCard.self) private var card
 
     @Bindable var model: NFTMetadata
 
@@ -35,7 +35,7 @@ struct NFTDetailView: View {
                         Section {
                             NavigationLink {
                                 NftContractView(model: .init(contract: model.contract), address: model.contract, name: model.contractName, symbol: model.symbol)
-                                    .environment(card)
+//                                    .environment(card)
                             } label: {
                                 AttributeCell(name: "") {
                                     Text(model.contract)

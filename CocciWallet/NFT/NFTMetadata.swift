@@ -31,6 +31,16 @@ class NFTMetadata: Codable {
         return dict ?? [:]
     }
     
+    init(nft: Web3Kit.NFT, contract: any Contract, json: Data? = nil) {
+        self.tokenId = nft.tokenId
+        self.uri = nft.uri
+        self.contract = contract.contract.string
+        self.contractName = contract.name
+        self.symbol = contract.symbol
+        self.json = json
+        try? decodeMetadata()
+    }
+    
     init(tokenId: BigUInt, contract: String, contractName: String?, symbol: String?, uri: URL?, json: Data? = nil) {
         self.tokenId = tokenId
         self.contract = contract

@@ -11,7 +11,7 @@ import BigInt
 
 struct NftContractView: View {
     @Environment(NetworkManager.self) private var network
-    @Environment(EthereumNetworkCard.self) private var card
+//    @Environment(EthereumNetworkCard.self) private var card
     
     @State var model: ERC721Model
     
@@ -71,7 +71,9 @@ struct NftContractView: View {
             Section {
                 HStack {
                     TextField("TokenID", text: $searchText)
+                    #if os(iOS)
                         .keyboardType(.numberPad)
+                    #endif
                     Button("Search"){
                         Task {
                             if let tokenIdSearch {

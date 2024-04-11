@@ -26,22 +26,25 @@ struct ContentView: View {
     @State private var priceModel = PriceModel()
     
     var body: some View {
-        NavigationStack {
+        NavigationSplitView {
             if let selected = navigation.selected {
-                WalletView(wallet: selected, showSettings: $navigation.showSettings, showWallets: $navigation.showWallets)
-            } else if wallets.isEmpty {
-                AddWalletView { wallet in
-                    context.insert(wallet)
-                    self.navigation.selected = wallet
+                WalletView(wallet: selected)
+            }
+        } detail: {
+            NavigationStack {
+                if let selected = navigation.selectedNetwork {
+                    NetworkDetailView(card: selected)
+                        .environment(walletManager)
+                        .environment(network)
+                        .environment(priceModel)
+                        .environment(navigation)
+                } else if self.wallets.isEmpty || self.navigation.selected == nil {
+                    AddWalletView { wallet in
+                        context.insert(wallet)
+                        self.navigation.selected = wallet
+                    }
                 }
             }
-        }
-        .onAppear{
-            navigation.select(from: wallets, lastSelected: lastSelected)
-            priceModel.fetchPrices(coinIDs: coinIDs, currency: currency)
-        }
-        .sheet(isPresented: $navigation.showSettings) {
-
         }
         .sheet(isPresented: $navigation.showWallets) {
             NavigationStack {
@@ -50,10 +53,44 @@ struct ContentView: View {
             }
                 .presentationDetents([.medium, .large])
         }
+        .onAppear{
+            navigation.select(from: wallets, lastSelected: lastSelected)
+            priceModel.fetchPrices(coinIDs: coinIDs, currency: currency)
+        }
+//        .onChange(of: selection) { _ in
+//            path.removeLast(path.count)
+//        }
         .environment(walletManager)
         .environment(network)
         .environment(priceModel)
         .environment(navigation)
+//        .environmentObject(accountStore)
+        #if os(macOS)
+        .frame(minWidth: 600, minHeight: 450)
+        .frame(maxWidth: 800, maxHeight: 700)
+        #elseif os(iOS)
+
+//        .onOpenURL { url in
+//            let urlLogger = Logger(subsystem: "com.example.apple-samplecode.Food-Truck", category: "url")
+//            urlLogger.log("Received URL: \(url, privacy: .public)")
+//            let order = "Order#\(url.lastPathComponent)"
+//            var newPath = NavigationPath()
+//            selection = Panel.truck
+//            Task {
+//                newPath.append(Panel.orders)
+//                newPath.append(order)
+//                path = newPath
+//            }
+//        }
+        #endif
     }
+//        .onAppear{
+//            navigation.select(from: wallets, lastSelected: lastSelected)
+//            priceModel.fetchPrices(coinIDs: coinIDs, currency: currency)
+//        }
+//        .sheet(isPresented: $navigation.showSettings) {
+//
+//        }
+
     
 }

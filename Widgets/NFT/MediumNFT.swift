@@ -12,14 +12,14 @@ import OffChainKit
 struct MediumNftWidget: View {
     
     let nft: NftEntity?
-    let image: UIImage?
+    let image: PlatformImage?
     let showBackground: Bool
     let symbol: String?
     
     var body: some View {
         HStack {
             SmallNFT(image: image, contentMode: .fit)
-                .roundedCorner(16, corners: .allCorners)
+                .clipShape(RoundedRectangle(cornerRadius: 16))
             if let nft {
                 VStack(alignment: .leading) {
                     Text(nft.contractName ?? nft.contract.shortened())

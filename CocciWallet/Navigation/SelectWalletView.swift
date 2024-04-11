@@ -13,8 +13,10 @@ struct SelectWalletView: View {
     @AppStorage("last_selected_wallet") private var selectedWallet: String = ""
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-//    @Query()
-    private var wallets: [Web3Wallet] = []
+    @Environment(Navigation.self) private var navigation
+    
+    @Query private var wallets: [Wallet]
+
 
     
     var sectioned: Bool = false
@@ -26,20 +28,20 @@ struct SelectWalletView: View {
     
     
     
-    var sections: [String: [Wallet]] {
-        Dictionary(grouping: wallets, by: {$0.hasKey.description})
+    var sections: [Wallet.Kind: [Wallet]] {
+        Dictionary(grouping: wallets, by: {$0.type})
     }
 
     var body: some View {
         List {
             if sectioned {
-//                ForEach(Array(sections.keys)) { walletType in
-//                    if let wallets = sections[walletType] {
-//                        Section(walletType) {
-//                            Cells(for: wallets)
-//                        }
-//                    }
-//                }
+                ForEach(Array(sections.keys)) { walletType in
+                    if let wallets = sections[walletType] {
+                        Section(walletType.rawValue) {
+                            Cells(for: wallets)
+                        }
+                    }
+                }
             } else {
                 Section {
                     Cells(for: wallets)
@@ -64,6 +66,11 @@ struct SelectWalletView: View {
         .alert("Delete Wallet", isPresented: presentAlert, presenting: walletToDelete) { wallet in
             Button("Delete", role: .destructive) {
                 context.delete(wallet)
+                if self.navigation.selected == wallet {
+                    self.navigation.selected = wallets.first
+                } else if wallets.isEmpty {
+                    self.navigation.selected = nil
+                }
             }
         } message: { wallet in
             Text("Are you sure you want to delete \(wallet.name.isEmpty ? "wallet" : wallet.name) \(wallet.address)?\nThis cannot be undone or recovered")
@@ -72,6 +79,7 @@ struct SelectWalletView: View {
     
     @ViewBuilder
     func Cells(for wallets: [Wallet]) -> some View {
+
         ForEach(wallets) { wallet in
             Button {
                 select(wallet)
@@ -100,16 +108,18 @@ struct SelectWalletView: View {
     }
     
     func add(_ wallet: Wallet) {
+        wallet.networks = [.init(evm: .ETH, address: wallet.address)]
         context.insert(wallet)
         select(wallet)
     }
     
     func select(_ wallet: Wallet) {
         self.selectedWallet = wallet.id
+        self.navigation.selected = wallet
 //        withAnimation {
 //            manager.select(wallet)
 //        }
-//        dismiss()
+        dismiss()
     }
 }
 
@@ -139,7 +149,13 @@ fileprivate extension View {
     @ViewBuilder
     func deleteAction(_ action: @escaping () -> Void ) -> some View {
         self
-            #if os(tvOS)
+            #if os(iOS)
+            .swipeActions {
+                Button("Delete", role: .destructive) {
+                    action()
+                }
+            }
+            #else
             .contextMenu {
                   Button(role: .destructive) {
                       action()
@@ -147,12 +163,6 @@ fileprivate extension View {
                       Label("Delete", systemImage: "trash")
                   }
               }
-            #else
-            .swipeActions {
-                Button("Delete", role: .destructive) {
-                    action()
-                }
-            }
             #endif
     }
 }

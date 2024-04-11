@@ -30,6 +30,7 @@ struct TransactionDetailView: View {
     }
     
     var body: some View {
+        
         List {
             Section{
                 NavigationLink {

@@ -44,27 +44,24 @@ struct GridCell: View {
     
         
         var body: some View {
-            SwiftUI.Button {
-                action()
-            } label: {
-                HStack {
-                    Image(systemName: systemName)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: size/5, height: size/5)
-                        .networkColor()
+            HStack {
+                Image(systemName: systemName)
+                    .resizable()
+                    .aspectRatio(contentMode: .fit)
+                    .frame(width: size/5, height: size/5)
+                    .networkColor()
 
-                    Text(title)
-                        .font(.title3)
-                        .lineLimit(1)
-                        .minimumScaleFactor(0.9)
-                        .foregroundStyle(.primary)
-                    Spacer()
-                }
-                .fontWeight(.semibold)
+                Text(title)
+                    .font(.title3)
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.9)
+                    .foregroundStyle(.primary)
+                Spacer()
             }
+            .fontWeight(.semibold)
             .foregroundStyle(.primary)
             .cellBackground(padding: 16, cornerRadius: 16)
+            .onTapGesture(perform: action)
         }
     }
 }

@@ -5,7 +5,7 @@
 //  Created by Michael Wilkowski on 4/3/24.
 //
 
-import UIKit
+//import UIKit
 import SwiftUI
 //extension UINavigationController {
 //    open override func viewWillLayoutSubviews() {
@@ -14,13 +14,14 @@ import SwiftUI
 //    }
 //}
 
+#if os(iOS)
 extension UINavigationController {
     override open func viewDidLoad() {
         super.viewDidLoad()
         interactivePopGestureRecognizer?.delegate = nil
     }
 }
-
+#endif
 
 struct NavigationBackViewModifier<C:View>: ViewModifier {
     @Environment(\.dismiss) private var dismiss

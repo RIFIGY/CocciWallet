@@ -45,9 +45,9 @@ struct NetworkView: View {
             }
             .environment(card)
             .networkTheme(card: card)
-            if !card.transactions.isEmpty, card.chain > 0 {
+//            if !card.transactions.isEmpty {
                 DateTransactions(address: address.string, transactions: card.transactions, symbol: card.symbol)
-            }
+//            }
         }
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {

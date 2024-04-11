@@ -12,39 +12,54 @@ import OffChainKit
 struct WalletView: View {
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
+    @Environment(Navigation.self) private var navigation
     
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
 
     @Bindable var wallet: Wallet
-    @Binding var showSettings: Bool
-    @Binding var showWallets: Bool
 
-    @State private var showNewNetwork = false
     @Namespace private var animation
 
     var body: some View {
+        let navigation = Bindable(navigation)
         Group {
             #if os(iOS)
-            if wallet.settings.displayAsCards {
-                NetworkCardStack(
-                    networks: $wallet.networks,
-                    animation: animation,
-                    header: header,
-                    footer: footer
-                ) { card in
-                    await update(card: card)
-                }
-            } else {
+            if UIDevice.current.userInterfaceIdiom == .pad {
                 cardList
+            } else {
+                if wallet.settings.displayAsCards {
+                    NetworkCardStack(
+                        name: wallet.name,
+                        networks: $wallet.networks,
+                        animation: animation
+                    ) { card in
+                        await update(card: card)
+                    }
+                } else {
+                    cardList
+                }
             }
             #else
             cardList
             #endif
         }
-        .sheet(isPresented: $showNewNetwork) {
+        .sheet(isPresented: navigation.showNewNetwork) {
             AddNetworkView(address: wallet.address) { network in
                 if !wallet.networks.map({$0.id}).contains(network.id) {
                     wallet.networks.append(network)
+                }
+            }
+        }
+//        .navigationDestination(isPresented: $navigation.showWallets) {
+//            NavigationStack {
+//                SelectWalletView()
+//            }
+//                .presentationDetents([.medium, .large])
+//        }
+        .toolbar {
+            ToolbarItem(placement: .automatic) {
+                Button("Wallets") {
+                    self.navigation.showWallets = true
                 }
             }
         }
@@ -55,39 +70,13 @@ struct WalletView: View {
             
     var cardList: some View {
         NetworkCardList(
-            wallet: wallet,
-            showSettings: $showSettings,
-            showNewNetwork: $showNewNetwork,
-            showWallets: $showWallets
-        )
+            networks: wallet.networks,
+            settings: wallet.settings){ card in
+                await update(card: card)
+            }
     }
     
-    var footer: some View {
-        Button("Add"){
-            showNewNetwork = true
-        }
-        .buttonStyle(.bordered)
-        .padding(.vertical, 32)
-    }
 
-    var header: some View {
-        HStack {
-            Text(wallet.name)
-                .font(.largeTitle.weight(.bold))
-            Spacer()
-            HStack {
-                HeaderButton(systemName: "wallet.pass") {
-                    withAnimation {
-                        showWallets = true
-                    }
-                }
-                HeaderButton(systemName: "gearshape") {
-                    showSettings = true
-                }
-            }
-        }
-        .padding(.horizontal)
-    }
     
     private func update(card: EthereumNetworkCard) async {
         
@@ -108,38 +97,11 @@ struct WalletView: View {
 }
 
 
-fileprivate struct HeaderButton: View {
-    @Environment(\.colorScheme) var colorScheme
 
-    let systemName: String
-    let action: () -> Void
-    
-    var background: Color {
-        colorScheme == .light ? .black : .white
-    }
-    
-    var foreground: Color {
-        colorScheme == .light ? .white : .black
-    }
-    
-    var body: some View {
-        SwiftUI.Button {
-            action()
-        } label: {
-            Image(systemName: systemName)
-                .foregroundStyle(foreground)
-                .padding(10)
-                .background(background)
-                .clipShape(.circle)
-        }
-    }
-}
-
-
-
-#Preview {
-    let preview = Preview()
-    return WalletView(wallet: .rifigy, showSettings: .constant(false), showWallets: .constant(false))
-        .environmentPreview()
-}
-
+//
+//#Preview {
+//    let preview = Preview()
+//    return WalletView(wallet: .rifigy, showSettings: .constant(false), showWallets: .constant(false))
+//        .environmentPreview()
+//}
+//

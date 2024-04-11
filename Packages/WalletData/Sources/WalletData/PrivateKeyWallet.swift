@@ -52,6 +52,10 @@ public extension PrivateKeyWallet {
     struct Settings: Codable {
         public var displayAsCards = true
         public var groupTokens = true
+        public init(displayAsCards: Bool = true, groupTokens: Bool = true) {
+            self.displayAsCards = displayAsCards
+            self.groupTokens = groupTokens
+        }
     }
     
     enum Kind: String, CaseIterable, Identifiable, Hashable, Codable {

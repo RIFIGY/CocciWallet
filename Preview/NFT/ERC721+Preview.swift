@@ -8,7 +8,6 @@
 import Foundation
 import Web3Kit
 import BigInt
-import UIKit
 import ChainKit
 
 extension ERC721 {

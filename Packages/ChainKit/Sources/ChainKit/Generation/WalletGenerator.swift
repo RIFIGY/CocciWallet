@@ -6,9 +6,6 @@
 //
 
 import Foundation
-import HdWalletKit
-
-
 
 public class PrivateKeyGenerator<A:AccountProtocol> {
     public typealias Address = A.Address

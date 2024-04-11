@@ -20,15 +20,14 @@ struct NftGridCell: View {
     var imageSize: CGFloat = 160
 
     var cover: NFTMetadata? {
-        nil
-//        nfts.tokens.flatMap{$0.value}.first
-//        nfts.coverNft(favorite: favorite)
-    }
+        guard let (contract, nfts) = nfts.first,
+              let nft = nfts.first else {return nil}
+        return .init(nft: nft, contract: contract)    }
 
         
     @State private var showNFTs = false
     @State private var showClaim = false
-    
+    @State private var metadata: [ERC721 : [NFTMetadata] ] = [:]
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
             Text("NFT")
@@ -52,16 +51,49 @@ struct NftGridCell: View {
         }
         .cellBackground(padding: 8, cornerRadius: 16)
         .navigationDestination(isPresented: $showNFTs) {
+            NFTGridView(nfts: metadata)
 //            NftListView(tokens: nfts.map{ [ $0.key : $0.value.map{} ] })
 //                .environment(card)
         }
         .sheet(isPresented: $showClaim) {
             Text("Claim")
         }
+        .task {
+//            let storage = MetadataStorage()
+
+            await withTaskGroup(of: Void.self) { group in
+                for (contract, nfts) in self.nfts {
+                    for nft in nfts {
+                        group.addTask {
+                            let nftMetadata = NFTMetadata(nft: nft, contract: contract)
+                            await nftMetadata.fetch()
+                            self.metadata[contract, default: []].append(nftMetadata)
+                        }
+                    }
+                }
+                
+                // Process each result as it comes in
+//                for await result in group {
+//                    await storage.add(metadata: result.1, forContract: result.0)
+//                }
+            }
+
+            // After all tasks are completed, update the shared state
+            // Note: Access to `storage` is performed on the main actor if updating UI or other main-thread-only operations
+//            let tokens = await storage.storage
+//            self.metadata = tokens
+//            print(self.metadata.count)
+        }
     }
 }
 
+actor MetadataStorage {
+    var storage: [ERC721: [NFTMetadata]] = [:]
 
+    func add(metadata nftMetadata: NFTMetadata, forContract contract: ERC721) {
+        storage[contract, default: []].append(nftMetadata)
+    }
+}
 //#Preview("Cell"){
 //    NftGridCell(model: .preview, favorite: .munko2309, color: .ETH)
 //}

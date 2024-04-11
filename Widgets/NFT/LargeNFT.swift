@@ -13,12 +13,12 @@ struct LargeNFT: View {
     typealias Attribute = OpenSeaMetadata.Attribute
 
     let nft: NftEntity?
-    let image: UIImage?
+    let image: PlatformImage?
     
     var metadata: OpenSeaMetadata? { nft?.metadata }
     
     let nfts: [NftEntity]
-    let images: [UIImage?]
+    let images: [PlatformImage?]
     let symbol: String?
     let showBackground: Bool
     
@@ -41,7 +41,7 @@ struct LargeNFT: View {
                         .padding(.trailing, 36)
                     } else {
                         NFTImageView(image: images[i])
-                            .roundedCorner(16, corners: .allCorners)
+                            .clipShape(RoundedRectangle(cornerRadius: 16))
                     }
 
                 }
@@ -106,7 +106,7 @@ struct LargeNFT: View {
                     .padding(.horizontal, 2)
                     .frame(width: 70, height: 50)
                     .background(.regularMaterial)
-                    .roundedCorner(16, corners: .allCorners)
+                    .clipShape(RoundedRectangle(cornerRadius: 16))
                 }
             }
 

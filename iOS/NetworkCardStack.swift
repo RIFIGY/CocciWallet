@@ -11,18 +11,17 @@ import Web3Kit
 import OffChainKit
 
 
-struct NetworkCardStack<Header:View, Footer:View>: View {
+struct NetworkCardStack: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
+    @Environment(Navigation.self) private var navigation
 
+    let name: String
     @Binding var networks: [EthereumNetworkCard]
     
     let animation: Namespace.ID
 
-    let header: Header
-    let footer: Footer
-    
     var update: (EthereumNetworkCard) async -> Void
     
     
@@ -61,10 +60,64 @@ struct NetworkCardStack<Header:View, Footer:View>: View {
     }
     
 
-    
+    var footer: some View {
+        Button("Add"){
+            navigation.showNewNetwork = true
+        }
+        .buttonStyle(.bordered)
+        .padding(.vertical, 32)
+    }
+
+    var header: some View {
+        HStack {
+            Text(name)
+                .font(.largeTitle.weight(.bold))
+            Spacer()
+            HStack {
+                HeaderButton(systemName: "wallet.pass") {
+                    withAnimation {
+                        navigation.showWallets = true
+                    }
+                }
+                HeaderButton(systemName: "gearshape") {
+                    navigation.showSettings = true
+                }
+            }
+        }
+        .padding(.horizontal)
+    }
 
 
 }
+
+fileprivate struct HeaderButton: View {
+    @Environment(\.colorScheme) var colorScheme
+
+    let systemName: String
+    let action: () -> Void
+    
+    var background: Color {
+        colorScheme == .light ? .black : .white
+    }
+    
+    var foreground: Color {
+        colorScheme == .light ? .white : .black
+    }
+    
+    var body: some View {
+        SwiftUI.Button {
+            action()
+        } label: {
+            Image(systemName: systemName)
+                .foregroundStyle(foreground)
+                .padding(10)
+                .background(background)
+                .clipShape(.circle)
+        }
+    }
+}
+
+
 
 struct CardIcon: View {
     let color: Color?

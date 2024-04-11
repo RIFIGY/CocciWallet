@@ -17,24 +17,77 @@ struct NetworkCardList: View {
     @Environment(WalletHolder.self) private var manager
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
+    @Environment(Navigation.self) private var navigation
     
-    @Bindable var wallet: Wallet
+    let networks: [EthereumNetworkCard]
+    let settings: Wallet.Settings
+    
+    var update: (EthereumNetworkCard) async -> Void
 
-    @State private var selected: EthereumNetworkCard?
+    
     @State private var selectedToken: Balance<ERC20, ERC20Transfer>?
-    @Binding var showSettings: Bool
-    @Binding var showNewNetwork: Bool
-    @Binding var showWallets: Bool
+//    @Binding var showSettings: Bool
+//    @Binding var showNewNetwork: Bool
+//    @Binding var showWallets: Bool
 
+    var body: some View {
+        List{
+            ForEach(networks.filter{!$0.isCustom}) { card in
+                if settings.groupTokens {
+                    CardSection(card: card)
+                } else {
+                    Section(card.name){
+                        CardSection(card: card)
+                    }
+                }
+            }
+            
+            ForEach(networks.filter{$0.isCustom}) { card in
+                if settings.groupTokens {
+                    CardSection(card: card)
+                } else {
+                    Section(card.name){
+                        CardSection(card: card)
+                    }
+                }
+            }
+            
+            if networks.isEmpty {
+                Button("Add"){
+                    self.navigation.showNewNetwork = true
+                }
+            }
+        }
+
+        .navigationDestination(item: $selectedToken) { token in
+            ERC20DetailView(token.token, balance: token.balance, price: token.price, tx: token.transfers ?? [], network: token.network)
+        }
+        .toolbar {
+//            ToolbarItem(placement: .automatic) {
+//                Button(systemName: "wallet.pass"){
+//                    showWallets = true
+//                }
+//                .foregroundStyle(.indigo)
+//
+//            }
+//            ToolbarItem(placement: .cancellationAction) {
+//                Button(systemName: "gearshape") {
+//                    showSettings = true
+//                }
+//                .foregroundStyle(.indigo)
+//
+//            }
+        }
+    }
     
     @ViewBuilder
     func CardSection(card: EthereumNetworkCard) -> some View {
-        Cell(card: card, group: wallet.settings.groupTokens)
+        Cell(card: card, group: settings.groupTokens)
             .onTapGesture {
-                self.selected = card
+                self.navigation.selectedNetwork = card
             }
             .task {
-//                await update(card: card)
+                await update(card)
             }
 //        if let card = card as? EthereumNetworkCard, !wallet.settings.groupTokens {
 //            ForEach(Array(card.tokens.balances.keys) ) { contract in
@@ -55,70 +108,6 @@ struct NetworkCardList: View {
 //        }
     }
     
-    var body: some View {
-        List{
-            ForEach(wallet.networks.filter{!$0.isCustom}) { card in
-                if wallet.settings.groupTokens {
-                    CardSection(card: card)
-                } else {
-                    Section(card.name){
-                        CardSection(card: card)
-                    }
-                }
-            }
-            
-            ForEach(wallet.networks.filter{$0.isCustom}) { card in
-                if wallet.settings.groupTokens {
-                    CardSection(card: card)
-                } else {
-                    Section(card.name){
-                        CardSection(card: card)
-                    }
-                }
-            }
-            
-            Section {
-                Button("Add"){
-                    showNewNetwork = true
-                }
-                .buttonStyle(.bordered)
-                .listRowBackground(Color.clear)
-                .frame(maxWidth: .infinity)
-            }
-                
-
-        }
-        .navigationDestination(item: $selected) { card in
-            NetworkDestination(card: card, price: 0, selected: $selected){
-                withAnimation {
-//                    wallet.remove(card)
-//                    self.selected = nil
-                }
-            }
-            .navigationBarBackButton(wallet.name, color: card.color)
-            .environment(wallet)
-        }
-        .navigationDestination(item: $selectedToken) { token in
-            ERC20DetailView(token.token, balance: token.balance, price: token.price, tx: token.transfers ?? [], network: token.network)
-        }
-        .navigationTitle(wallet.name)
-        .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button(systemName: "wallet.pass"){
-                    showWallets = true
-                }
-                .foregroundStyle(.indigo)
-
-            }
-            ToolbarItem(placement: .cancellationAction) {
-                Button(systemName: "gearshape") {
-                    showSettings = true
-                }
-                .foregroundStyle(.indigo)
-
-            }
-        }
-    }
     
 }
 
@@ -216,9 +205,15 @@ fileprivate struct Balance<E:Contract, T:ERCTransfer>: Identifiable, Hashable {
     let network: Color
 }
 
-#Preview {
-    NetworkCardList(wallet: .rifigy, showSettings: .constant(false), showNewNetwork: .constant(false), showWallets: .constant(false))
-        .environmentPreview()
-}
-
-
+//#Preview {
+//    NetworkCardList(
+//        networks: [EthereumNetworkCard.preview],
+//        settings: .init(),
+//        showSettings: .constant(false),
+//        showNewNetwork: .constant(false),
+//        showWallets: .constant(false)
+//    )
+//        .environmentPreview()
+//}
+//
+//

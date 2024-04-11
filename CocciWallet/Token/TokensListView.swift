@@ -30,17 +30,26 @@ struct TokensListView<Token: Contract, Transfer:ERCTransfer>: View {
         Array(Set(transfers.map{$0.contract}))
     }
     
+    var transferContracts: [Token] {
+        let contracts = Array(Set(transfers.map { $0.contract }))
+        let tokens = balances.map{$0.key}.filter{ contract in
+            contracts.map{$0.string}.contains(contract.contract.string)
+        }
+        return tokens
+    }
+    
     @State private var selected: Token?
     
     var body: some View {
         List {
             ForEach(sortedBalances, id: \.contract.id) { token in
-                TokenCell(token.contract, balance: token.balance, network: network)
-                    .onTapGesture {
-                        selected = token.0
-                    }
+                NavigationLink {
+                    ERC20DetailView(token.contract, balance: balances[token.contract], tx: [ERC20Transfer](), network: network)
+                } label : {
+                    TokenCell(token.contract, balance: token.balance, network: network)
+                }
             }
-//            ERCTransactions(transfers: Array(Set(transfers.map{$0.contract})), transactions: transfers, address: address, symbol: nil)
+            ERCTransactions(transfers: transferContracts, transactions: transfers, address: address, symbol: nil)
         }
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
