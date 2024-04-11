@@ -7,6 +7,7 @@
 
 import Foundation
 import AppIntents
+import WalletData
 
 struct WalletEntity: AppEntity, Identifiable, Codable {
     var id: String { address }
@@ -33,7 +34,7 @@ struct WalletEntity: AppEntity, Identifiable, Codable {
 struct WalletQuery: EntityQuery {
     
     func suggestedEntities() async throws -> [WalletEntity] {
-        Storage.shared.wallets()
+        await WalletContainer.shared.allWallets().map{ .init(name: $0.name, address: $0.address.string) }
     }
 
     func entities(for identifiers: [WalletEntity.ID]) async throws -> [WalletEntity] {

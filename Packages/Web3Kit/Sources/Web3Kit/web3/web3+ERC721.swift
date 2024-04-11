@@ -10,36 +10,39 @@ import web3
 import BigInt
 import ChainKit
 
+public typealias ERC721 = Token<EthereumAddress>
 extension EthereumHttpClient: ERC721Client {
+    
+    
+    
     
     private var erc721: web3.ERC721 { .init(client: self) }
     private var erc721Metadata: web3.ERC721Metadata { .init(client: self, metadataSession: .shared) }
-    
-    public func getTokenBalance(contract: String, address: String) async throws -> BigUInt {
+
+    public func getTokenBalance(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt {
         try await erc721.balanceOf(
-            contract: try validate(contract),
-            address: try validate(address)
+            contract: contract,
+            address: address
         )
     }
     
 
     
-    public func getTokenContract(address contract: String) async throws -> ChainKit.ERC721 {
-        let validatedContract = try validate(contract)
+    public func getTokenContract(address contract: EthereumAddress) async throws -> ERC721 {
 
-        async let name: String? = try? await erc721Metadata.name(contract: validatedContract)
-        async let symbol: String? = try? await erc721Metadata.symbol(contract: validatedContract)
+        async let name: String? = try? await erc721Metadata.name(contract: contract)
+        async let symbol: String? = try? await erc721Metadata.symbol(contract: contract)
 
-        return await ERC721(
-            contract: .init(contract),
+        return await Token<web3.EthereumAddress>(
+            contract: contract,
             name: name ?? "",
-            symbol: symbol ?? ""
+            symbol: symbol ?? "",
+            decimals: 0
         )
 
     }
     
-    public func getTokenTransferEvents(for address: String) async throws -> [ERC721Transfer] {
-        let address = try validate(address)
+    public func getTokenTransferEvents(for address: EthereumAddress) async throws -> [ERC721Transfer] {
         
         async let to = try await self.erc721.transferEventsTo(
             recipient: address,
@@ -56,59 +59,20 @@ extension EthereumHttpClient: ERC721Client {
 
     }
     
-    public func getTokenURI(contract: String, tokenId: BigUInt) async throws -> URL {
+    public func getTokenURI(contract: EthereumAddress, tokenId: BigUInt) async throws -> URL {
         try await erc721Metadata.tokenURI(
-            contract: try validate(contract),
+            contract: contract,
             tokenID: tokenId
         )
     }
     
-    public func ownerOf(tokenId: BigUInt, in contract: String) async throws -> String {
-        return try await erc721.ownerOf(contract: try validate(contract), tokenId: tokenId).asString()
+    public func ownerOf(tokenId: BigUInt, in contract: EthereumAddress) async throws -> String {
+        return try await erc721.ownerOf(contract: contract, tokenId: tokenId).asString()
     }
 }
 
 
 
 
+extension ERC721Events.Transfer: ERC721TransferProtocol {}
 public typealias ERC721Transfer = ERC721Events.Transfer
-
-extension ERC721Transfer: ERCTransfer {
-    public var timestamp: Date? {
-        nil
-    }
-    
-    
-}
-
-extension ERC721Events.Transfer: ERC721TransferProtocol {
-    public var sorter: String { self.log.blockNumber.stringValue }
-    public var id: String {
-        self.log.transactionHash ?? "\(toAddress)_\(fromAddress)_\(tokenId.description)_\(log.data)"
-    }
-    public var toAddress: String {
-        self.to.asString()
-    }
-    
-    public var fromAddress: String {
-        self.from.asString()
-    }
-    
-    public var bigValue: BigUInt? {
-        nil
-    }
-    
-    public var contract: String {
-        self.log.address.asString()
-    }
-    
-    public var title: String {
-        "NFT Transfer"
-    }
-    
-    public var subtitle: String {
-        self.contract
-    }
-    
-    
-}

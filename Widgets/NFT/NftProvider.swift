@@ -8,6 +8,7 @@
 import WidgetKit
 import UIKit
 import OffChainKit
+import WalletData
 
 struct NftEntry: TimelineEntry {
     let date: Date
@@ -31,7 +32,7 @@ struct NftProvider: AppIntentTimelineProvider {
         var entry = NftEntry(date: .now, intent: intent)
         
         if intent.randomNFT {
-            entry.intent.nft = randomNFT(for: intent.wallet.id, network: intent.network?.id, contract: intent.contract?.contract)
+//            entry.intent.nft = randomNFT(for: intent.wallet.id, network: intent.network?.id, contract: intent.contract?.contract)
         }
         
         do {
@@ -64,13 +65,11 @@ extension NftProvider {
 
     }
     
-    private func randomNFT(for wallet: Wallet.ID, network: Network.ID?, contract: String? = nil) -> NftEntity? {
-        var nfts = Storage.shared.nfts(in: network, owner: wallet)
-        if let contract {
-            nfts = nfts.filter{$0.contract.lowercased() == contract.lowercased()}
-        }
+    private func randomNFT(for wallet: Wallet.ID, network: String, contract: String? = nil) async -> NftEntity? {
+        let nfts = await WalletContainer.shared.fetchAllNFTs(wallet: wallet, networkID: network, contract: contract)
         if let random = nfts.randomElement() {
-            return NftEntity(nft: random)
+            #warning("fix this")
+            return NftEntity(tokenId: random.tokenId.description, contract: contract ?? "", imageUrl: random.uri)
         } else {return nil}
         
     }

@@ -46,15 +46,3 @@ public struct Token<A:ChainKit.Address>: Contract {
     }
 }
 
-public typealias ERC20 = Token<EthereumAddress>
-public typealias ERC721 = Token<EthereumAddress>
-
-public extension ERC20 {
-    static let USDC = ERC20(contract: "0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48", name: "USD Coin", symbol: "USDC", decimals: 6)
-}
-
-extension ERC721 {
-    public init(contract: EthereumAddress, name: String, symbol: String) {
-        self.init(contract: contract, name: name, symbol: symbol, decimals: 0)
-    }
-}

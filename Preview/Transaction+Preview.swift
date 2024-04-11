@@ -9,7 +9,7 @@ import SwiftUI
 import Web3Kit
 import BigInt
 import OffChainKit
-
+import ChainKit
 //extension TransactionsModel {
 //    static var preview: TransactionsModel {
 //        .init(address: Wallet.rifigy.address, price: (100,"usd"))
@@ -18,11 +18,17 @@ import OffChainKit
 
 extension Transaction {
     static var preview: Transaction {
-        .init(title: "Simple Transaction", subtitle: "My transaction preview", amount: 4_000_000_000_000_000_469, date: .now, toAddressString: Wallet.rifigy.address, fromAddressString: Wallet.wallet.address)
+        .init(title: "Simple Transaction", subtitle: "My transaction preview", amount: 4_000_000_000_000_000_469, date: .now, toAddressString: Wallet.rifigy.address.string, fromAddressString: Wallet.wallet.address.string)
     }
 }
 
 struct Transaction: TransactionProtocol {
+    var to: Web3Kit.EthereumAddress { .init(toAddressString) }
+    
+    var from: Web3Kit.EthereumAddress { .init(fromAddressString) }
+    
+    typealias Sorter = Date
+        
     var sorter: Date { date }
     var id: String = UUID().uuidString
     let title: String
@@ -60,8 +66,8 @@ struct Transaction: TransactionProtocol {
                     subtitle: "Description for \(month)/\(day)",
                     amount: amount,
                     date: date,
-                    toAddressString: t % 2 == 0 ? Wallet.wallet.address : Wallet.rifigy.address,
-                    fromAddressString: t % 2 == 0 ? Wallet.rifigy.address : Wallet.wallet.address
+                    toAddressString: t % 2 == 0 ? Wallet.wallet.address.string : Wallet.rifigy.address.string,
+                    fromAddressString: t % 2 == 0 ? Wallet.rifigy.address.string : Wallet.wallet.address.string
                 )
                 transactions.append(transaction)
             }

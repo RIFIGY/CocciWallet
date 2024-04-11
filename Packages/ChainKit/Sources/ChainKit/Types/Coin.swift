@@ -11,7 +11,7 @@ public struct Coin: CoinProtocol, CoinType {
     public var id: UInt32 { derivation }
     public let derivation: UInt32
     
-    public let symbol: String
+    public var symbol: String
     public let name: String
     public let decimals: UInt8
     

@@ -23,6 +23,7 @@ class PriceModel {
 
     var priceHistory: [String : [CoinGecko.PriceHistory.Price] ] = [:] // coinId : pricedata
 
+    var contractPrices: [String: Price] = [:] // contract : priceSheet
 
     func price(coin id: String, currency: String) -> Double? {
         let id = id.lowercased()
@@ -43,6 +44,14 @@ class PriceModel {
         return price
     }
     
+    func price(contract: String, currency: String) -> Double? {
+        let contract = contract.lowercased()
+        let currency = currency.lowercased()
+        
+        return self.contractPrices[contract]?[currency]
+
+    }
+    
     func price(chain: Int, contract: String? = nil, currency: String) -> Double? {
         if let contract, let platform = CoinGecko.AssetPlatform.PlatformID(chainID: chain) {
             return price(platform: platform, contract: contract, currency: currency)
@@ -59,31 +68,37 @@ class PriceModel {
 
 extension PriceModel {
     
-    func fetchPrices(coinIDs ids: [String], currency: String) async {
-        do {
-            let prices = try await api.fetchPrices(coins: ids, currency: currency)
-            prices.forEach { key, value in
-                let coin = key.lowercased()
-                let currency = currency.lowercased()
-                
-                withAnimation {
-                    self.prices[coin] = [currency:value]
+    func fetchPrices(coinIDs ids: String, currency: String) {
+        let ids = ids.components(separatedBy: ",")
+
+        Task {
+            do {
+                let prices = try await api.fetchPrices(coins: ids, currency: currency)
+                prices.forEach { key, value in
+                    let coin = key.lowercased()
+                    let currency = currency.lowercased()
+                    
+                    withAnimation {
+                        self.prices[coin] = [currency:value]
+                    }
                 }
+            } catch {
+                print("Price Error: \(error)")
             }
-        } catch {
-            print("Price Error: \(error)")
         }
     }
+
     
     func fetchPrices(contracts: [String], platform: String, currency: String) async {
         do {
             let prices = try await api.fetchAssetPrices(platform: platform, contracts: contracts, currency: currency)
             prices.forEach { key, value in
                 let platform = platform.lowercased()
-                let contractt = key.lowercased()
+                let contract = key.lowercased()
                 let currency = currency.lowercased()
                 withAnimation {
-                    platformPrices[platform, default: [:]][key] = [currency: value]
+                    platformPrices[platform, default: [:]][contract] = [currency: value]
+                    contractPrices[contract] = [currency:value]
                 }
             }
         } catch {

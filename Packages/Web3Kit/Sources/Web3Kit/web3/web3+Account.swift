@@ -22,7 +22,7 @@ extension web3.EthereumAddress: ChainKit.Address {
 }
 
 
-
+public typealias EthereumAddress = web3.EthereumAddress
 public class EthereumAccount: ChainKit.EthereumAccount<web3.EthereumAddress>, web3.EthereumAccountProtocol {
 
     

@@ -7,13 +7,12 @@
 
 import Foundation
 import AppIntents
-
+import WalletData
 
 struct NetworkEntity: AppEntity {
     let id: String
 
     let title: String
-    let chain: Int
     let symbol: String?
 
     var displayRepresentation: DisplayRepresentation {
@@ -43,8 +42,8 @@ struct NetworkQuery: EntityQuery {
         
     func suggestedEntities() async throws -> [NetworkEntity] {
         guard let wallet else {return []}
-        return Storage.shared.networks(for: wallet.id).map{
-            NetworkEntity(card: $0)
+        return try await WalletContainer.shared.fetchNetworks(wallet: wallet.id).map{
+            NetworkEntity(network: $0)
         }
 
     }
@@ -57,14 +56,9 @@ struct NetworkQuery: EntityQuery {
 }
 
 extension NetworkEntity {
-    init(network: Network, chain: Int) {
+    init(network: Web3Network) {
         self.id = network.id
         self.title = network.name
-        self.symbol = network.nativeCoin.symbol
-        self.chain = chain
-    }
-    
-    init(card: NetworkCard) {
-        self.init(network: card, chain: card.chain)
+        self.symbol = network.symbol
     }
 }

@@ -10,21 +10,39 @@ import web3
 import BigInt
 
 extension web3.EthereumHttpClient: EthereumClientProtocol  {
+
     
+    public typealias NFT = Web3Kit.NFT
     public typealias Account = EthereumAccount
-    public var rpc: URL {
-        self.url
+    public typealias Metadata = OpenSeaMetadata
+    
+            
+    
+    public func fetchTokens(for address: EthereumAddress) async throws -> [ERC20 : BigUInt] {
+        let interactions = try await self.getTransferEvents(for: address)
+        let balances = try await self.fetchBalances(for: address, in: interactions.map{$0.contract})
+        return balances.reduce(into: [ERC20: BigUInt]()) { result, current in
+            let (key, value) = current
+            result[key] = value
+        }
     }
     
-    public var chain: Int {
-        self.network.intValue
-    }
+    public var rpc: URL { url }
+    
+    public var chain: Int { network.intValue }
         
-    public func getBalance(address: String, block: Int? = nil) async throws -> BigUInt {
+    public func getBalance(address: EthereumAddress, block: Int?) async throws -> BigUInt {
         try await self.eth_getBalance(
-            address: try validate(address),
+            address: address,
             block: validate(block)
         )
+    }
+    private func validate(_ block: Int?) -> EthereumBlock {
+        if let block, block > 0 {
+            return .init(rawValue: block)
+        } else {
+            return .Latest
+        }
     }
 
     
@@ -38,7 +56,7 @@ extension web3.EthereumHttpClient: EthereumClientProtocol  {
         return try await self.eth_estimateGas(tx)
     }
     
-    public func send(_ amount: BigUInt, to: String, from account: EthereumAccount, gasPrice: BigUInt?, gasLimit: BigUInt?) async throws -> String {
+    public func send(_ amount: BigUInt, to: EthereumAddress, from account: EthereumAccount, gasPrice: BigUInt?, gasLimit: BigUInt?) async throws -> String {
 
         let nonce = try await self.eth_getTransactionCount(address: account.address, block: .Latest)
         print("Nonce \(nonce)")
@@ -46,7 +64,7 @@ extension web3.EthereumHttpClient: EthereumClientProtocol  {
 
         let tx = EthereumTransaction(
             from: account.address,
-            to: .init(to),
+            to: to,
             value: amount,
             data: nil,
             nonce: nonce,

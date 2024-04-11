@@ -8,6 +8,7 @@
 import Foundation
 
 public protocol BlockchainNetwork: Identifiable, Equatable, Hashable {
+    associatedtype Address : ChainKit.Address
     var nativeCoin: Coin { get }
     var name: String {get}
     var hexColor: String {get}

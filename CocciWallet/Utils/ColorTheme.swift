@@ -9,14 +9,13 @@ import SwiftUI
 
 public struct NetworkTheme: Hashable, Equatable, Codable {
         
-    let chain: Int
     let symbol: String?
     let color: Color
     let decimals: UInt8
 }
 
 private struct NetworkThemeEnvironmentKey: EnvironmentKey {
-    static var defaultValue = NetworkTheme(chain: 1, symbol: "ETH", color: .ETH, decimals: 18)
+    static var defaultValue = NetworkTheme(symbol: "ETH", color: .ETH, decimals: 18)
 }
 
 extension EnvironmentValues {
@@ -42,21 +41,19 @@ extension View {
         self.modifier(NetworkColorModifier())
     }
     
-    func networkTheme(chain: Int, symbol: String?, color: Color, decimals: UInt8) -> some View {
+    func networkTheme(symbol: String?, color: Color, decimals: UInt8) -> some View {
         self.environment(\.networkTheme, .init(
-            chain: chain,
             symbol: symbol,
             color: color,
             decimals: decimals
         ))
   }
 
-    func networkTheme(card: NetworkCard) -> some View {
+    func networkTheme(card: EthereumNetworkCard) -> some View {
         self.environment(\.networkTheme, .init(
-            chain: card.chain,
-            symbol: card.nativeCoin.symbol,
+            symbol: card.symbol,
             color: card.color,
-            decimals: card.nativeCoin.decimals
+            decimals: card.decimals
         ))
     }
     
@@ -70,14 +67,13 @@ import OffChainKit
 extension View {
     
     @ViewBuilder
-    func networkTheme(chain: Int, token: any Contract, networkColor: Color) -> some View {
+    func networkTheme(token: any Contract, networkColor: Color) -> some View {
         var color: Color? {
             guard !token.symbol.isEmpty, let color = Icon(symbol: token.symbol)?.color
             else {return nil}
             return color
         }
         self.environment(\.networkTheme, .init(
-            chain: chain,
             symbol: token.symbol,
             color: color ?? networkColor,
             decimals: token.decimals

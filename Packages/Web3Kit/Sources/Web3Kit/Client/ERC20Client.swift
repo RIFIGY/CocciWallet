@@ -10,17 +10,16 @@ import BigInt
 import ChainKit
 
 public protocol ERC20Client {
-
-    
-    func getBalance(contract: String, address: String) async throws -> BigUInt
-    func getContract(address contract: String) async throws -> ERC20
-    func getTransferEvents(for address: String) async throws -> [ERC20Transfer]
-    
+    func getBalance(contract: EthereumAddress, address: EthereumAddress) async throws -> BigUInt
+    func getContract(address contract: EthereumAddress) async throws -> ERC20
+    func getTransferEvents(for address: EthereumAddress) async throws -> [ERC20Transfer]
 }
 
+
 extension ERC20Client {
+
     
-    public func fetchBalances(for address: String, in contracts: [String]) async throws -> [(ERC20, BigUInt)] {
+    public func fetchBalances(for address: EthereumAddress, in contracts: [EthereumAddress]) async throws -> [(ERC20, BigUInt)] {
         
         try await withThrowingTaskGroup(of: (ERC20,BigUInt)?.self) { group in
             

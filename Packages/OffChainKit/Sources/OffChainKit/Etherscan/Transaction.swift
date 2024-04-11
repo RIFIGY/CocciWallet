@@ -9,18 +9,28 @@ import Foundation
 
 public extension Etherscan {
     struct Transaction: Codable {
-        public let to: String
-        public let from: String?
+        public let toAddress: String
+        public let fromAddress: String?
+        public let timeStamp: String
         public let value: String?
-        
-        public let blockNumber, timeStamp, hash, nonce: String
+
+        public let blockNumber, hash, nonce: String
         public let blockHash, transactionIndex: String
         public let gas, gasPrice, gasUsed, cumulativeGasUsed, isError: String
         public let txreceiptStatus, input, contractAddress: String?
         public let confirmations, methodID, functionName: String?
         
+        enum CodingKeys: String, CodingKey {
+            case fromAddress = "from"
+            case toAddress = "to"
+            case timeStamp
+            case value, blockNumber, hash, nonce
+            case blockHash, transactionIndex
+            case gas, gasPrice, gasUsed, cumulativeGasUsed, isError
+            case txreceiptStatus, input, contractAddress
+            case confirmations, methodID, functionName
+        }
     }
-
 }
 public extension Etherscan.Transaction {
     

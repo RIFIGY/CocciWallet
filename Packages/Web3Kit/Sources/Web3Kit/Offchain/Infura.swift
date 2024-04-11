@@ -20,12 +20,11 @@ public struct Infura {
         self.API_KEY = api_key
         self.session = session
     }
-    
-    public func URL(evm: EthereumNetwork, websocket: Bool = false) -> Foundation.URL? {
-        guard let chain = evm.infuraChain else {return nil}
+
+    public func URL(chainInt: Int, websocket: Bool = false) -> Foundation.URL? {
+        guard let chain = Chain(chainId: chainInt) else {return nil}
         return URL(chain: chain, websocket: websocket)
     }
-
         
     public func URL(chain: Chain = .mainnet, websocket: Bool = false) -> Foundation.URL {
         let version = websocket ? "ws/v3/" : "v3/"
@@ -92,6 +91,8 @@ extension Infura {
                 return "MATIC"
             case .avalanche:
                 return "AVAX"
+            case .arbitrum:
+                return "BASE"
             default:
                 return "ETH"
             }
@@ -100,8 +101,8 @@ extension Infura {
 
 }
 
-extension EthereumNetwork {
-    public var infuraChain: Infura.Chain? {
-        .init(chainId: self.chain)
-    }
-}
+//extension EthereumNetwork {
+//    public var infuraChain: Infura.Chain? {
+//        .init(chainId: self.chain)
+//    }
+//}

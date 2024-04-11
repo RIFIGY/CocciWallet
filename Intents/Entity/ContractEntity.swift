@@ -9,6 +9,7 @@ import Foundation
 import AppIntents
 import Web3Kit
 import ChainKit
+import WalletData
 
 struct ContractEntity: AppEntity, Identifiable, Codable {
     var id: String { contract }
@@ -36,7 +37,7 @@ struct NftContractQuery: EntityQuery {
     func suggestedEntities() async throws -> [ContractEntity] {
         guard let wallet = nftIntent?.wallet,
               let network = nftIntent?.network else {return []}
-        let contracts = Storage.shared.nftContracts(for: wallet.id, in: network)
+        let contracts = await WalletContainer.shared.fetchNFTContracts(wallet: wallet.id, networkID: network.id)
 
         if contracts.isEmpty {
             return [ContractEntity(contract: "None", name: "none")]
@@ -60,7 +61,8 @@ struct TokenQuery: EntityQuery {
     func suggestedEntities() async throws -> [ContractEntity] {
         guard let wallet = tokenIntent?.wallet,
               let network = tokenIntent?.network else {return []}
-        let contracts = Storage.shared.tokenContracts(for: wallet.id, in: network.id)
+        
+        let contracts = await WalletContainer.shared.fetchTokens(wallet: wallet.id, networkID: network.id)
 
         if contracts.isEmpty {
             return [ContractEntity(contract: "None", name: "none")]

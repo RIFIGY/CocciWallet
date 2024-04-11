@@ -40,3 +40,7 @@ extension Infura {
         return .init(api_key: api, session: .shared)
     }
 }
+
+extension UserDefaults {
+    static let group = UserDefaults(suiteName: "group.rifigy.CocciWallet")!
+}

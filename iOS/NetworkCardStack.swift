@@ -16,22 +16,23 @@ struct NetworkCardStack<Header:View, Footer:View>: View {
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
 
-    @Bindable var wallet: Wallet
+    @Binding var networks: [EthereumNetworkCard]
     
     let animation: Namespace.ID
 
     let header: Header
     let footer: Footer
     
-    var delete: (NetworkCard) -> Void
+    var update: (EthereumNetworkCard) async -> Void
+    
     
     @State private var showDetail = false
-    @State private var selected: NetworkCard?
+    @State private var selected: EthereumNetworkCard?
 
     var body: some View {
         CardListView(
-            cards: wallet.cards,
-            additional: wallet.custom,
+            cards: networks,
+            additional: [],
             showDetail: $showDetail,
             animation: animation,
             header: header,
@@ -43,39 +44,25 @@ struct NetworkCardStack<Header:View, Footer:View>: View {
                 animation: animation
             )
                 .task {
-                    await update(card: card)
+                    await update(card)
                 }
         } cardDetail: { card in
-            NetworkWalletView(card: card) {
-                wallet.save()
-            } remove: {
+            NetworkView(card: card){
                 withAnimation{
-                    wallet.remove(card)
+                    networks.remove(card)
                     selected = nil
                 }
             }
-            .environment(wallet)
-            .navigationBarBackButton(wallet.name, color: card.color)
+//            .environment(wallet)
+//            .navigationBarBackButton(wallet.name, color: card.color)
         } cardIcon: { card in
             CardIcon(color: card?.color, symbol: card?.symbol)
         }
     }
     
-    private func update(card: NetworkCard) async {
-        let client = network.getClient(card)
-        let updated = await card.update(with: client)
-        if updated {
-            wallet.save()
-            await fetchPrice(for: card)
-        }
-    }
+
     
-    private func fetchPrice(for card: NetworkCard) async {
-        guard let platform = CoinGecko.AssetPlatform.PlatformID(chainID: card.chain) else {return}
-        let contracts = card.tokenInfo.contractInteractions
-        
-        await priceModel.fetchPrices(contracts: contracts, platform: platform, currency: currency)
-    }
+
 
 }
 
@@ -92,9 +79,9 @@ struct CardIcon: View {
         }
     }
 }
-
-#Preview {
-    NetworkCardStack(wallet: .rifigy, animation: Namespace().wrappedValue, header: EmptyView(), footer: EmptyView()) { _ in }
-        .environment(NetworkManager())
-        .environment(PriceModel.preview)
-}
+//
+//#Preview {
+//    NetworkCardStack(wallet: .rifigy, animation: Namespace().wrappedValue, header: EmptyView(), footer: EmptyView()) { _ in }
+//        .environment(NetworkManager())
+//        .environment(PriceModel.preview)
+//}

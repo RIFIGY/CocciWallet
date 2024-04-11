@@ -8,67 +8,52 @@
 import Foundation
 import Web3Kit
 import OffChainKit
+import WalletData
 
 @Observable
 class NetworkManager {
-    private let cache: any Cache
 
-    private var clients: [EthereumNetwork : EthereumClient ] = [:]
+    private var web3: [Int : EthereumClient ] = [:]
     
     var showNewNetwork = false
 
-    var coingeckoIds: [String] { clients.keys.compactMap{ CoinGecko.AssetPlatform.NativeCoin(chainID: $0.chain) } }
+    var coingeckoIds: [String] {
+        web3.keys.compactMap{
+            CoinGecko.AssetPlatform.NativeCoin(chainID: $0)
+        }
+    }
             
-    init(cache: any Cache = UserDefaults.group) {
-        self.cache = cache
+    init() {
         
-        let wallets = Storage.shared.Wallets()
-        
-        wallets.forEach { wallet in
-            let cards = wallet.cards + wallet.custom
-            cards.forEach { card in
-                 add(card: card)
-             }
+        Task {
+            let wallets = await WalletContainer.shared.allWallets()
+            
+            wallets.forEach { wallet in
+                wallet.networks.forEach { evm in
+                    self.add(network: evm)
+                 }
+            }
         }
     }
     
-    func add(card: NetworkCard) {
-//        let evm = EthereumNetwork(rpc: card.rpc, chain: card.chain, name: card.title, symbol: card.symbol, explorer: card.explorer, hexColor: card.color.hexString, isCustom: card.isCustom)
-//        guard clients[evm] == nil,
-//              let infuraURL = Infura.shared.URL(evm: evm) else {return}
-//        
-//        let client = EthClient(rpc: infuraURL, chain: evm.chain)
-//        
-//        clients[evm] = client
-    }
-    
-    func getClient(chain: Int) -> EthereumClient? {
-        clients.first{ key, _ in key.chain == chain }?.value
-    }
-    
-    func getClient(_ card: NetworkCard) -> EthereumClient {
-        .init(rpc: card.rpc, chain: card.chain)
-//        let evm = EthereumNetwork(rpc: card.rpc, chain: card.chain, name: card.title, symbol: card.symbol, explorer: card.explorer, hexColor: card.color.hexString, isCustom: card.isCustom)
-//        if let client = clients[evm] {
-//            return client
-//        } else {
-//            let url = Infura.shared.URL(evm: evm) ?? evm.rpc
-//            let client = EthClient(rpc: url, chain: evm.chain)
-//            clients[evm] = client
-//            return client
-//        }
-    }
-    
-    func getClient(_ evm: EthereumNetwork) -> EthereumClient {
-        .init(rpc: evm.rpc, chain: evm.chain)
 
-//        if let client = clients[evm] {
-//            return client
-//        } else {
-//            let url = Infura.shared.URL(evm: evm) ?? evm.rpc
-//            let client = EthClient(rpc: url, chain: evm.chain)
-//            clients[evm] = client
-//            return client
-//        }
+    func add(network: Web3Network) {
+        let chain = network.chain
+        guard web3[chain] == nil,
+                let infuraURL = Infura.shared.URL(chainInt: chain) else {return}
+        let client = EthereumClient(rpc: infuraURL, chain: chain)
+        self.web3[chain] = client
+    }
+    
+    func getClient(chain: Int, rpc: URL? = nil) -> EthereumClient? {
+        if let client = web3[chain] {
+            return client
+        } else if let url = Infura.shared.URL(chainInt: chain) {//?? rpc {
+            let client = EthereumClient(rpc: url, chain: chain)
+            self.web3[chain] = client
+            return client
+        } else {
+            return nil
+        }
     }
 }

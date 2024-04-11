@@ -12,9 +12,13 @@ public protocol NFTProtocol: Identifiable, Codable, Hashable, Equatable {
     var tokenId: BigUInt { get }
 }
 extension NFTProtocol {
+    public var id: BigUInt { tokenId }
 //    static func ==(rh)
 }
 
+public protocol ERC721Protocol: NFTProtocol {
+    var uri: URL {get}
+}
 
 
 protocol OrdinalProtocol: NFTProtocol {

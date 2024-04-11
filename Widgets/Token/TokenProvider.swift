@@ -7,6 +7,7 @@
 
 import WidgetKit
 import OffChainKit
+import WalletData
 
 struct TokenEntry: TimelineEntry {
     let date: Date
@@ -19,18 +20,18 @@ struct TokenEntry: TimelineEntry {
 fileprivate extension TokenIntent {
     static var placeholder: TokenIntent {
         let intent = TokenIntent()
-        let storage = Storage.shared
-        let wallets: [WalletEntity] = storage.wallets()
-        guard let wallet = wallets.first else {return intent}
-        
-        intent.wallet = wallet
-        if let network = storage.networks(for: wallet.id).first(where: {!$0.tokenInfo.balances.isEmpty}) {
-            intent.network = NetworkEntity(card: network)
-            if let contract = storage.tokenContracts(for: wallet.id, in: network.id).first {
-                let entity = ContractEntity(contract: contract )
-                intent.contract = entity
-            }
-        }
+//        let storage = Storage.shared
+//        let wallets: [WalletEntity] = storage.wallets()
+//        guard let wallet = wallets.first else {return intent}
+//        
+//        intent.wallet = wallet
+////        if let network = storage.networks(for: wallet.id).first(where: {!$0.tokenInfo.balances.isEmpty}) {
+////            intent.network = NetworkEntity(card: network)
+////            if let contract = storage.tokenContracts(for: wallet.id, in: network.id).first {
+////                let entity = ContractEntity(contract: contract )
+////                intent.contract = entity
+////            }
+////        }
         return intent
     }
 }
@@ -46,12 +47,13 @@ struct TokenProvider: AppIntentTimelineProvider {
     
     func timeline(for intent: TokenIntent, in context: Context) async -> Timeline<TokenEntry> {
         
-        let balance = Storage.shared.balance(
-            of: intent.contract.contract,
-            in: intent.wallet.id,
-            on: intent.network.id
+        let balance = await WalletContainer.shared.fetchBalance(
+            wallet: intent.wallet.id,
+            networkID: intent.network.id,
+            contract: intent.contract.contract
         )
-        var entry = TokenEntry(date: .now, intent: intent, balance: balance)
+        #warning("fix this")
+        var entry = TokenEntry(date: .now, intent: intent, balance: balance?.value(decimals: 18))
         
         do {
             let currentPrice = try await fetchPrice(network: intent.network, contract: intent.contract, currency: intent.currency)
@@ -68,9 +70,9 @@ struct TokenProvider: AppIntentTimelineProvider {
     private let api = CoinGecko.shared
     
     private func fetchPrice(network: NetworkEntity, contract entity: ContractEntity, currency: String) async throws -> Double {
-        let chain = network.chain
+        let chain = Int(network.id)
         let contract = entity.contract
-        guard let platform = CoinGecko.AssetPlatform.NativeCoin(chainID: chain) else {
+        guard let chain, let platform = CoinGecko.AssetPlatform.NativeCoin(chainID: chain) else {
             throw NSError(domain: "CoinGeckoWidget", code: 2, userInfo: [NSLocalizedDescriptionKey: "No Native Platform ID"])
         }
         

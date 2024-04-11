@@ -8,6 +8,7 @@
 import Foundation
 import AppIntents
 import Web3Kit
+import WalletData
 
 struct NftEntity: AppEntity, Identifiable, Codable {
     var id: String { contract + "_" + tokenId }
@@ -46,10 +47,11 @@ extension NftEntity {
                     let contract = intent?.contract 
             else { return [] }
             
-            let metadata = Storage.shared.nfts(for: contract.contract, in: network.id, owner: wallet.id)
+            let metadata = await WalletContainer.shared.fetchNFTs(wallet: wallet.id, networkID: network.id, contract: contract.contract)
             
             return metadata.map{
-                NftEntity(nft: $0)
+                .init(tokenId: $0.tokenId.description, contract: contract.contract, imageUrl: nil)
+//                NftEntity(nft: $0)
             }
 
         }
@@ -70,5 +72,7 @@ extension NftEntity {
         self.symbol = nft.symbol
         self.metadata = nft.metadata
     }
+    
+
     
 }

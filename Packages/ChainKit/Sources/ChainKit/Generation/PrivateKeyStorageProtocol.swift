@@ -16,6 +16,7 @@ public protocol PrivateKeyStorageProtocol {
     func storePrivateKey<A:Address>(key: Data, with _: A) throws
 }
 
+
 extension AccountProtocol {
         
     public static func create(into storage: any PrivateKeyStorageProtocol, keystorePassword password: String) throws -> Self {

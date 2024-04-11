@@ -77,3 +77,18 @@ extension Cache {
         return Calendar.current.date(byAdding: component, value: value, to: .now)
     }
 }
+
+
+extension UserDefaults: Cache {
+    public func setData(_ data: Data, forKey key: String) {
+        self.set(data, forKey: key)
+    }
+    
+    public func getData(forKey key: String) -> Data? {
+        self.data(forKey: key)
+    }
+    
+    public func removeData(forKey key: String) {
+        self.removeObject(forKey: key)
+    }
+}
