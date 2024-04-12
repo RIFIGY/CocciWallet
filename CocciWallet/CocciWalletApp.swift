@@ -19,4 +19,8 @@ struct CocciWalletApp: App {
         .windowResizability(.contentSize)
         .modelContainer(WalletContainer.shared.container)
     }
+    
+    init(){
+        print(URL.applicationSupportDirectory.path(percentEncoded: false))
+    }
 }

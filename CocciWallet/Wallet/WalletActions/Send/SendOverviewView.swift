@@ -12,7 +12,6 @@ import BigInt
 struct SendOverviewView: View {
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     @Environment(NetworkManager.self) private var network
-    @Environment(WalletHolder.self) private var manager
     @Environment(PriceModel.self) private var priceModel
 
     @Bindable var model: SendViewModel

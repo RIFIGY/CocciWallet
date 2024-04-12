@@ -16,8 +16,6 @@ struct SelectWalletView: View {
     @Environment(Navigation.self) private var navigation
     
     @Query private var wallets: [Wallet]
-
-
     
     var sectioned: Bool = false
     
@@ -59,9 +57,7 @@ struct SelectWalletView: View {
             }
         }
         .sheet(isPresented: $showNewWallet) {
-            AddWalletView { wallet in
-                add(wallet)
-            }
+            AddWalletView()
         }
         .alert("Delete Wallet", isPresented: presentAlert, presenting: walletToDelete) { wallet in
             Button("Delete", role: .destructive) {
@@ -114,8 +110,8 @@ struct SelectWalletView: View {
     }
     
     func select(_ wallet: Wallet) {
-        self.selectedWallet = wallet.id
-        self.navigation.selected = wallet
+//        self.selectedWallet = wallet.id
+//        self.navigation.selected = wallet
 //        withAnimation {
 //            manager.select(wallet)
 //        }
@@ -170,7 +166,6 @@ fileprivate extension View {
 #Preview {
     NavigationStack {
         SelectWalletView()
-            .environment( WalletHolder() )
     }
 }
 

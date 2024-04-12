@@ -15,7 +15,6 @@ import KeychainSwift
 struct WalletSendView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
-    @Environment(WalletHolder.self) private var manager
     @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
     

@@ -9,13 +9,15 @@ import SwiftUI
 import Web3Kit
 import KeychainSwift
 import ChainKit
+import SwiftData
 
 typealias WalletGenerator = PrivateKeyGenerator<Web3Kit.EthereumAccount>
 
 struct AddWalletView: View {
 
+    @Environment(\.modelContext) private var context
+    @Environment(Navigation.self) private var navigation
     var generator: WalletGenerator = WalletGenerator(storage: KeychainSwift.shared)
-    var wallet: (Wallet) -> Void
     
     var body: some View {
         NavigationStack {
@@ -40,7 +42,8 @@ struct AddWalletView: View {
             .navigationTitle("New Wallet")
             .navigationDestination(for: WalletOption.self) { option in
                 NewWalletView(generator: generator, option: option) { wallet in
-                    self.wallet(wallet)
+                    context.insert(wallet)
+                    navigation.selected = wallet
                 }
             }
         }
@@ -213,5 +216,5 @@ enum WalletOption: String, CaseIterable, Identifiable, Hashable {
 
 
 #Preview {
-    AddWalletView { _ in }
+    AddWalletView()
 }

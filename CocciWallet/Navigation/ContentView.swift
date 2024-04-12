@@ -15,59 +15,38 @@ struct ContentView: View {
     @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIDs: String = "ethereum"
 
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
-
-    @Environment(\.modelContext) private var context
+    
     @Query private var wallets: [Wallet]
     
     @State private var navigation = Navigation()
-    
-    @State private var walletManager = WalletHolder()
     @State private var network = NetworkManager()
-    @State private var priceModel = PriceModel()
+    @State private var prices = Prices()
+    
+    @State private var selection: Panel? = Panel.network
+
     
     var body: some View {
         NavigationSplitView {
-            if let selected = navigation.selected {
-                WalletView(wallet: selected)
-            }
+            Sidebar(wallet: $navigation.selected, selectedCard: $navigation.selectedNetwork)
         } detail: {
-            NavigationStack {
-                if let selected = navigation.selectedNetwork {
-                    NetworkDetailView(card: selected)
-                        .environment(walletManager)
-                        .environment(network)
-                        .environment(priceModel)
-                        .environment(navigation)
-                } else if self.wallets.isEmpty || self.navigation.selected == nil {
-                    AddWalletView { wallet in
-                        context.insert(wallet)
-                        self.navigation.selected = wallet
-                    }
+            if let wallet = navigation.selected {
+                NavigationStack {
+                    DetailCollumn(wallet: wallet, selected: $navigation.selectedNetwork)
                 }
+            } else {
+                AddWalletView()
             }
-        }
-        .sheet(isPresented: $navigation.showWallets) {
-            NavigationStack {
-                SelectWalletView()
-                    .environment(walletManager)
-            }
-                .presentationDetents([.medium, .large])
         }
         .onAppear{
             navigation.select(from: wallets, lastSelected: lastSelected)
-            priceModel.fetchPrices(coinIDs: coinIDs, currency: currency)
+            prices.fetch(coinIDs: coinIDs, currency: currency)
         }
-//        .onChange(of: selection) { _ in
-//            path.removeLast(path.count)
-//        }
-        .environment(walletManager)
         .environment(network)
-        .environment(priceModel)
+        .environment(prices)
         .environment(navigation)
-//        .environmentObject(accountStore)
         #if os(macOS)
         .frame(minWidth: 600, minHeight: 450)
-        .frame(maxWidth: 800, maxHeight: 700)
+//        .frame(maxWidth: 800, maxHeight: 700)
         #elseif os(iOS)
 
 //        .onOpenURL { url in
@@ -84,13 +63,6 @@ struct ContentView: View {
 //        }
         #endif
     }
-//        .onAppear{
-//            navigation.select(from: wallets, lastSelected: lastSelected)
-//            priceModel.fetchPrices(coinIDs: coinIDs, currency: currency)
-//        }
-//        .sheet(isPresented: $navigation.showSettings) {
-//
-//        }
 
     
 }

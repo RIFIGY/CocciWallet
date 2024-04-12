@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct WalletKeySettings: View {
-    @Environment(WalletHolder.self) private var manager
     @Environment(\.dismiss) private var dismiss
 
     @Bindable var wallet: Wallet
@@ -26,7 +25,7 @@ struct WalletKeySettings: View {
                     }
                     .onTapGesture {
                         Task {
-                            self.privateKey = try await manager.getPrivateKey(for: wallet.address)
+//                            self.privateKey = try await manager.getPrivateKey(for: wallet.address)
                         }
                     }
                     NavigationLink {
@@ -51,7 +50,7 @@ struct WalletKeySettings: View {
                     DeleteWalletView(wallet: wallet) {
                         dismiss()
                     }
-                    .environment(manager)
+//                    .environment(manager)
                 } label: {
                     CellIcon(systemImage: "trash.fill", color: .red) {
                         Text("Delete").foregroundStyle(.red)
@@ -73,12 +72,12 @@ struct WalletKeySettings: View {
     }
     
     func export(key: String) async {
-        do {
-            let key = try await manager.getAccount(for: wallet.address)
-            print(key.publicKey)
-        } catch {
-            print(error)
-        }
+//        do {
+//            let key = try await manager.getAccount(for: wallet.address)
+//            print(key.publicKey)
+//        } catch {
+//            print(error)
+//        }
     }
 }
 

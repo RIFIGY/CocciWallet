@@ -31,7 +31,7 @@ struct WalletSettingsView: View {
                     TextField("Name", text: $wallet.name)
                         .fixedSize()
                 }
-                NetworkList(wallet: wallet)
+                NetworkSettingsList(wallet: wallet)
                 NavigationLink {
                     WalletKeySettings(wallet: wallet)
                 } label: {
@@ -62,7 +62,7 @@ struct WalletSettingsView: View {
 
 
 
-fileprivate struct NetworkList: View {
+fileprivate struct NetworkSettingsList: View {
     @Bindable var wallet: Wallet
     
     var body: some View {
@@ -148,7 +148,7 @@ struct DeleteWalletView: View {
     func delete(){
         Task {
             do {
-                #warning("add auth")
+                #warning("add auth amd delete key")
                 context.delete(wallet)
                 dismiss()
             } catch {

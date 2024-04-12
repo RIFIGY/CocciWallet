@@ -40,12 +40,14 @@ public class PrivateKeyWallet {
         self.settings = .init()
     }
     
-    public var address: Address { .init(id) }
-
+    @Transient
+    public var selected: WalletData.Network<Client>? = nil
 }
 
 
 public extension PrivateKeyWallet {
+    var address: Address { .init(id) }
+
     var hasKey: Bool {
         type != .watch
     }

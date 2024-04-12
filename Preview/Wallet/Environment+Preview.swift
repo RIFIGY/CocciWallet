@@ -17,7 +17,6 @@ extension View {
         let preview = Preview()
         self
             .environment(PriceModel.preview)
-            .environment(WalletHolder())
             .environment(NetworkManager())
             .environment(Navigation.preview)
             .modelContainer(preview.container)

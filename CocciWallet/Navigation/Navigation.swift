@@ -17,15 +17,20 @@ class Navigation {
     var showNewNetwork = false
     var showSettings = false
     var showWallets = false
-    
-//    var path: [NavigationPath]
+        
     
     func select(from wallets: [Wallet], lastSelected: String) {
+        
+        let wallet: Wallet?
+        
         if lastSelected.isEmpty {
-            self.selected = wallets.first
+            wallet = wallets.first
         } else {
-            self.selected = wallets.first{$0.id == lastSelected}
+            wallet = wallets.first{$0.id == lastSelected}
         }
+        
+        self.selected = wallet
+        self.selectedNetwork = wallet?.networks.first
     }
     
 }

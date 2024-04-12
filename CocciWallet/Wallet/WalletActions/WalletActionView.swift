@@ -33,7 +33,7 @@ enum WalletAction: String, Hashable, Identifiable, Equatable {
 extension WalletAction {
     
     struct GridButton: View {
-        @Environment(WalletHolder.self) private var manager
+//        @Environment(WalletHolder.self) private var manager
         @Environment(NetworkManager.self) private var network
         
         let destination: WalletAction
@@ -72,7 +72,7 @@ extension WalletAction {
                         case .stake: StakeView()
                         }
                     }
-                    .environment(manager)
+//                    .environment(manager)
                     .environment(network)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {

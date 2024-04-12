@@ -10,8 +10,10 @@ import OffChainKit
 import SwiftUI
 //typealias PlatformID = CoinGecko.PlatformContract
 
+typealias PriceModel = Prices
+
 @Observable
-class PriceModel {
+class Prices {
     
     private let api = CoinGecko.shared
         
@@ -66,9 +68,8 @@ class PriceModel {
     
 }
 
-extension PriceModel {
-    
-    func fetchPrices(coinIDs ids: String, currency: String) {
+extension Prices {
+    func fetch(coinIDs ids: String, currency: String) {
         let ids = ids.components(separatedBy: ",")
 
         Task {
