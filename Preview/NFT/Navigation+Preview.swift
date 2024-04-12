@@ -12,7 +12,7 @@ import SwiftData
 extension Navigation {
     static var preview: Navigation {
         let navigation = Navigation()
-        navigation.selected = .dave
+//        navigation.select(wallet: .dave)
         return navigation
     }
 }

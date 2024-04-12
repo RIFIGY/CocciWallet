@@ -15,15 +15,15 @@ struct WalletSettingsView: View {
     
     var body: some View {
         Form {
-            Section {
-                NavigationLink {
-                    SelectWalletView()
-                } label: {
-                    IconCell(systemImage: "wallet.pass.fill", color: .teal) {
-                        Text("Wallets")
-                    }
-                }
-            }
+//            Section {
+//                NavigationLink {
+//                    SelectWalletView(wallet: $wallet)
+//                } label: {
+//                    IconCell(systemImage: "wallet.pass.fill", color: .teal) {
+//                        Text("Wallets")
+//                    }
+//                }
+//            }
             Section(wallet.name) {
                 IconCell(systemImage: "tray", color: .cyan) {
                     Text("Name")

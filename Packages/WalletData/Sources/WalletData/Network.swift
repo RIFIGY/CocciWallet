@@ -14,7 +14,9 @@ import OffChainKit
 @Observable
 public class Network<N:ChainKit.BlockchainClientProtocol>: Codable {
     public typealias Address = N.Account.Address
-    public typealias NFT = N.NFT
+//    public typealias NFT = N.NFT
+    public typealias EtherscanFetch = (String, String?) async throws -> [Etherscan.Transaction]
+
     public let address: Address
     public var chain: Int
     public var rpc: URL
@@ -46,13 +48,19 @@ public class Network<N:ChainKit.BlockchainClientProtocol>: Codable {
     
     
     @Transient var isUpdating = false
+//    @Transient var nftMetadata: [Token<Address> : [N.Metadata] ] = [:]
     
-    public func update(with client: N) async -> Bool {
-        guard !isUpdating else {return false}
+    public func update(with client: N, transactions: @escaping EtherscanFetch ) async -> Bool {
+        guard needsUpdate() else {print("Skipping \(name)");return false}
         print("Updating \(name)")
 
         isUpdating = true
         await withTaskGroup(of: Void.self) { group in
+            
+            group.addTask {
+                let transactions = try? await transactions(self.address.string, "etherscan.io")
+                self.transactions = transactions ?? []
+            }
             
             group.addTask {
                 self.balance = try? await client.fetchBalance(for: self.address)
@@ -61,12 +69,52 @@ public class Network<N:ChainKit.BlockchainClientProtocol>: Codable {
                 self.tokens = (try? await client.fetchTokens(for: self.address)) ?? [:]
             }
             group.addTask {
-                self.nfts = (try? await client.fetchNFTS(for: self.address)) ?? [:]
+                await self.fetchNFTS(with: client)
             }
         }
         isUpdating = false
         print("Balance:\(balance) TX: \(self.transactions.count) Tokens: \(self.tokens.keys.count) NFT: \(self.nfts.keys.count)")
         return true
+    }
+    
+    private func fetchNFTS(with client: N) async {
+            do {
+                // Fetch NFTs, handle errors explicitly
+                let results = try await client.fetchNFTS(for: self.address)
+                
+                self.nfts = await withTaskGroup(of: (Token<Address>, NFT)?.self) { group in
+                    results.forEach { contract, tokens in
+                        tokens.forEach { token in
+                            group.addTask {
+                                if let nft = token as? any ChainKit.ERC721Protocol {
+                                    let object = NFT(nft: nft, contract: contract)
+                                    await object.fetch()
+                                    return (contract, object)
+                                }
+                                return nil
+                            }
+                        }
+                    }
+                    
+                    return await group.reduce(into: [ Token<Address> : [NFT] ]()) { partialResult, result in
+                        if let result {
+                            let (contract, nft) = result
+                            partialResult[contract, default: []].append(nft)
+                        }
+                    }
+                }
+
+            } catch {
+                // Handle or log error if needed
+                print("Failed to fetch NFTs: \(error)")
+            }
+    }
+    
+    private func needsUpdate() -> Bool {
+        guard !isUpdating else {return false}
+        guard let lastUpdate = lastUpdate else { return true }
+        let minutes: Double = 15
+        return Date().timeIntervalSince(lastUpdate) > (60 * minutes)
     }
 
 }

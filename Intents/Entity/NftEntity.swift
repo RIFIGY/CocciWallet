@@ -63,8 +63,9 @@ extension NftEntity {
         }
     }
 }
+
 extension NftEntity {
-    init(nft: NFTMetadata) {
+    init(nft: WalletData.NFT) {
         self.tokenId = nft.tokenId.description
         self.contract = nft.contract
         self.imageUrl = nft.imageURL

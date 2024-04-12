@@ -142,3 +142,16 @@ public struct UShapedBorder: Shape {
     }
 }
 
+extension View {
+    
+    @ViewBuilder
+    func targetable(cornerRadius: CGFloat = 16) -> some View {
+        #if !os(macOS)
+        self
+        .contentShape(.hoverEffect, .rect(cornerRadius: 16))
+        .hoverEffect()
+        #else
+        self
+        #endif
+    }
+}

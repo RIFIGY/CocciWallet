@@ -7,6 +7,7 @@
 
 import SwiftUI
 import OffChainKit
+import WalletData
 
 struct NFTImageView<P:View>: View {
     @Environment(\.colorScheme) var colorScheme
@@ -88,7 +89,7 @@ extension NFTImageView {
 }
 
 extension NFTImageView {
-    init(nft: NFTMetadata, contentMode: ContentMode = .fit) where P == EmptyView {
+    init(nft: NFT, contentMode: ContentMode = .fit) where P == EmptyView {
         if let image = nft.image {
             self.image = image
             self.url = nil
@@ -106,7 +107,7 @@ extension NFTImageView {
 }
 
 #Preview("URL") {
-    NFTImageView(url: NFTMetadata.munko2309.imageURL)
+    NFTImageView(url: NFT.munko2309.imageURL)
 }
 
 #Preview("UIImage") {

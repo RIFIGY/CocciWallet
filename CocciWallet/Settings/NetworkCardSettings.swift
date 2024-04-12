@@ -69,12 +69,13 @@ struct Web3NetworkCardSettings: View {
 //                }
 
             }
-            
-            Section {
-                NavigationLink {
-                    AdvancedNetworkSettings(card: card)
-                } label: {
-                    Text("Advanced")
+            if card.isCustom {
+                Section {
+                    NavigationLink {
+                        AdvancedNetworkSettings(card: card)
+                    } label: {
+                        Text("Advanced")
+                    }
                 }
             }
             

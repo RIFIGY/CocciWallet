@@ -11,7 +11,7 @@ import Web3Kit
 struct NetworkDetailView: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
     @Environment(PriceModel.self) private var priceModel
-
+    
     let card: EthereumNetworkCard
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
@@ -20,11 +20,10 @@ struct NetworkDetailView: View {
     @Namespace
     var animation
     
-    var price: Double? {
-        return priceModel.price(chain: card.chain, currency: currency)
-    }
     var address: EthereumAddress { card.address }
-
+    
+    @State private var showSettings = false
+    
     var body: some View {
         WidthThresholdReader(widthThreshold: 520) { proxy in
             ScrollView(.vertical) {
@@ -33,33 +32,7 @@ struct NetworkDetailView: View {
                         .frame(height: 200)
                         .frame(maxWidth: 600)
                         .padding(.horizontal)
-                    
-                    Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-                        GridRow {
-                            WalletAction.GridButton(.receive, card: card)
-                            WalletAction.GridButton(.send, card: card)
-                        }
-                        GridRow {
-                            VStack {
-                                BalanceGridCell(balance: card.value, price: price)
-                                TokensGridCell(balances: card.tokens, transfers: [], address:address)
-                            }
-                            NftGridCell(nfts: card.nfts, address: address, favorite: nil, color: card.color)
-                                .environment(card)
-                        }
-                        GridRow {
-                            WalletAction.GridButton(.stake, card: card)
-                            WalletAction.GridButton(.swap, card: card)
-                        }
-                        DateTransactions(address: card.address.string, transactions: card.transactions)
-                    }
-                    .environment(card)
-                    .networkTheme(card: card)
-
-                    .containerShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-                    .fixedSize(horizontal: false, vertical: true)
-                    .padding([.horizontal, .bottom], 16)
-                    .frame(maxWidth: 1200)
+                    NetworkGrid(card: card)
                 }
             }
         }
@@ -70,12 +43,154 @@ struct NetworkDetailView: View {
         #endif
         .background()
         .navigationTitle(card.name)
+        .toolbar{
+            ToolbarItem(placement: .automatic) {
+                Button("Settings", systemImage: "gearshape") {
+                    showSettings = true
+                }
+            }
+        }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack {
+                NetworkCardSettings(card: card) {
+                    
+                }
+            }
+        }
+
+//        .task {
+//            await withTaskGroup(of: Void.self) { group in
+//                for (contract, nfts) in self.card.nfts {
+//                    for nft in nfts {
+//                        group.addTask {
+//                            let nftMetadata = NFTMetadata(nft: nft, contract: contract)
+//                            await nftMetadata.fetch()
+//                            self.metadata[contract, default: []].append(nftMetadata)
+//                        }
+//                    }
+//                }
+//            }
+//        }
+    }
+    
+
+}
+
+struct NetworkGrid: View {
+    @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
+    @Environment(PriceModel.self) private var priceModel
+
+    let card: EthereumNetworkCard
+    
+    typealias Destination = NetworkCardDestination
+    
+    var body: some View {
+        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+            GridRow {
+                NetworkGridButton(.receive)
+                NetworkGridButton(.send)
+            }
+            GridRow {
+                VStack {
+                    NetworkGridCell(.balance, balance: card.value, value: value)
+                    NetworkGridCell(
+                        .tokens,
+                        balance: Double(card.tokens.keys.count),
+                        value: tokenValue
+                    )
+                }
+                NftGridCell(nfts: card.nfts, address: card.address, color: card.color)
+            }
+            GridRow {
+                NetworkGridButton(.stake)
+                NetworkGridButton(.swap)
+            }
+            DateTransactions(address: card.address.string, transactions: card.transactions)
+        }
+        .environment(card)
+        .networkTheme(card: card)
+        .containerShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+        .fixedSize(horizontal: false, vertical: true)
+        .padding([.horizontal, .bottom], 16)
+        .frame(maxWidth: 1200)
+        .navigationDestination(for: NetworkCardDestination.self) { destination in
+            Group {
+                switch destination {
+                case .send:
+                    Text("Send")
+                case .receive:
+                    AddressView(address: card.address.string, name: card.name)
+                case .stake:
+                    StakeView()
+                case .swap:
+                    SwapView()
+                case .nft:
+                    NFTGridView(nfts: card.nfts)
+                case .tokens:
+                    TokensListView(network: card.color, address: card.address, balances: card.tokens, transfers: [ERC20Transfer]())
+                case .balance:
+                    Text("Balance")
+                }
+            }
+            #if !os(tvOS)
+            .toolbarRole(.editor)
+            #endif
+        }
+    }
+        
+    var price: Double? {
+        priceModel.price(chain: card.chain, currency: currency)
+    }
+    
+    var value: Double? {
+        guard let balance = card.value, let price else {return nil}
+        return balance * price
+    }
+    
+    var tokenValue: Double {
+        card.tokens.reduce(into: 0.0) { total, entry in
+            let (contract, balance) = entry
+            let price = priceModel.price(contract: contract.contract.string, currency: currency)
+            let value = balance.value(decimals: contract.decimals) * (price ?? 0)
+            total += value
+        }
     }
 }
 
-enum NetworkCardDestination: String, CaseIterable {
-    case send, receive, stake, swap, nft, tokens, balance
+fileprivate struct NetworkGridButton: View {
+    let destination: NetworkCardDestination
+    init(_ destination: NetworkCardDestination) {
+        self.destination = destination
+    }
+    
+    var body: some View {
+        NavigationLink(value: destination) {
+            GridCell.Button(destination)
+        }
+    }
 }
+
+fileprivate struct NetworkGridCell: View {
+    @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
+
+    let destination: NetworkCardDestination
+    
+    let balance: Double?
+    let value: Double?
+    
+    init(_ destination: NetworkCardDestination, balance: Double?, value: Double?) {
+        self.destination = destination
+        self.balance = balance
+        self.value = value
+    }
+    
+    var body: some View {
+        NavigationLink(value: destination) {
+            GridCell(title: destination.rawValue.capitalized, balance: balance, value: value, currency: currency)
+        }
+    }
+}
+
 //
 #Preview {
     NavigationStack {

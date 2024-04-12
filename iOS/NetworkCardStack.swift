@@ -13,8 +13,8 @@ import OffChainKit
 
 struct NetworkCardStack: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
-    @Environment(NetworkManager.self) private var network
-    @Environment(PriceModel.self) private var priceModel
+    @Environment(NetworkManager.self) private var networks
+    @Environment(PriceModel.self) private var prices
     @Environment(Navigation.self) private var navigation
 
     
@@ -29,7 +29,6 @@ struct NetworkCardStack: View {
     
     @State private var showDetail = false
     @State private var selected: EthereumNetworkCard?
-    @State private var showNewNetwork = false
     
     var body: some View {
         CardListView(
@@ -42,11 +41,11 @@ struct NetworkCardStack: View {
         ) { card in
             NetworkCardView(
                 card: card,
-                price: priceModel.price(chain: card.chain, currency: currency),
+                price: prices.price(chain: card.chain, currency: currency),
                 animation: animation
             )
                 .task {
-                    await update(card)
+                    await card.update(clients: networks, prices: prices, currency: currency)
                 }
         } cardDetail: { card in
             NetworkView(card: card){
@@ -63,35 +62,19 @@ struct NetworkCardStack: View {
         } cardIcon: { card in
             CardIcon(color: card?.color, symbol: card?.symbol)
         }
-        .sheet(isPresented: $showNewNetwork) {
-            AddNetworkView(address: wallet.address) { network in
-                guard !wallet.networks.map({$0.chain}).contains(network.chain) else {return}
-                wallet.networks.append(network)
-                showNewNetwork = false
-            }
-        }
+//        .sheet(isPresented: $showNewNetwork) {
+//            AddNetworkView(address: wallet.address) { network in
+//                guard !wallet.networks.map({$0.chain}).contains(network.chain) else {return}
+//                wallet.networks.append(network)
+//                showNewNetwork = false
+//            }
+//        }
     }
     
-
-    private func update(_ card: EthereumNetworkCard) async {
-        guard let client = network.getClient(chain: card.chain) else {return}
-        let updated: Bool = await card.update(with: client.node)
-        await card.fetchTransactions()
-
-        if updated {
-            await fetchPrice(for: card)
-        }
-    }
-
-    private func fetchPrice(for card: EthereumNetworkCard) async {
-        guard let platform = CoinGecko.AssetPlatform.PlatformID(chainID: card.chain) else {return}
-        let contracts = card.tokens.map{$0.key.contract.string}
-        await priceModel.fetchPrices(contracts: contracts, platform: platform, currency: currency)
-    }
     
     var footer: some View {
         Button("Add"){
-            showNewNetwork = true
+            navigation.showNewNetwork = true
         }
         .buttonStyle(.bordered)
         .padding(.vertical, 32)

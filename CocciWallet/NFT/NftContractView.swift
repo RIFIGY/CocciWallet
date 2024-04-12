@@ -8,6 +8,7 @@
 import SwiftUI
 import Web3Kit
 import BigInt
+import WalletData
 
 struct NftContractView: View {
     @Environment(NetworkManager.self) private var network
@@ -139,7 +140,7 @@ class ERC721Model {
     
     var isSearching = false
     
-    var searchResult: (String, NFTMetadata)?
+    var searchResult: (String, WalletData.NFT)?
     
     var baseURI: URL?
     
@@ -152,7 +153,7 @@ class ERC721Model {
             let owner = try await client.ownerOf(tokenId: tokenId, in: .init(contract))
             let ownerString = owner
             let uri = try await client.getTokenURI(contract: .init(contract), tokenId: tokenId)
-            let nft = NFTMetadata(tokenId: tokenId, contract: .init(contract), contractName: nil, symbol: nil, uri: uri)
+            let nft = WalletData.NFT(tokenId: tokenId, contract: .init(contract), contractName: nil, symbol: nil, uri: uri)
             await nft.fetch()
             self.searchResult = (ownerString, nft)
             print("Search found metadata \(nft.metadata?.name ?? tokenId.description)")

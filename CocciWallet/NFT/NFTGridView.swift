@@ -8,16 +8,18 @@
 import SwiftUI
 import ChainKit
 import Web3Kit
+import WalletData
 
 struct NFTGridView<Token:Contract>: View {
+    typealias NFT = WalletData.NFT
     
-    let nfts: [Token : [NFTMetadata]]
+    let nfts: [Token : [NFT]]
         
     @State private var searchText = ""
     @State private var layout = BrowserLayout.grid
 
     
-    var filteredNFTs: [NFTMetadata] {
+    var filteredNFTs: [NFT] {
         nfts.flatMap{$0.value}
     }
     

@@ -18,9 +18,7 @@ extension EthereumNetworkCard {
     }()
 }
 
-extension NetworkEntity {
-    static let ETH = NetworkEntity(id: EthereumCardEntity.ETH.chain.description, title: EthereumCardEntity.ETH.name, symbol: EthereumCardEntity.ETH.symbol)
-}
+
 
 struct LocalChain {
     static let ganache_private_key = "0x81033d424a3198903297e50d17740f56609d179d0b225c72f116ce81e1396ab4"

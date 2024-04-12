@@ -8,7 +8,7 @@
 import WidgetKit
 import SwiftUI
 import OffChainKit
-
+import Web3Kit
 struct TokenWidgetView: View {
     var entry: TokenProvider.Entry
     
@@ -127,6 +127,82 @@ struct TokenWidgets: Widget {
     }
 }
 
+extension WalletEntity {
+    static let rifigy = WalletEntity(name: "Rifigy", address: Wallet.rifigy.address.string)
+    static let wallet = WalletEntity(name: Wallet.wallet.name, address: Wallet.wallet.address.string)
+    static let dave = WalletEntity(name: Wallet.dave.name, address: Wallet.dave.address.string)
+    static let ganache = WalletEntity(name: Wallet.ganache.name, address: Wallet.ganache.address.string)
+
+}
+
+extension NetworkEntity {
+    static let ETH = NetworkEntity(id: EthereumCardEntity.ETH.chain.description, title: EthereumCardEntity.ETH.name, symbol: EthereumCardEntity.ETH.symbol)
+}
+
+extension ContractEntity {
+    static let munko = ContractEntity(contract: ERC721.Munko)
+}
+
+extension ContractEntity {
+    static let usdc = ContractEntity(contract: ERC20.USDC.contract.string, name: ERC20.USDC.name, symbol: ERC20.USDC.symbol)
+}
+
+import WalletData
+extension NftEntity {
+    static let munko2309 = NftEntity(nft: .munko2309)
+    static let munko2310 = NftEntity(nft: .munko2310)
+}
+extension NFTIntent {
+    
+    static var m2309: NFTIntent {
+        let intent = NFTIntent()
+        intent.wallet = .rifigy
+        intent.network = .ETH
+        intent.contract = .munko
+        intent.nft = .munko2309
+        intent.randomNFT = false
+        intent.nfts = []
+        return intent
+    }
+    
+    static var m2310: NFTIntent {
+        let intent = NFTIntent()
+        intent.wallet = .rifigy
+        intent.network = .ETH
+        intent.contract = .munko
+        intent.nft = .munko2310
+        intent.showBackground = true
+
+        intent.randomNFT = false
+        intent.nfts = []
+        
+        return intent
+    }
+    
+    static var m2309_4: NFTIntent {
+        let intent = NFTIntent()
+        intent.wallet = .rifigy
+        intent.network = .ETH
+        intent.contract = .munko
+        intent.nft = .munko2309
+        intent.randomNFT = false
+        intent.nfts = [.munko2309, .munko2310, .munko2309, .munko2310]
+        return intent
+    }
+    
+    static var m2309_2: NFTIntent {
+        let intent = NFTIntent()
+        intent.wallet = .rifigy
+        intent.network = .ETH
+        intent.contract = .munko
+        intent.nft = .munko2309
+        intent.randomNFT = false
+        intent.nfts = [.munko2309, .munko2310]
+        return intent
+    }
+    
+
+}
 fileprivate extension TokenIntent {
     static var usdc: TokenIntent {
         let intent = TokenIntent()

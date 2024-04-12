@@ -17,6 +17,8 @@ struct SelectWalletView: View {
     
     @Query private var wallets: [Wallet]
     
+    @Binding var selected: Wallet?
+    
     var sectioned: Bool = false
     
     @State private var showNewWallet = false
@@ -25,15 +27,25 @@ struct SelectWalletView: View {
     @State private var walletToDelete: Wallet?
     
     
-    
     var sections: [Wallet.Kind: [Wallet]] {
         Dictionary(grouping: wallets, by: {$0.type})
     }
+    
+    var walletTypes: [Wallet.Kind] {
+        Array(sections.keys)
+    }
 
+    var presentAlert: Binding<Bool> { .init {
+        self.walletToDelete != nil
+        } set: { newValue in
+            if !newValue { self.walletToDelete = nil }
+        }
+    }
+    
     var body: some View {
         List {
-            if sectioned {
-                ForEach(Array(sections.keys)) { walletType in
+            if sectioned, wallets.count > 1 {
+                ForEach(walletTypes) { walletType in
                     if let wallets = sections[walletType] {
                         Section(walletType.rawValue) {
                             Cells(for: wallets)
@@ -48,24 +60,29 @@ struct SelectWalletView: View {
         }
         .navigationTitle("Wallets")
         .toolbar {
-            ToolbarItem(placement: .automatic) {
-                Button{
+            ToolbarItem(placement: .primaryAction) {
+                Button("Add", systemImage: "plus") {
                     showNewWallet = true
-                } label: {
-                    Image(systemName: "plus")
+                }
+            }
+            ToolbarItem(placement: .cancellationAction) {
+                Button("Back", systemImage: "chevron.left") {
+                    dismiss()
                 }
             }
         }
-        .sheet(isPresented: $showNewWallet) {
+        .sheet(isPresented: $showNewWallet, onDismiss: { dismiss() }) {
             AddWalletView()
+                #if os(macOS)
+                .frame(minHeight: 450)
+                //        .frame(maxWidth: 800, maxHeight: 700)
+                #endif
         }
         .alert("Delete Wallet", isPresented: presentAlert, presenting: walletToDelete) { wallet in
             Button("Delete", role: .destructive) {
                 context.delete(wallet)
-                if self.navigation.selected == wallet {
-                    self.navigation.selected = wallets.first
-                } else if wallets.isEmpty {
-                    self.navigation.selected = nil
+                if selected == wallet {
+                    selected = wallets.first
                 }
             }
         } message: { wallet in
@@ -78,7 +95,12 @@ struct SelectWalletView: View {
 
         ForEach(wallets) { wallet in
             Button {
-                select(wallet)
+                withAnimation {
+                    self.selected = wallet
+                }
+                self.selectedWallet = wallet.id
+//                navigation.select(wallet: wallet)
+                dismiss()
             } label: {
                 Cell(wallet: wallet)
             }
@@ -88,45 +110,18 @@ struct SelectWalletView: View {
             }
         }
     }
-    
-    var presentAlert: Binding<Bool> { .init {
-        self.walletToDelete != nil
-        } set: { newValue in
-            if !newValue { self.walletToDelete = nil }
-        }
-    }
-        
-    func delete(_ indexSet: IndexSet) {
-        for i in indexSet {
-            let wallet = wallets[i]
-            context.delete(wallet)
-        }
-    }
-    
-    func add(_ wallet: Wallet) {
-        wallet.networks = [.init(evm: .ETH, address: wallet.address)]
-        context.insert(wallet)
-        select(wallet)
-    }
-    
-    func select(_ wallet: Wallet) {
-//        self.selectedWallet = wallet.id
-//        self.navigation.selected = wallet
-//        withAnimation {
-//            manager.select(wallet)
-//        }
-        dismiss()
-    }
 }
+
+
 
 fileprivate struct Cell: View {
     let wallet: Wallet
     
     var body: some View {
         HStack {
-//            Image(systemName: wallet.type.systemImage)
-//                .font(.title)
-//                .foregroundStyle(wallet.type.color)
+            Image(systemName: wallet.type.systemImage)
+                .font(.title)
+                .foregroundStyle(wallet.type.color)
             VStack(alignment: .leading) {
                 Text(wallet.name)
                     .fontWeight(.semibold)
@@ -165,7 +160,7 @@ fileprivate extension View {
 
 #Preview {
     NavigationStack {
-        SelectWalletView()
+        SelectWalletView(selected: .constant(nil))
     }
 }
 

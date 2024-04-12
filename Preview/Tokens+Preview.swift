@@ -14,8 +14,3 @@ extension EthereumClient {
 }
 
 
-
-extension ContractEntity {
-    static let usdc = ContractEntity(contract: ERC20.USDC.contract.string, name: ERC20.USDC.name, symbol: ERC20.USDC.symbol)
-}
-

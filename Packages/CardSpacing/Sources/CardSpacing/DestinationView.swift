@@ -72,7 +72,7 @@ public struct DestinationView<C:Identifiable, CardView: View, CardDetails: View>
                 }
                 .frame(height: cardHeight)
                 cardDetails(card)
-                    .padding()
+                    .padding(.vertical)
                     .zIndex(-10)
                     .opacity(showExpenseView ? 1 : 0)
             }

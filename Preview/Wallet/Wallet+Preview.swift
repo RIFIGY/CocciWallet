@@ -28,13 +28,6 @@ extension Wallet {
     static let ganache = Wallet(address: .init(LocalChain.ganache_address), name: "Ganache")
 }
 
-extension WalletEntity {
-    static let rifigy = WalletEntity(name: "Rifigy", address: Wallet.rifigy.address.string)
-    static let wallet = WalletEntity(name: Wallet.wallet.name, address: Wallet.wallet.address.string)
-    static let dave = WalletEntity(name: Wallet.dave.name, address: Wallet.dave.address.string)
-    static let ganache = WalletEntity(name: Wallet.ganache.name, address: Wallet.ganache.address.string)
-
-}
 
 
 

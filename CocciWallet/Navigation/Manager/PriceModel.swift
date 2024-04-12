@@ -89,6 +89,7 @@ extension Prices {
         }
     }
 
+
     
     func fetchPrices(contracts: [String], platform: String, currency: String) async {
         do {
@@ -106,5 +107,11 @@ extension Prices {
             print(error.localizedDescription)
         }
     }
+    
+    func fetchPrices(chain: Int, contracts: [String], currency: String) async {
+        guard let platform = CoinGecko.AssetPlatform.PlatformID(chainID: chain) else {return}
+        await fetchPrices(contracts: contracts, platform: platform, currency: currency)
+    }
+    
     
 }

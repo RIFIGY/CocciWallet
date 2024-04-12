@@ -13,34 +13,41 @@ import SwiftData
 struct ContentView: View {
     @AppStorage(AppStorageKeys.lastSelectedWallet) private var lastSelected: String = ""
     @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIDs: String = "ethereum"
-
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     
     @Query private var wallets: [Wallet]
     
+    @State var path = NavigationPath()
+
     @State private var navigation = Navigation()
     @State private var network = NetworkManager()
     @State private var prices = Prices()
     
     @State private var selection: Panel? = Panel.network
-
     
+    @State private var selected: Wallet?
+    
+    @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
+
     var body: some View {
-        NavigationSplitView {
-            Sidebar(wallet: $navigation.selected, selectedCard: $navigation.selectedNetwork)
+        NavigationSplitView(columnVisibility: $columnVisibility) {
+            Sidebar(selection: $selected)
         } detail: {
-            if let wallet = navigation.selected {
-                NavigationStack {
-                    DetailCollumn(wallet: wallet, selected: $navigation.selectedNetwork)
-                }
-            } else {
-                AddWalletView()
+            NavigationStack(path: $path) {
+                DetailCollumn(wallet: $selected)
             }
         }
         .onAppear{
-            navigation.select(from: wallets, lastSelected: lastSelected)
+            self.selected = wallets.first
             prices.fetch(coinIDs: coinIDs, currency: currency)
         }
+        .onChange(of: selected) { _, _ in
+            print(path)
+            path.removeLast(path.count)
+            self.navigation.selectedNetwork = nil
+            print(path)
+        }
+
         .environment(network)
         .environment(prices)
         .environment(navigation)
@@ -48,19 +55,18 @@ struct ContentView: View {
         .frame(minWidth: 600, minHeight: 450)
 //        .frame(maxWidth: 800, maxHeight: 700)
         #elseif os(iOS)
-
-//        .onOpenURL { url in
-//            let urlLogger = Logger(subsystem: "com.example.apple-samplecode.Food-Truck", category: "url")
+        .onOpenURL { url in
+//            let urlLogger = Logger(subsystem: "app.rifigy.CocciWallet", category: "url")
 //            urlLogger.log("Received URL: \(url, privacy: .public)")
-//            let order = "Order#\(url.lastPathComponent)"
-//            var newPath = NavigationPath()
+            let nft = "#\(url.lastPathComponent)"
+            var newPath = NavigationPath()
 //            selection = Panel.truck
 //            Task {
 //                newPath.append(Panel.orders)
 //                newPath.append(order)
 //                path = newPath
 //            }
-//        }
+        }
         #endif
     }
 

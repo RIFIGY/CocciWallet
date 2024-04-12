@@ -15,13 +15,12 @@ import ChainKit
 struct NetworkList: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
     @Environment(NetworkManager.self) private var network
-    @Environment(PriceModel.self) private var priceModel
+    @Environment(PriceModel.self) private var prices
     @Environment(Navigation.self) private var navigation
     
     
     @Bindable var wallet: Wallet
-    @Binding var selectedCard: EthereumNetworkCard?
-    
+
     var networks: [EthereumNetworkCard] {
         wallet.networks
     }
@@ -41,39 +40,26 @@ struct NetworkList: View {
     var body: some View {
         List{
             ForEach(cards) { card in
-                NetworkCell(network: card)
-                    .task {
-                        await update(card)
-                    }
-                    .onTapGesture {
-                        withAnimation {
-                            self.selectedCard = card
+//                NavigationLink(value: card) {
+                    NetworkCell(network: card)
+                        .targetable()
+                        .task {
+                            await card.update(clients: network, prices: prices, currency: currency)
                         }
-                    }
+                        .onTapGesture {
+                            navigation.selectedNetwork = card
+                        }
+//                }
             }
             Button("Add"){
                 self.navigation.showNewNetwork = true
             }
             .frame(maxWidth: .infinity)
         }
+
     }
     
-    private func update(_ card: EthereumNetworkCard) async {
-        guard let client = network.getClient(chain: card.chain) else {return}
-        let updated: Bool = await card.update(with: client.node)
-        await card.fetchTransactions()
 
-        if updated {
-            await fetchPrice(for: card)
-        }
-    }
-
-    private func fetchPrice(for card: EthereumNetworkCard) async {
-        guard let platform = CoinGecko.AssetPlatform.PlatformID(chainID: card.chain) else {return}
-        let contracts = card.tokens.map{$0.key.contract.string}
-        await priceModel.fetchPrices(contracts: contracts, platform: platform, currency: currency)
-    }
-    
 }
 
 struct NetworkCell: View {
@@ -120,7 +106,8 @@ struct NetworkCell: View {
 }
 
 //#Preview {
-//    NetworkList(networks: [.preview], selected: .constant(nil), settings: .init())
+//    let preview = Preview()
+//    return NetworkList(wallet: .rifigy, selectedCard: .constant(.preview))
 //        .environmentPreview()
 //}
 

@@ -8,6 +8,7 @@
 import SwiftData
 import ChainKit
 import Web3Kit
+import SwiftUI
 
 @Model
 public class PrivateKeyWallet {
@@ -63,8 +64,33 @@ public extension PrivateKeyWallet {
     enum Kind: String, CaseIterable, Identifiable, Hashable, Codable {
         public var id: String { rawValue }
         case watch, key, seed
+        public var systemImage: String {
+            switch self {
+            case .watch:
+                "magnifyingglass"
+            case .key:
+                "key"
+            case .seed:
+                "list.number"
+            }
+        }
+        
+        public var color: Color {
+            switch self {
+            case .watch:
+                .blue
+            case .key:
+                .orange
+            case .seed:
+                .indigo
+            }
+        }
     }
 
+}
+
+extension PrivateKeyWallet: Identifiable, Equatable, Hashable {
+    
 }
 
 public typealias Web3Wallet = PrivateKeyWallet

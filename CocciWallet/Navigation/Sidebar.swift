@@ -9,50 +9,69 @@ import SwiftUI
 
 struct Sidebar: View {
     
-    @Binding var wallet: Wallet?
-    @Binding var selectedCard: EthereumNetworkCard?
+    @Environment(Navigation.self) private var navigation
     
+    @Binding var selection: Wallet?
+
     var body: some View {
+        let showWallets = Bindable(navigation).showWallets
+        
         Group {
             #if os(iOS)
-            if let wallet = navigation.selected {
-                NetworkCardStack(wallet: wallet)
-            } else {
-                AddWalletView()
-            }
+            iosContent
             #else
-            if let wallet {
-                NetworkList(wallet: wallet, selectedCard: $selectedCard)
-                    .navigationTitle("CocciWallet")
-                    #if os(macOS)
-                    .navigationSplitViewColumnWidth(min: 200, ideal: 200)
-                    #endif
-                    .toolbar {
-                        ToolbarItem(placement: .automatic) {
-                            Button("", systemImage: "circle") {
-            //                    showWallets = true
-                            }
-                        }
-                    }
-            }
+            content
             #endif
         }
-//        .sheet(isPresented: $showWallets) {
-//            
-//        }
-
+        .sheet(isPresented: showWallets) {
+            NavigationStack {
+                SelectWalletView(selected: $selection)
+                    #if os(macOS)
+                    .frame(minWidth: 300, minHeight: 250)
+                    #endif
+            }
+        }
+    }
+    
+    @ViewBuilder
+    var iosContent: some View {
+        if let selection {
+            NetworkCardStack(wallet: selection)
+        } else {
+            AddWalletView()
+        }
+    }
+    
+    @ViewBuilder
+    var content: some View {
+        let showNewNetwork = Bindable(navigation).showNewNetwork
+        if let wallet = selection {
+            NetworkList(wallet: wallet)
+                .navigationTitle(wallet.name)
+                #if os(macOS)
+                .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
+                #endif
+                .sheet(isPresented: showNewNetwork) {
+                    AddNetworkView(address: wallet.address) { card in
+                        if !wallet.networks.compactMap({$0.chain}).contains(card.chain) {
+                            wallet.networks.append(card)
+                        }
+                    }
+                }
+                .toolbar {
+                    ToolbarItem(placement: .automatic) {
+                        Button("Wallets", systemImage: "wallet.pass") {
+                            self.navigation.showWallets = true
+                        }
+                    }
+                }
+                .navigationDestination(for: EthereumNetworkCard.self) { card in
+                    NetworkDetailView(card: card)
+                }
+        }
     }
 }
 
-//extension Sidebar where I == Panel, C == Label<Text, Image> {
-//    init(selection: Binding<Panel?>) {
-//        self._selected = selection
-//        self.items = Panel.allCases
-//        self.cell = { panel in
-//            Label(panel.rawValue, systemImage: panel.image)
-//        }
-//    }
-//}
 
 enum Panel: String, Identifiable, CaseIterable, Hashable {
     var id: String { rawValue }
@@ -60,8 +79,6 @@ enum Panel: String, Identifiable, CaseIterable, Hashable {
     
     var image: String {
         switch self {
-//        case .wallets:
-//            "triangle"
         case .network:
             "square"
         case .tokens:

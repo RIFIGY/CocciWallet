@@ -23,32 +23,16 @@ struct NetworkView: View {
         return priceModel.price(chain: card.chain, currency: currency)
     }
     
+    var value: Double? {
+        guard let balance = card.value, let price else {return nil}
+        return balance * price
+    }
+    
+    @State private var destination: NetworkCardDestination?
+
     var body: some View {
-        VStack {
-            Grid {
-                GridRow {
-                    WalletAction.GridButton(.receive, card: card)
-                    WalletAction.GridButton(.send, card: card)
-                }
-                GridRow {
-                    VStack {
-                        BalanceGridCell(balance: card.value, price: price)
-                        TokensGridCell(balances: card.tokens, transfers: [], address: card.address)
-                    }
-                    NftGridCell(nfts: card.nfts, address: address, favorite: nil, color: card.color)
-                        .environment(card)
-                }
-                GridRow {
-                    WalletAction.GridButton(.stake, card: card)
-                    WalletAction.GridButton(.swap, card: card)
-                }
-            }
-            .environment(card)
-            .networkTheme(card: card)
-//            if !card.transactions.isEmpty {
-                DateTransactions(address: address.string, transactions: card.transactions, symbol: card.symbol)
-//            }
-        }
+        NetworkGrid(card: card)
+            .foregroundStyle(.primary)
         .toolbar {
             ToolbarItem(placement: .confirmationAction) {
                 Button(systemName: "gearshape"){

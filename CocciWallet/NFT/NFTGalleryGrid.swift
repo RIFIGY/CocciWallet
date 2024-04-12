@@ -6,9 +6,10 @@ The grid view used in the DonutGallery.
 */
 
 import SwiftUI
+import WalletData
 
 struct NFTGalleryGrid: View {
-    var nfts: [NFTMetadata]
+    var nfts: [NFT]
     var width: Double
     
     #if os(iOS)

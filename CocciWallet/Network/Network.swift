@@ -24,6 +24,19 @@ extension EthereumNetworkCard {
         self.init(address: address, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
     }
         
+    
+    func update(clients network: NetworkManager, prices: Prices, currency: String) async {
+        guard let client = network.getClient(chain: self.chain) else {return}
+        let updated = await self.update(with: client.node) { address, explorer in
+            try await Etherscan.shared.getTransactions(for: address, explorer: explorer)
+        }
+
+        if updated {
+            let contracts = self.tokens.map{$0.key.contract.string}
+            await prices.fetchPrices(chain: self.chain, contracts: contracts, currency: currency)
+        }
+    }
+    
     var color: Color {
         Color(hex: hexColor)!
     }
@@ -32,10 +45,7 @@ extension EthereumNetworkCard {
         balance?.value(decimals: decimals)
     }
     
-    func fetchTransactions(explorer: String? = nil) async {
-        let transactions = try? await Etherscan.shared.getTransactions(for: self.address.string, explorer: explorer)
-        self.transactions = transactions ?? []
-    }
+
     
     var isCustom: Bool {
         #warning("fix this")

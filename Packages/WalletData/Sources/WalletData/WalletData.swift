@@ -88,11 +88,12 @@ public extension WalletContainer {
 }
 
 public extension WalletContainer {
+    typealias NFT = WalletData.NFT
     
-    func fetchAllNFTs(wallet: String, networkID: String? = nil, contract: String? = nil) async -> [Web3Kit.NFT] {
+    func fetchAllNFTs(wallet: String, networkID: String? = nil, contract: String? = nil) async -> [NFT] {
         guard let walletModel = await fetchWeb3Wallet(address: wallet) else {return []}
         guard let networkID else {
-            var nfts = [Web3Kit.NFT]()
+            var nfts = [NFT]()
             walletModel.networks.forEach { network in
                 let _nfts = network.nfts.flatMap{$0.value}
                 nfts.append(contentsOf: _nfts)
