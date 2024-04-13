@@ -104,7 +104,6 @@
 		4C9862172BA76E2B002EBE73 /* WalletManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9862162BA76E2B002EBE73 /* WalletManager.swift */; };
 		4C98621B2BA78554002EBE73 /* WalletSelectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C98621A2BA78554002EBE73 /* WalletSelectionView.swift */; };
 		4C98621D2BA7E4EF002EBE73 /* Environment+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C98621C2BA7E4EF002EBE73 /* Environment+Preview.swift */; };
-		4C9862212BA8ADA3002EBE73 /* NFTMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */; };
 		4C9862242BA8B5FC002EBE73 /* WalletHolderView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9862232BA8B5FC002EBE73 /* WalletHolderView.swift */; };
 		4CA785382BB8724700E25D6D /* WalletEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA785352BB8724700E25D6D /* WalletEntity.swift */; };
 		4CA7853C2BB873CC00E25D6D /* NFTIntent.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA785332BB871E700E25D6D /* NFTIntent.swift */; };
@@ -112,8 +111,6 @@
 		4CA785492BB881A200E25D6D /* BigInt in Frameworks */ = {isa = PBXBuildFile; productRef = 4CA785482BB881A200E25D6D /* BigInt */; };
 		4CA7854D2BB8889E00E25D6D /* NftEntity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CA7854A2BB8889E00E25D6D /* NftEntity.swift */; };
 		4CA785512BB893C300E25D6D /* OffChainKit in Frameworks */ = {isa = PBXBuildFile; productRef = 4CA785502BB893C300E25D6D /* OffChainKit */; };
-		4CA7855D2BB8941D00E25D6D /* NFTMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */; };
-		4CA7855E2BB8941D00E25D6D /* NFTMetadata.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */; };
 		4CA7855F2BB8945F00E25D6D /* BigUInt+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB603DC2B97BE1D00DE17CD /* BigUInt+Extension.swift */; };
 		4CA785602BB8945F00E25D6D /* Button+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CB603EA2B98039200DE17CD /* Button+Extension.swift */; };
 		4CA785612BB8945F00E25D6D /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BDE2B9F9A080043A758 /* View+Extension.swift */; };
@@ -307,7 +304,6 @@
 		4C9862162BA76E2B002EBE73 /* WalletManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletManager.swift; sourceTree = "<group>"; };
 		4C98621A2BA78554002EBE73 /* WalletSelectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletSelectionView.swift; sourceTree = "<group>"; };
 		4C98621C2BA7E4EF002EBE73 /* Environment+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Environment+Preview.swift"; sourceTree = "<group>"; };
-		4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTMetadata.swift; sourceTree = "<group>"; };
 		4C9862232BA8B5FC002EBE73 /* WalletHolderView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletHolderView.swift; sourceTree = "<group>"; };
 		4CA785332BB871E700E25D6D /* NFTIntent.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTIntent.swift; sourceTree = "<group>"; };
 		4CA785352BB8724700E25D6D /* WalletEntity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalletEntity.swift; sourceTree = "<group>"; };
@@ -683,7 +679,6 @@
 				4CFC11112BC86DE900555941 /* NFTGallery.swift */,
 				4CFC110F2BC86BDF00555941 /* NFTGridView.swift */,
 				4C2707A12BC8786D00D0DE2F /* NFTDetail.swift */,
-				4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */,
 				4C74F7B52BC4A4B600620903 /* NFTs.swift */,
 				4C97561A2BA644650073602B /* NftListView.swift */,
 				4C1C3BE02B9F9FB60043A758 /* NftContractView.swift */,
@@ -969,7 +964,6 @@
 				4CA7856D2BB894B700E25D6D /* MediaCache.swift in Sources */,
 				4C1B3D2A2BAF9AA400FB8695 /* CocciWalletTests.swift in Sources */,
 				4C4757002BB9F75200F92E63 /* Wallet+Preview.swift in Sources */,
-				4CA7855D2BB8941D00E25D6D /* NFTMetadata.swift in Sources */,
 				4C74F7BB2BC4A54E00620903 /* Tokens.swift in Sources */,
 				4CDF6A4E2BBE37630097F3B7 /* ColorTheme.swift in Sources */,
 				4C1B3D322BAFB5D600FB8695 /* KeychainSwift+WalletStore.swift in Sources */,
@@ -1024,7 +1018,6 @@
 				4CA7854D2BB8889E00E25D6D /* NftEntity.swift in Sources */,
 				4C74F7B82BC4A4B600620903 /* NFTs.swift in Sources */,
 				4C4757152BBA381700F92E63 /* MediumNFT.swift in Sources */,
-				4CA7855E2BB8941D00E25D6D /* NFTMetadata.swift in Sources */,
 				4C5F40422BC33F0700085AB5 /* TokenIntent.swift in Sources */,
 				4CA7857D2BB8F0D400E25D6D /* NFTWidget.swift in Sources */,
 				4CA785402BB873DB00E25D6D /* NetworkEntity.swift in Sources */,
@@ -1138,7 +1131,6 @@
 				4CDB50392B9D075C0066F615 /* ContentViewMac.swift in Sources */,
 				4CB603B52B957C0700DE17CD /* AddWalletView.swift in Sources */,
 				4CD341732BACEB7400F9DE93 /* AddNetworkView.swift in Sources */,
-				4C9862212BA8ADA3002EBE73 /* NFTMetadata.swift in Sources */,
 				4C93F9492BB5DE4900203C66 /* SwapView.swift in Sources */,
 				4CDF6A532BBE83D50097F3B7 /* TransactionsListView.swift in Sources */,
 				4CFC11102BC86BDF00555941 /* NFTGridView.swift in Sources */,

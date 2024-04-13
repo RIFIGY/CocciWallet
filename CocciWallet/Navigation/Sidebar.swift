@@ -14,6 +14,7 @@ struct Sidebar: View {
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
     @Bindable var wallet: Wallet
+    @Binding var selected: EthereumNetworkCard?
 
     var body: some View {
         Group {
@@ -47,7 +48,7 @@ struct Sidebar: View {
     
     @ViewBuilder
     var content: some View {
-        NetworkList(address: wallet.address, networks: $wallet.networks, settings: wallet.settings)
+        NetworkList(address: wallet.address, networks: $wallet.networks, selection: $selected, settings: wallet.settings)
             .navigationTitle(wallet.name)
             #if os(macOS)
             .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)

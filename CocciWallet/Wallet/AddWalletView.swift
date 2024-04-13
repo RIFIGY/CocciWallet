@@ -19,6 +19,8 @@ struct AddWalletView: View {
     @Environment(Navigation.self) private var navigation
     var generator: WalletGenerator = WalletGenerator(storage: KeychainSwift.shared)
     
+    var created: (Wallet) -> Void = {_ in }
+    
     var body: some View {
         List{
             ForEach(WalletOption.allCases) { option in
@@ -42,7 +44,6 @@ struct AddWalletView: View {
         .navigationDestination(for: WalletOption.self) { option in
             NewWalletView(generator: generator, option: option) { wallet in
                 context.insert(wallet)
-//                    navigation.selected = wallet
                 dismiss()
             }
         }

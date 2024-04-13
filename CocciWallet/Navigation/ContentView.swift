@@ -12,8 +12,6 @@ import SwiftData
 
 struct ContentView: View {
     @AppStorage(AppStorageKeys.lastSelectedWallet) private var lastSelected: String = ""
-    @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIDs: String = "ethereum"
-    @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     
     @Query private var wallets: [Wallet]
     
@@ -26,45 +24,47 @@ struct ContentView: View {
     @State private var selection: Panel? = Panel.network
     
     @State private var selected: Wallet?
+    @State private var selectedNetwork: EthereumNetworkCard?
     
     @State private var columnVisibility = NavigationSplitViewVisibility.doubleColumn
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-//            if let first = wallets.first {
-//                Sidebar(wallet: first)
-//            } else if !wallets.isEmpty {
-////                SelectWalletView(selected: $selected)
-//            } else {
-//                AddWalletView()
-//            }
             if let selected {
-                Sidebar(wallet: selected)
+                Sidebar(wallet: selected, selected: $selectedNetwork)
+            } else if !wallets.isEmpty {
+                SelectWalletView(selected: $selected)
+            } else {
+                AddWalletView()
             }
 
         } detail: {
-//            NavigationStack(path: $path) {
-//                DetailCollumn(wallet: $selected)
-//            }
-            ContentUnavailableView("Select a Network", systemImage: "circle")
+            if let selected {
+                NavigationStack(path: $path) {
+                    DetailCollumn(network: $selectedNetwork)
+                }
+            } else {
+                ContentUnavailableView("Select a Wallet", systemImage: "circle")
+            }
         }
         .onAppear{
             self.selected = wallets.first
+            self.selectedNetwork = self.selected?.networks.first
         }
-        
-//        .onChange(of: selected) { _, _ in
-//            print(path)
-//            path.removeLast(path.count)
-//            self.navigation.selectedNetwork = nil
-//            print(path)
-//        }
-
+        .onChange(of: selected) { oldValue, _ in
+            path.removeLast(path.count)
+            if oldValue != nil {
+                self.selectedNetwork = nil
+            }
+        }
+        .onChange(of: selectedNetwork) { _, _ in
+            path.removeLast(path.count)
+        }
         .environment(network)
         .environment(prices)
         .environment(navigation)
         #if os(macOS)
         .frame(minWidth: 600, minHeight: 450)
-//        .frame(maxWidth: 800, maxHeight: 700)
         #elseif os(iOS)
         .onOpenURL { url in
 //            let urlLogger = Logger(subsystem: "app.rifigy.CocciWallet", category: "url")

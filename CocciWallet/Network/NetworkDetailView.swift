@@ -9,7 +9,7 @@ import SwiftUI
 import Web3Kit
 
 struct NetworkDetailView: View {
-    @Binding var card: EthereumNetworkCard
+    let card: EthereumNetworkCard
     
     var saved: ()->Void = {}
     var removed: ()->Void = {}
@@ -45,20 +45,20 @@ struct NetworkDetailView: View {
                 }
             }
         }
-        .sheet(isPresented: $showSettings) {
-            NavigationStack {
-                NetworkCardSettings(card: $card) {
-//                                    removed()
-                }
-                .toolbar {
-                    ToolbarItem(placement: .cancellationAction) {
-                        Button("Back", systemImage: "chevron.left") {
-                            showSettings = false
-                        }
-                    }
-                }
-            }
-        }
+//        .sheet(isPresented: $showSettings) {
+//            NavigationStack {
+//                NetworkCardSettings(card: $card) {
+////                                    removed()
+//                }
+//                .toolbar {
+//                    ToolbarItem(placement: .cancellationAction) {
+//                        Button("Back", systemImage: "chevron.left") {
+//                            showSettings = false
+//                        }
+//                    }
+//                }
+//            }
+//        }
 
 
     }
@@ -110,29 +110,7 @@ struct NetworkGrid: View {
             .frame(maxWidth: 1200)
 
         }
-        //        .navigationDestination(for: NetworkCardDestination.self) { destination in
-        //            Group {
-        //                switch destination {
-        //                case .send:
-        //                    Text("Send")
-        //                case .receive:
-        //                    AddressView(address: card.address.string, name: card.name)
-        //                case .stake:
-        //                    StakeView()
-        //                case .swap:
-        //                    SwapView()
-        //                case .nft:
-        //                    NFTGridView(nfts: card.nfts)
-        //                case .tokens:
-        //                    TokensListView(network: card.color, address: card.address, balances: card.tokens, transfers: [ERC20Transfer]())
-        //                case .balance:
-        //                    Text("Balance")
-        //                }
-        //            }
-        //            #if !os(tvOS)
-        //            .toolbarRole(.editor)
-        //            #endif
-        //        }
+
     }
         
     var price: Double? {

@@ -14,8 +14,10 @@ import ChainKit
 import SwiftData
 
 struct NetworkList: View {
-    let address: Web3Kit.EthereumAddress
+//    @Bindable var wallet: Wallet
+    var address: Web3Kit.EthereumAddress
     @Binding var networks: [EthereumNetworkCard]
+    @Binding var selection: EthereumNetworkCard?
 
     let settings: Wallet.Settings
     
@@ -24,7 +26,14 @@ struct NetworkList: View {
     var body: some View {
         List{
             ForEach($networks) { card in
-                NetworkCell(network: card)
+//                NavigationLink {
+//                    NetworkDetailView(card: card)
+//                } label: {
+                    NetworkCell(network: card)
+                    .onTapGesture {
+                        self.selection = card.wrappedValue
+                    }
+//                }
             }
             Button("Add"){
                 self.showNewNetwork = true
@@ -57,55 +66,54 @@ struct NetworkCell: View {
     @State private var isUpdating = false
     
     var body: some View {
-        NavigationLink {
-            NetworkDetailView(card: $network)
-        } label: {
-            Group {
-                if compact {
-                    cell
-                } else {
-                    banner
-                }
+//        NavigationLink {
+//            NetworkDetailView(card: $network)
+//        } label: {
+        Group {
+            if compact {
+                cell
+            } else {
+                banner
             }
-            .task {
-                guard !isUpdating else {return}
-                guard let ethClient = networks.getClient(chain: network.chain) else {return}
-                let client = ethClient.node
+        }
+        .task {
+            guard !isUpdating else {return}
+            guard let ethClient = networks.getClient(chain: network.chain) else {return}
+            let client = ethClient.node
 
-                //        guard needsUpdate() else {print("Skipping \(name)");return false}
-                //        print("Updating \(name)")
+            //        guard needsUpdate() else {print("Skipping \(name)");return false}
+            //        print("Updating \(name)")
 
-                        isUpdating = true
-                    await withTaskGroup(of: Void.self) { group in
-                        let address = self.network.address
-                        group.addTask {
-                            let transactions = try? await Etherscan.shared.getTransactions(for: address.string, explorer: "etherscan.io")
-                            Task { @MainActor in
-                                network.transactions = transactions ?? []
-                            }
-                        }
-                        
-                        group.addTask {
-                            Task { @MainActor in
-                                network.balance = try? await client.fetchBalance(for: address)
-                            }
-                        }
-                        group.addTask {
-                            Task { @MainActor in
-                                network.tokens = (try? await client.fetchTokens(for: address)) ?? [:]
-                            }
-                        }
-                        group.addTask {
-                            let nfts = (try? await ethClient.fetchNFTS(for: address)) ?? [:]
-                            print("NFTS" + nfts.count.description)
-                            Task{ @MainActor in
-                                network.nfts = nfts
-                            }
+                    isUpdating = true
+                await withTaskGroup(of: Void.self) { group in
+                    let address = self.network.address
+                    group.addTask {
+                        let transactions = try? await Etherscan.shared.getTransactions(for: address.string, explorer: "etherscan.io")
+                        Task { @MainActor in
+                            network.transactions = transactions ?? []
                         }
                     }
-                        isUpdating = false
-                    print("Balance:\(network.balance) TX: \(network.transactions.count) Tokens: \(network.tokens.keys.count) NFT: \(network.nfts.keys.count)")
-            }
+                    
+                    group.addTask {
+                        Task { @MainActor in
+                            network.balance = try? await client.fetchBalance(for: address)
+                        }
+                    }
+                    group.addTask {
+                        Task { @MainActor in
+                            network.tokens = (try? await client.fetchTokens(for: address)) ?? [:]
+                        }
+                    }
+                    group.addTask {
+                        let nfts = (try? await ethClient.fetchNFTS(for: address)) ?? [:]
+                        print("NFTS" + nfts.count.description)
+                        Task{ @MainActor in
+                            network.nfts = nfts
+                        }
+                    }
+                }
+                    isUpdating = false
+                print("Balance:\(network.balance) TX: \(network.transactions.count) Tokens: \(network.tokens.keys.count) NFT: \(network.nfts.keys.count)")
         }
 
 
@@ -147,10 +155,10 @@ struct NetworkCell: View {
 extension NetworkCell {
     
 }
-#Preview {
-    NavigationStack {
-        NetworkList(address: .rifigy, networks: .constant([.preview]), settings: .init())
-            .environmentPreview()
-    }
-}
-
+//#Preview {
+//    NavigationStack {
+//        NetworkList(address: .rifigy, networks: .constant([.preview]), settings: .init())
+//            .environmentPreview()
+//    }
+//}
+//
