@@ -38,6 +38,17 @@ public extension Address {
         
         return lhs == rhs
     }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.singleValueContainer()
+        try container.encode(string)
+    }
+
+    init(from decoder: Decoder) throws {
+        let container = try decoder.singleValueContainer()
+        let stringRepresentation = try container.decode(String.self)
+        self.init(stringRepresentation)
+    }
 }
 
 

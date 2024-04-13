@@ -1,18 +1,15 @@
 //
-//  NFT+Preview.swift
+//  munko_2309.swift
 //  CocciWallet
 //
-//  Created by Michael Wilkowski on 3/11/24.
+//  Created by Michael on 4/12/24.
 //
 
 import Foundation
-import Web3Kit
-import BigInt
-import ChainKit
 
-extension ERC721 {
+struct MunkoJSON {
     
-    static let munkoJSON:Data = """
+    static let contract: Data = """
     {
       "contract": "0x885525B82e8ab86c5f463Cef0a4b19a43EF005c5",
       "name": "Munko",
@@ -21,18 +18,7 @@ extension ERC721 {
     }
     """.data(using: .utf8)!
     
-    static var Munko: ERC721 { try! JSONDecoder().decode(ERC721.self, from: munkoJSON) }
-}
-
-
-
-
-extension OpenSeaMetadata {
-    
-    static var munko2309Metadata: OpenSeaMetadata { try! JSONDecoder().decode(OpenSeaMetadata.self, from: muko2309MetadataJSON) }
-    static var munko2310Metadata: OpenSeaMetadata { try! JSONDecoder().decode(OpenSeaMetadata.self, from: munko2310MetadataJSON) }
-
-    static let muko2309MetadataJSON:Data = """
+    static let data_2309:Data = """
     {
       "tokenId": "2309",
       "name": "Munko #2309",
@@ -122,7 +108,7 @@ extension OpenSeaMetadata {
     }
     """.data(using: .utf8)!
     
-    static var munko2310MetadataJSON: Data {"""
+    static var data_2310: Data {"""
     {
       "tokenId": "2310",
       "name": "Munko #2310",

@@ -17,7 +17,7 @@ public class WalletContainer {
     
     private init(inMemory:Bool = false){
         let schema = Schema([
-            Web3Wallet.self,
+            Web3Wallet.self
         ])
         let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: inMemory, allowsSave: true)
                 

@@ -126,7 +126,7 @@ extension ERC20DetailView {
         self.address = contract.contract.string
         self.name = contract.name
         self.symbol = contract.symbol
-        self.decimals = contract.decimals
+        self.decimals = contract.decimals ?? 18
         self.balance = balance
         self.price = price
         self.transactions = tx

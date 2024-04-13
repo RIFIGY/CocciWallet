@@ -10,7 +10,7 @@ import Web3Kit
 import OffChainKit
 
 struct AddNetworkView: View {
-    let address: EthereumAddress
+    let address: Web3Kit.EthereumAddress
     var network: (EthereumNetworkCard) -> Void
     
     @Environment(\.dismiss) private var dismiss
@@ -50,7 +50,7 @@ struct AddNetworkView: View {
     }
 
     func add(evm: EthereumCardEntity) {
-        let card = EthereumNetworkCard(evm: evm, address: address)
+        let card = EthereumNetworkCard(address: address, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
         add(network: card)
     }
     
@@ -62,7 +62,7 @@ struct AddNetworkView: View {
 
 
 
-#Preview {
-    AddNetworkView(address: .rifigy){ _ in}
-        .environmentPreview()
-}
+//#Preview {
+//    AddNetworkView(address: .rifigy){ _ in}
+//        .environmentPreview()
+//}

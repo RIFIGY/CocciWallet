@@ -45,7 +45,7 @@ struct CustomNetworkView: View {
 
 struct AddCustomNetworkView: View {
     
-    let address: EthereumAddress
+    let address: Web3Kit.EthereumAddress
     
     @State private var name: String = ""
     @State private var chainId: Int?

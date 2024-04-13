@@ -12,11 +12,11 @@ public protocol Contract: Codable, Identifiable, Hashable, Equatable {
     var contract: Address { get }
     var name: String {get}
     var symbol: String {get}
-    var decimals: UInt8 {get}
+    var decimals: UInt8? {get}
 }
 public extension Contract {
     var id: Address { contract }
-    var isNFT: Bool { self.decimals <= 0 }
+    var isNFT: Bool { self.decimals == nil }
     var title: String {
         if name.isEmpty {
             if symbol.isEmpty {
@@ -36,7 +36,7 @@ public struct Token<A:ChainKit.Address>: Contract {
     public let contract: A
     public let name: String
     public let symbol: String
-    public let decimals: UInt8
+    public let decimals: UInt8?
     
     public init(contract: A, name: String, symbol: String, decimals: UInt8) {
         self.contract = contract

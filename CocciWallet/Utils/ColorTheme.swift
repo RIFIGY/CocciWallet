@@ -76,7 +76,7 @@ extension View {
         self.environment(\.networkTheme, .init(
             symbol: token.symbol,
             color: color ?? networkColor,
-            decimals: token.decimals
+            decimals: token.decimals ?? 18
         ))
     }
 }

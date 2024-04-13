@@ -11,69 +11,104 @@ import CardSpacing
 import Web3Kit
 import BigInt
 import ChainKit
+import SwiftData
 
 struct NetworkList: View {
-    @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
-    @Environment(NetworkManager.self) private var network
-    @Environment(PriceModel.self) private var prices
-    @Environment(Navigation.self) private var navigation
-    
-    
-    @Bindable var wallet: Wallet
+    let address: Web3Kit.EthereumAddress
+    @Binding var networks: [EthereumNetworkCard]
 
-    var networks: [EthereumNetworkCard] {
-        wallet.networks
-    }
-
-    var settings: Wallet.Settings {
-        wallet.settings
-    }
-        
-    var cards: [EthereumNetworkCard]{
-        networks
-    }
+    let settings: Wallet.Settings
     
-    var custom: [EthereumNetworkCard] {
-        []
-    }
+    @State private var showNewNetwork: Bool = false
     
     var body: some View {
         List{
-            ForEach(cards) { card in
-//                NavigationLink(value: card) {
-                    NetworkCell(network: card)
-                        .targetable()
-                        .task {
-                            await card.update(clients: network, prices: prices, currency: currency)
-                        }
-                        .onTapGesture {
-                            navigation.selectedNetwork = card
-                        }
-//                }
+            ForEach($networks) { card in
+                NetworkCell(network: card)
             }
             Button("Add"){
-                self.navigation.showNewNetwork = true
+                self.showNewNetwork = true
             }
             .frame(maxWidth: .infinity)
         }
-
+        .sheet(isPresented: $showNewNetwork) {
+            AddNetworkView(address: address) { network in
+                guard !networks.map({$0.chain}).contains(network.chain) else {return}
+                networks.append(network)
+            }
+        }
+        
     }
-    
-
 }
 
+
+import WalletData
 struct NetworkCell: View {
-    let network: EthereumNetworkCard
+//    @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
+//    @Environment(PriceModel.self) private var prices
+    @Environment(NetworkManager.self) private var networks
+    typealias Address = EthereumClient.Client.Account.Address
+
+    @Binding var network: EthereumNetworkCard
     
     var compact: Bool = false
     var size: CGFloat = 42
         
+    @State private var isUpdating = false
+    
     var body: some View {
-        if compact {
-            cell
-        } else {
-            banner
+        NavigationLink {
+            NetworkDetailView(card: $network)
+        } label: {
+            Group {
+                if compact {
+                    cell
+                } else {
+                    banner
+                }
+            }
+            .task {
+                guard !isUpdating else {return}
+                guard let ethClient = networks.getClient(chain: network.chain) else {return}
+                let client = ethClient.node
+
+                //        guard needsUpdate() else {print("Skipping \(name)");return false}
+                //        print("Updating \(name)")
+
+                        isUpdating = true
+                    await withTaskGroup(of: Void.self) { group in
+                        let address = self.network.address
+                        group.addTask {
+                            let transactions = try? await Etherscan.shared.getTransactions(for: address.string, explorer: "etherscan.io")
+                            Task { @MainActor in
+                                network.transactions = transactions ?? []
+                            }
+                        }
+                        
+                        group.addTask {
+                            Task { @MainActor in
+                                network.balance = try? await client.fetchBalance(for: address)
+                            }
+                        }
+                        group.addTask {
+                            Task { @MainActor in
+                                network.tokens = (try? await client.fetchTokens(for: address)) ?? [:]
+                            }
+                        }
+                        group.addTask {
+                            let nfts = (try? await ethClient.fetchNFTS(for: address)) ?? [:]
+                            print("NFTS" + nfts.count.description)
+                            Task{ @MainActor in
+                                network.nfts = nfts
+                            }
+                        }
+                    }
+                        isUpdating = false
+                    print("Balance:\(network.balance) TX: \(network.transactions.count) Tokens: \(network.tokens.keys.count) NFT: \(network.nfts.keys.count)")
+            }
         }
+
+
     }
     
     var banner: some View {
@@ -103,73 +138,19 @@ struct NetworkCell: View {
             Text(network.name)
         }
     }
+    
+    var card: some View {
+        NetworkCardView(card: network)
+    }
 }
 
-//#Preview {
-//    let preview = Preview()
-//    return NetworkList(wallet: .rifigy, selectedCard: .constant(.preview))
-//        .environmentPreview()
-//}
+extension NetworkCell {
+    
+}
+#Preview {
+    NavigationStack {
+        NetworkList(address: .rifigy, networks: .constant([.preview]), settings: .init())
+            .environmentPreview()
+    }
+}
 
-
-//
-//struct NetworkDestination: View {
-//    let card: EthereumNetworkCard
-//    let price: Double?
-//    @Binding var selected: EthereumNetworkCard?
-//
-//    var remove: ()->Void
-//    
-//    @Namespace private var animation
-//    
-//    @State private var showToolbar:(Bool,CGFloat) = (false, 0)
-//
-//    
-//    var body: some View {
-//        DestinationView(card: card, cardHeight: 200, animation: animation, showToolbar: $showToolbar, fadeDetails: false) {
-//            //dismiss
-//        } cardView: { card in
-//            NetworkCardView(
-//                card: card,
-//                price: price,
-//                animation: animation
-//            )
-//        } cardDetails: { card in
-//            NetworkView(card: card){
-//                remove()
-//            }
-//        }
-//
-//    }
-//}
-
-//fileprivate struct Balance<E:Contract, T:ERCTransfer>: Identifiable, Hashable {
-//    static func == (lhs: Balance, rhs: Balance) -> Bool {
-//        lhs.id == rhs.id
-//    }
-//    
-//    func hash(into hasher: inout Hasher) {
-//        hasher.combine(id)
-//    }
-//    
-//    var id: String { token.contract.string }
-//    let token: E
-//    let balance: BigUInt
-//    let price: Double?
-//    let transfers: [T]?
-//    let chain: Int
-//    let network: Color
-//}
-
-//#Preview {
-//    NetworkCardList(
-//        networks: [EthereumNetworkCard.preview],
-//        settings: .init(),
-//        showSettings: .constant(false),
-//        showNewNetwork: .constant(false),
-//        showWallets: .constant(false)
-//    )
-//        .environmentPreview()
-//}
-//
-//

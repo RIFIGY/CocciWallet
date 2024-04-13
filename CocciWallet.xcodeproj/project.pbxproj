@@ -24,7 +24,6 @@
 		4C1C1F2D2BC7585100AFEC3B /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C1F2C2BC7585100AFEC3B /* Navigation.swift */; };
 		4C1C1F2F2BC75B8400AFEC3B /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C1F2E2BC75B8400AFEC3B /* SettingsView.swift */; };
 		4C1C1F312BC75BDA00AFEC3B /* Navigation+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C1F302BC75BDA00AFEC3B /* Navigation+Preview.swift */; };
-		4C1C3BD32B9EBA740043A758 /* ERC721+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BD22B9EBA740043A758 /* ERC721+Preview.swift */; };
 		4C1C3BD52B9F67590043A758 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BD42B9F67590043A758 /* Theme.swift */; };
 		4C1C3BD72B9F72B20043A758 /* AdditionalNftDetails.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BD62B9F72B20043A758 /* AdditionalNftDetails.swift */; };
 		4C1C3BD92B9F72EC0043A758 /* NftAttributeGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BD82B9F72EC0043A758 /* NftAttributeGrid.swift */; };
@@ -57,10 +56,8 @@
 		4C4757062BB9F8A100F92E63 /* Tokens+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C2012BB71F9D00C1CD2A /* Tokens+Preview.swift */; };
 		4C4757072BB9F8A100F92E63 /* Tokens+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C2012BB71F9D00C1CD2A /* Tokens+Preview.swift */; };
 		4C4757092BB9F91800F92E63 /* PriceModel+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B3D1F2BAE97E200FB8695 /* PriceModel+Preview.swift */; };
-		4C47570A2BB9F91800F92E63 /* ERC721+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BD22B9EBA740043A758 /* ERC721+Preview.swift */; };
 		4C47570B2BB9F91800F92E63 /* NFTs+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C2032BB7360500C1CD2A /* NFTs+Preview.swift */; };
 		4C47570D2BB9F91900F92E63 /* PriceModel+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1B3D1F2BAE97E200FB8695 /* PriceModel+Preview.swift */; };
-		4C47570E2BB9F91900F92E63 /* ERC721+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C1C3BD22B9EBA740043A758 /* ERC721+Preview.swift */; };
 		4C47570F2BB9F91900F92E63 /* NFTs+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C2032BB7360500C1CD2A /* NFTs+Preview.swift */; };
 		4C4757132BBA37EC00F92E63 /* LargeNFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4757122BBA37EC00F92E63 /* LargeNFT.swift */; };
 		4C4757152BBA381700F92E63 /* MediumNFT.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C4757142BBA381700F92E63 /* MediumNFT.swift */; };
@@ -167,6 +164,7 @@
 		4CBECC532BB343620009896D /* IconCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBECC522BB343620009896D /* IconCell.swift */; };
 		4CBECC552BB352280009896D /* AppSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBECC542BB352280009896D /* AppSettings.swift */; };
 		4CBECC5A2BB3B07B0009896D /* RpcTextField.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CBECC592BB3B07B0009896D /* RpcTextField.swift */; };
+		4CD013202BCA42A800AEAAAC /* NFTFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD0131F2BCA42A800AEAAAC /* NFTFetcher.swift */; };
 		4CD3414B2BA8ECCE00F9DE93 /* PriceChart.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD3414A2BA8ECCE00F9DE93 /* PriceChart.swift */; };
 		4CD341502BA92A4E00F9DE93 /* MediaCache.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD3414F2BA92A4E00F9DE93 /* MediaCache.swift */; };
 		4CD341522BA936ED00F9DE93 /* QRCodeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD341512BA936ED00F9DE93 /* QRCodeView.swift */; };
@@ -192,6 +190,10 @@
 		4CDF6A562BBE86C00097F3B7 /* TransactionInfoView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD3415B2BAA21EF00F9DE93 /* TransactionInfoView.swift */; };
 		4CDF6A572BBE86DF0097F3B7 /* Transaction+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9756112BA612030073602B /* Transaction+Preview.swift */; };
 		4CDF6A582BBE87130097F3B7 /* TransactionCellView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CD341572BAA217E00F9DE93 /* TransactionCellView.swift */; };
+		4CE1AD182BC9D34200953BC5 /* MunkoJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE1AD172BC9D34200953BC5 /* MunkoJSON.swift */; };
+		4CE1AD192BC9D34200953BC5 /* MunkoJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE1AD172BC9D34200953BC5 /* MunkoJSON.swift */; };
+		4CE1AD1A2BC9D34200953BC5 /* MunkoJSON.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE1AD172BC9D34200953BC5 /* MunkoJSON.swift */; };
+		4CE1AD1C2BC9DB6900953BC5 /* NFTWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE1AD1B2BC9DB6900953BC5 /* NFTWindow.swift */; };
 		4CE9C2002BB6980200C1CD2A /* GridCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C1FF2BB6980200C1CD2A /* GridCell.swift */; };
 		4CE9C2022BB71F9D00C1CD2A /* Tokens+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C2012BB71F9D00C1CD2A /* Tokens+Preview.swift */; };
 		4CE9C2042BB7360500C1CD2A /* NFTs+Preview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CE9C2032BB7360500C1CD2A /* NFTs+Preview.swift */; };
@@ -207,7 +209,7 @@
 		4CFAE3182BB1F00C00100A68 /* TransactionSentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFAE3172BB1F00C00100A68 /* TransactionSentView.swift */; };
 		4CFAE31A2BB21D2000100A68 /* AppStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFAE3192BB21D2000100A68 /* AppStorage.swift */; };
 		4CFC11102BC86BDF00555941 /* NFTGridView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFC110F2BC86BDF00555941 /* NFTGridView.swift */; };
-		4CFC11122BC86DE900555941 /* NFTGalleryGrid.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFC11112BC86DE900555941 /* NFTGalleryGrid.swift */; };
+		4CFC11122BC86DE900555941 /* NFTGallery.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4CFC11112BC86DE900555941 /* NFTGallery.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -256,7 +258,6 @@
 		4C1C1F2C2BC7585100AFEC3B /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		4C1C1F2E2BC75B8400AFEC3B /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		4C1C1F302BC75BDA00AFEC3B /* Navigation+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Navigation+Preview.swift"; sourceTree = "<group>"; };
-		4C1C3BD22B9EBA740043A758 /* ERC721+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ERC721+Preview.swift"; sourceTree = "<group>"; };
 		4C1C3BD42B9F67590043A758 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		4C1C3BD62B9F72B20043A758 /* AdditionalNftDetails.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AdditionalNftDetails.swift; sourceTree = "<group>"; };
 		4C1C3BD82B9F72EC0043A758 /* NftAttributeGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NftAttributeGrid.swift; sourceTree = "<group>"; };
@@ -340,6 +341,7 @@
 		4CBECC522BB343620009896D /* IconCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IconCell.swift; sourceTree = "<group>"; };
 		4CBECC542BB352280009896D /* AppSettings.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSettings.swift; sourceTree = "<group>"; };
 		4CBECC592BB3B07B0009896D /* RpcTextField.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RpcTextField.swift; sourceTree = "<group>"; };
+		4CD0131F2BCA42A800AEAAAC /* NFTFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTFetcher.swift; sourceTree = "<group>"; };
 		4CD3414A2BA8ECCE00F9DE93 /* PriceChart.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PriceChart.swift; sourceTree = "<group>"; };
 		4CD3414F2BA92A4E00F9DE93 /* MediaCache.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MediaCache.swift; sourceTree = "<group>"; };
 		4CD341512BA936ED00F9DE93 /* QRCodeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QRCodeView.swift; sourceTree = "<group>"; };
@@ -360,6 +362,8 @@
 		4CDB50382B9D075C0066F615 /* ContentViewMac.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentViewMac.swift; sourceTree = "<group>"; };
 		4CDB503F2B9E2C330066F615 /* Web3Kit */ = {isa = PBXFileReference; lastKnownFileType = wrapper; path = Web3Kit; sourceTree = "<group>"; };
 		4CDF6A522BBE83D50097F3B7 /* TransactionsListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionsListView.swift; sourceTree = "<group>"; };
+		4CE1AD172BC9D34200953BC5 /* MunkoJSON.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MunkoJSON.swift; sourceTree = "<group>"; };
+		4CE1AD1B2BC9DB6900953BC5 /* NFTWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTWindow.swift; sourceTree = "<group>"; };
 		4CE9C1FF2BB6980200C1CD2A /* GridCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GridCell.swift; sourceTree = "<group>"; };
 		4CE9C2012BB71F9D00C1CD2A /* Tokens+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Tokens+Preview.swift"; sourceTree = "<group>"; };
 		4CE9C2032BB7360500C1CD2A /* NFTs+Preview.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "NFTs+Preview.swift"; sourceTree = "<group>"; };
@@ -372,7 +376,7 @@
 		4CFAE3172BB1F00C00100A68 /* TransactionSentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransactionSentView.swift; sourceTree = "<group>"; };
 		4CFAE3192BB21D2000100A68 /* AppStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppStorage.swift; sourceTree = "<group>"; };
 		4CFC110F2BC86BDF00555941 /* NFTGridView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTGridView.swift; sourceTree = "<group>"; };
-		4CFC11112BC86DE900555941 /* NFTGalleryGrid.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTGalleryGrid.swift; sourceTree = "<group>"; };
+		4CFC11112BC86DE900555941 /* NFTGallery.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NFTGallery.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -437,12 +441,14 @@
 		4C1C3BD12B9EB87F0043A758 /* Preview */ = {
 			isa = PBXGroup;
 			children = (
+				4C98621C2BA7E4EF002EBE73 /* Environment+Preview.swift */,
 				4C9756112BA612030073602B /* Transaction+Preview.swift */,
+				4C1C1F302BC75BDA00AFEC3B /* Navigation+Preview.swift */,
 				4C47571A2BBA6BE200F92E63 /* Content */,
 				4C4757162BBA418800F92E63 /* NFT */,
 				4CE9C2012BB71F9D00C1CD2A /* Tokens+Preview.swift */,
 				4C4757022BB9F7D400F92E63 /* Network+Preview.swift */,
-				4C4756FD2BB9F74000F92E63 /* Wallet */,
+				4C4756FE2BB9F75200F92E63 /* Wallet+Preview.swift */,
 				4C1B3D1F2BAE97E200FB8695 /* PriceModel+Preview.swift */,
 			);
 			path = Preview;
@@ -491,20 +497,10 @@
 			path = Token;
 			sourceTree = "<group>";
 		};
-		4C4756FD2BB9F74000F92E63 /* Wallet */ = {
-			isa = PBXGroup;
-			children = (
-				4C98621C2BA7E4EF002EBE73 /* Environment+Preview.swift */,
-				4C4756FE2BB9F75200F92E63 /* Wallet+Preview.swift */,
-			);
-			path = Wallet;
-			sourceTree = "<group>";
-		};
 		4C4757162BBA418800F92E63 /* NFT */ = {
 			isa = PBXGroup;
 			children = (
-				4C1C3BD22B9EBA740043A758 /* ERC721+Preview.swift */,
-				4C1C1F302BC75BDA00AFEC3B /* Navigation+Preview.swift */,
+				4CE1AD172BC9D34200953BC5 /* MunkoJSON.swift */,
 				4CE9C2032BB7360500C1CD2A /* NFTs+Preview.swift */,
 			);
 			path = NFT;
@@ -683,12 +679,12 @@
 		4CB603F42B98250D00DE17CD /* NFT */ = {
 			isa = PBXGroup;
 			children = (
-				4C2707A12BC8786D00D0DE2F /* NFTDetail.swift */,
-				4CFC11112BC86DE900555941 /* NFTGalleryGrid.swift */,
+				4CB6040D2B9AA28C00DE17CD /* NFTImageView.swift */,
+				4CFC11112BC86DE900555941 /* NFTGallery.swift */,
 				4CFC110F2BC86BDF00555941 /* NFTGridView.swift */,
+				4C2707A12BC8786D00D0DE2F /* NFTDetail.swift */,
 				4C9862202BA8ADA3002EBE73 /* NFTMetadata.swift */,
 				4C74F7B52BC4A4B600620903 /* NFTs.swift */,
-				4C93F94C2BB5EDED00203C66 /* NftGridCell.swift */,
 				4C97561A2BA644650073602B /* NftListView.swift */,
 				4C1C3BE02B9F9FB60043A758 /* NftContractView.swift */,
 				4CD3414E2BA9298900F9DE93 /* Metadata */,
@@ -720,7 +716,6 @@
 		4CBECC582BB3B0600009896D /* Components */ = {
 			isa = PBXGroup;
 			children = (
-				4CB6040D2B9AA28C00DE17CD /* NFTImageView.swift */,
 				4CD341512BA936ED00F9DE93 /* QRCodeView.swift */,
 				4C93F93F2BB51F9000203C66 /* EthTextField.swift */,
 				4CE9C1FF2BB6980200C1CD2A /* GridCell.swift */,
@@ -746,8 +741,10 @@
 			isa = PBXGroup;
 			children = (
 				4CD979282BC38CE100893F56 /* Network.swift */,
+				4CD0131F2BCA42A800AEAAAC /* NFTFetcher.swift */,
 				4C1164912BBCA05E00657D83 /* NetworkList.swift */,
 				4C5EFB862BC849F9002F03EA /* NetworkDetailView.swift */,
+				4C93F94C2BB5EDED00203C66 /* NftGridCell.swift */,
 				4C1C3BE92BA0C6E50043A758 /* NetworkCardView.swift */,
 				4CD341722BACEB7400F9DE93 /* AddNetworkView.swift */,
 				4CD3414A2BA8ECCE00F9DE93 /* PriceChart.swift */,
@@ -792,6 +789,7 @@
 		4CF61F3C2BC0571A00AC3EAD /* visionOS */ = {
 			isa = PBXGroup;
 			children = (
+				4CE1AD1B2BC9DB6900953BC5 /* NFTWindow.swift */,
 			);
 			path = visionOS;
 			sourceTree = "<group>";
@@ -977,7 +975,6 @@
 				4C1B3D322BAFB5D600FB8695 /* KeychainSwift+WalletStore.swift in Sources */,
 				4CA785652BB8945F00E25D6D /* BigUInt+Extension.swift in Sources */,
 				4C4757092BB9F91800F92E63 /* PriceModel+Preview.swift in Sources */,
-				4C47570A2BB9F91800F92E63 /* ERC721+Preview.swift in Sources */,
 				4CF6F10C2BBB343E00A7DF4A /* PriceModel.swift in Sources */,
 				4C47570B2BB9F91800F92E63 /* NFTs+Preview.swift in Sources */,
 				4CA785662BB8945F00E25D6D /* Button+Extension.swift in Sources */,
@@ -989,6 +986,7 @@
 				4CA785692BB8945F00E25D6D /* String+Extension.swift in Sources */,
 				4C5EFB842BC848D4002F03EA /* WidthThresholdReader.swift in Sources */,
 				4CA7856A2BB8945F00E25D6D /* Pasteboard.swift in Sources */,
+				4CE1AD192BC9D34200953BC5 /* MunkoJSON.swift in Sources */,
 				4C1B3D312BAF9BA800FB8695 /* TestConfig.swift in Sources */,
 				4C74F7BE2BC4A59100620903 /* Network.swift in Sources */,
 			);
@@ -1000,6 +998,7 @@
 			files = (
 				4C4757012BB9F75200F92E63 /* Wallet+Preview.swift in Sources */,
 				4C74F7AC2BC4548100620903 /* IconCell.swift in Sources */,
+				4CE1AD1A2BC9D34200953BC5 /* MunkoJSON.swift in Sources */,
 				4CA7853C2BB873CC00E25D6D /* NFTIntent.swift in Sources */,
 				4C1164962BBD017400657D83 /* ColorTheme.swift in Sources */,
 				4CA785722BB894DF00E25D6D /* Theme.swift in Sources */,
@@ -1043,7 +1042,6 @@
 				4C74F7BC2BC4A54E00620903 /* Tokens.swift in Sources */,
 				4CA785632BB8945F00E25D6D /* String+Extension.swift in Sources */,
 				4C47570D2BB9F91900F92E63 /* PriceModel+Preview.swift in Sources */,
-				4C47570E2BB9F91900F92E63 /* ERC721+Preview.swift in Sources */,
 				4C47570F2BB9F91900F92E63 /* NFTs+Preview.swift in Sources */,
 				4C4757072BB9F8A100F92E63 /* Tokens+Preview.swift in Sources */,
 				4C74F7A82BC453E500620903 /* QRCodeView.swift in Sources */,
@@ -1090,6 +1088,7 @@
 				4C93F9422BB527B400203C66 /* NetworkCardSettings.swift in Sources */,
 				4CE9C2002BB6980200C1CD2A /* GridCell.swift in Sources */,
 				4C1C3BE12B9F9FB60043A758 /* NftContractView.swift in Sources */,
+				4CE1AD182BC9D34200953BC5 /* MunkoJSON.swift in Sources */,
 				4CFAE31A2BB21D2000100A68 /* AppStorage.swift in Sources */,
 				4CD3414B2BA8ECCE00F9DE93 /* PriceChart.swift in Sources */,
 				4CB603DD2B97BE1D00DE17CD /* BigUInt+Extension.swift in Sources */,
@@ -1109,7 +1108,6 @@
 				4C9862172BA76E2B002EBE73 /* WalletManager.swift in Sources */,
 				4CD341582BAA217E00F9DE93 /* TransactionCellView.swift in Sources */,
 				4CB603F72B98271900DE17CD /* SelectWalletView.swift in Sources */,
-				4C1C3BD32B9EBA740043A758 /* ERC721+Preview.swift in Sources */,
 				4C74F7BA2BC4A54E00620903 /* Tokens.swift in Sources */,
 				4CFAE30D2BB08C7700100A68 /* CodeScannerView.swift in Sources */,
 				4CB604032B9A2DFF00DE17CD /* SearchERC20View.swift in Sources */,
@@ -1118,6 +1116,7 @@
 				4CBECC532BB343620009896D /* IconCell.swift in Sources */,
 				4CE9C2022BB71F9D00C1CD2A /* Tokens+Preview.swift in Sources */,
 				4C9756142BA6123C0073602B /* DateTransactions.swift in Sources */,
+				4CE1AD1C2BC9DB6900953BC5 /* NFTWindow.swift in Sources */,
 				4CD341662BAA275700F9DE93 /* ERC20TokenCell.swift in Sources */,
 				4C1C1F312BC75BDA00AFEC3B /* Navigation+Preview.swift in Sources */,
 				4CD979292BC38CE100893F56 /* Network.swift in Sources */,
@@ -1133,8 +1132,9 @@
 				4C4757202BBA97AB00F92E63 /* Array+Extension.swift in Sources */,
 				4C93F94F2BB6041100203C66 /* WalletKeySettings.swift in Sources */,
 				4CD341622BAA24F900F9DE93 /* TransactionMonthly.swift in Sources */,
+				4CD013202BCA42A800AEAAAC /* NFTFetcher.swift in Sources */,
 				4C1C3BD52B9F67590043A758 /* Theme.swift in Sources */,
-				4CFC11122BC86DE900555941 /* NFTGalleryGrid.swift in Sources */,
+				4CFC11122BC86DE900555941 /* NFTGallery.swift in Sources */,
 				4CDB50392B9D075C0066F615 /* ContentViewMac.swift in Sources */,
 				4CB603B52B957C0700DE17CD /* AddWalletView.swift in Sources */,
 				4CD341732BACEB7400F9DE93 /* AddNetworkView.swift in Sources */,
@@ -1430,6 +1430,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "CoccieWallet uses the camera to scan QR codes";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "CocciWallet uses Face ID to protect your account data";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;
@@ -1474,6 +1475,7 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_NSCameraUsageDescription = "CoccieWallet uses the camera to scan QR codes";
 				INFOPLIST_KEY_NSFaceIDUsageDescription = "CocciWallet uses Face ID to protect your account data";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphoneos*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSceneManifest_Generation[sdk=iphonesimulator*]" = YES;
 				"INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents[sdk=iphoneos*]" = YES;

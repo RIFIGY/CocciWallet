@@ -13,8 +13,7 @@ import SwiftUI
 extension View {
     
     @ViewBuilder
-    func environmentPreview() -> some View {
-        let preview = Preview()
+    func environmentPreview(_ preview: Preview = Preview()) -> some View {
         self
             .environment(PriceModel.preview)
             .environment(NetworkManager())
@@ -32,12 +31,12 @@ struct Preview {
         self.container = container
     }
     
-//    func addWallets(_ wallets: [Wallet]) {
-//        Task { @MainActor in
-//            wallets.forEach { wallet in
-//                container.mainContext.insert(wallet)
-//            }
-//        }
-//    }
+    func addWallets(_ wallets: [Wallet]) {
+        Task { @MainActor in
+            wallets.forEach { wallet in
+                container.mainContext.insert(wallet)
+            }
+        }
+    }
     
 }

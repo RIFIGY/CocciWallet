@@ -9,13 +9,10 @@ import SwiftUI
 import Web3Kit
 
 struct NetworkDetailView: View {
-    @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
-    @Environment(PriceModel.self) private var priceModel
+    @Binding var card: EthereumNetworkCard
     
-    let card: EthereumNetworkCard
-    #if os(iOS)
-    @Environment(\.horizontalSizeClass) private var sizeClass
-    #endif
+    var saved: ()->Void = {}
+    var removed: ()->Void = {}
     
     @Namespace
     var animation
@@ -25,15 +22,13 @@ struct NetworkDetailView: View {
     @State private var showSettings = false
     
     var body: some View {
-        WidthThresholdReader(widthThreshold: 520) { proxy in
-            ScrollView(.vertical) {
-                VStack(spacing: 16) {
-                    NetworkCardView(card: card, animation: animation)
-                        .frame(height: 200)
-                        .frame(maxWidth: 600)
-                        .padding(.horizontal)
+        ScrollView(.vertical) {
+            VStack(spacing: 16) {
+                NetworkCardView(card: card, animation: animation)
+                    .frame(height: 200)
+                    .frame(maxWidth: 600)
+                    .padding(.horizontal)
                     NetworkGrid(card: card)
-                }
             }
         }
         #if os(iOS)
@@ -52,25 +47,20 @@ struct NetworkDetailView: View {
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
-                NetworkCardSettings(card: card) {
-                    
+                NetworkCardSettings(card: $card) {
+//                                    removed()
+                }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Back", systemImage: "chevron.left") {
+                            showSettings = false
+                        }
+                    }
                 }
             }
         }
 
-//        .task {
-//            await withTaskGroup(of: Void.self) { group in
-//                for (contract, nfts) in self.card.nfts {
-//                    for nft in nfts {
-//                        group.addTask {
-//                            let nftMetadata = NFTMetadata(nft: nft, contract: contract)
-//                            await nftMetadata.fetch()
-//                            self.metadata[contract, default: []].append(nftMetadata)
-//                        }
-//                    }
-//                }
-//            }
-//        }
+
     }
     
 
@@ -85,57 +75,64 @@ struct NetworkGrid: View {
     typealias Destination = NetworkCardDestination
     
     var body: some View {
-        Grid(horizontalSpacing: 12, verticalSpacing: 12) {
-            GridRow {
-                NetworkGridButton(.receive)
-                NetworkGridButton(.send)
-            }
-            GridRow {
-                VStack {
-                    NetworkGridCell(.balance, balance: card.value, value: value)
-                    NetworkGridCell(
-                        .tokens,
-                        balance: Double(card.tokens.keys.count),
-                        value: tokenValue
-                    )
+        WidthThresholdReader(widthThreshold: 520) { proxy in
+            Grid(horizontalSpacing: 12, verticalSpacing: 12) {
+                GridRow {
+                    NetworkGridButton(.receive)
+                    NetworkGridButton(.send)
                 }
-                NftGridCell(nfts: card.nfts, address: card.address, color: card.color)
-            }
-            GridRow {
-                NetworkGridButton(.stake)
-                NetworkGridButton(.swap)
-            }
-            DateTransactions(address: card.address.string, transactions: card.transactions)
-        }
-        .environment(card)
-        .networkTheme(card: card)
-        .containerShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
-        .fixedSize(horizontal: false, vertical: true)
-        .padding([.horizontal, .bottom], 16)
-        .frame(maxWidth: 1200)
-        .navigationDestination(for: NetworkCardDestination.self) { destination in
-            Group {
-                switch destination {
-                case .send:
-                    Text("Send")
-                case .receive:
-                    AddressView(address: card.address.string, name: card.name)
-                case .stake:
-                    StakeView()
-                case .swap:
-                    SwapView()
-                case .nft:
-                    NFTGridView(nfts: card.nfts)
-                case .tokens:
-                    TokensListView(network: card.color, address: card.address, balances: card.tokens, transfers: [ERC20Transfer]())
-                case .balance:
-                    Text("Balance")
+                GridRow {
+                    VStack {
+                        NetworkGridCell(.balance, balance: card.value, value: value)
+                        NetworkGridCell(
+                            .tokens,
+                            balance: Double(card.tokens.keys.count),
+                            value: tokenValue
+                        )
+                    }
+                    NavigationLink {
+                        NFTGridView(nfts: card.nfts)
+                    } label: {
+                        NftGridCell(nfts: card.nfts, address: card.address, color: card.color)
+
+                    }
                 }
+                GridRow {
+                    NetworkGridButton(.stake)
+                    NetworkGridButton(.swap)
+                }
+                DateTransactions(address: card.address.string, transactions: card.transactions)
             }
-            #if !os(tvOS)
-            .toolbarRole(.editor)
-            #endif
+            .networkTheme(card: card)
+            .containerShape(RoundedRectangle(cornerRadius: 12, style: .continuous))
+            .fixedSize(horizontal: false, vertical: true)
+            .padding([.horizontal, .bottom], 16)
+            .frame(maxWidth: 1200)
+
         }
+        //        .navigationDestination(for: NetworkCardDestination.self) { destination in
+        //            Group {
+        //                switch destination {
+        //                case .send:
+        //                    Text("Send")
+        //                case .receive:
+        //                    AddressView(address: card.address.string, name: card.name)
+        //                case .stake:
+        //                    StakeView()
+        //                case .swap:
+        //                    SwapView()
+        //                case .nft:
+        //                    NFTGridView(nfts: card.nfts)
+        //                case .tokens:
+        //                    TokensListView(network: card.color, address: card.address, balances: card.tokens, transfers: [ERC20Transfer]())
+        //                case .balance:
+        //                    Text("Balance")
+        //                }
+        //            }
+        //            #if !os(tvOS)
+        //            .toolbarRole(.editor)
+        //            #endif
+        //        }
     }
         
     var price: Double? {
@@ -151,7 +148,7 @@ struct NetworkGrid: View {
         card.tokens.reduce(into: 0.0) { total, entry in
             let (contract, balance) = entry
             let price = priceModel.price(contract: contract.contract.string, currency: currency)
-            let value = balance.value(decimals: contract.decimals) * (price ?? 0)
+            let value = balance.value(decimals: contract.decimals ?? 18) * (price ?? 0)
             total += value
         }
     }
@@ -192,9 +189,9 @@ fileprivate struct NetworkGridCell: View {
 }
 
 //
-#Preview {
-    NavigationStack {
-        NetworkDetailView(card: .preview)
-            .environmentPreview()
-    }
-}
+//#Preview {
+//    NavigationStack {
+//        NetworkDetailView(card: .preview)
+//            .environmentPreview()
+//    }
+//}

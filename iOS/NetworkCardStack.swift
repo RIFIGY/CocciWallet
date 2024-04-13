@@ -45,10 +45,10 @@ struct NetworkCardStack: View {
                 animation: animation
             )
                 .task {
-                    await card.update(clients: networks, prices: prices, currency: currency)
+//                    await card.update(clients: networks, prices: prices, currency: currency)
                 }
         } cardDetail: { card in
-            NetworkView(card: card){
+            NetworkView(card: .constant(card)){
                 withAnimation{
                     wallet.networks.remove(card)
                     selected = nil

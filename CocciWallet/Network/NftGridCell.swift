@@ -11,7 +11,9 @@ import Web3Kit
 
 struct NftGridCell: View {
     @Environment(\.colorScheme) var colorScheme
-    
+    @Environment(\.openWindow) private var openWindow
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+
     typealias NFT = WalletData.NFT
 
     let nfts: [ERC721 : [NFT]]
@@ -22,7 +24,8 @@ struct NftGridCell: View {
     var imageSize: CGFloat = 160
 
     private var cover: NFT? {
-        nfts.first?.value.first
+        nfts.flatMap{$0.value}.first{$0.imageURL != nil }
+//        nfts.first?.value.first{$0.imageURL != nil}
     }
 
         
@@ -30,18 +33,18 @@ struct NftGridCell: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("NFT")
+            Text("NFT \(nfts.flatMap{$0.value}.count)")
             Group {
                 if let cover {
-                    NavigationLink(value: NetworkCardDestination.nft) {
-                        NFTImageView(nft: cover, contentMode: .fill)
-                            .cellBackground(padding: 8, cornerRadius: 16)
-                    }
-                    .buttonStyle(.plain)
+                    NFTImageView(nft: cover, contentMode: .fill)
+                        .cellBackground(padding: 8, cornerRadius: 16)
 
                 } else {
                     Button("Claim\nyour first \nNFT"){
-                        self.showClaim = true
+//                        self.showClaim = true
+                        if supportsMultipleWindows {
+                            openWindow(id: NFTWindow.ID)
+                        }
                     }
                         .foregroundStyle(color)
                         .font(.title.weight(.semibold))

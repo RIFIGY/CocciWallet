@@ -18,6 +18,16 @@ struct CocciWalletApp: App {
         }
         .windowResizability(.contentSize)
         .modelContainer(WalletContainer.shared.container)
+        
+        #if os(visionOS)
+        WindowGroup(id: NFTWindow.ID) {
+            NFTWindow()
+        }
+        .windowStyle(.plain)
+        .defaultSize(.infinity)
+        .modelContainer(WalletContainer.shared.container)
+        #endif
+//        #endif
     }
     
     init(){

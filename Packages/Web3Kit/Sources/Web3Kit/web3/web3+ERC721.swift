@@ -12,10 +12,7 @@ import ChainKit
 
 public typealias ERC721 = Token<EthereumAddress>
 extension EthereumHttpClient: ERC721Client {
-    
-    
-    
-    
+        
     private var erc721: web3.ERC721 { .init(client: self) }
     private var erc721Metadata: web3.ERC721Metadata { .init(client: self, metadataSession: .shared) }
 

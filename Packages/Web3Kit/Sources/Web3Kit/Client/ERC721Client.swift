@@ -24,6 +24,11 @@ public protocol ERC721Client {
 public struct NFT: ChainKit.ERC721Protocol, Codable, Hashable {
     public let tokenId: BigUInt
     public let uri: URL
+    
+    public init(tokenId: BigUInt, uri: URL) {
+        self.tokenId = tokenId
+        self.uri = uri
+    }
 }
 
 

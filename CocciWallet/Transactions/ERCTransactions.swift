@@ -37,7 +37,7 @@ struct ERCTransactions<E:Contract, T:ERCTransfer>: View {
 //                    #endif
                 } label: {
                     if let erc20 = transfers.first(where: {$0.contract.string.lowercased() == tx.contract.string.lowercased()}) as? ERC20 {
-                        TransactionCellView(tx: tx, symbol: erc20.symbol, decimals: erc20.decimals, isCell: false)
+                        TransactionCellView(tx: tx, symbol: erc20.symbol, decimals: erc20.decimals ?? 18, isCell: false)
                     } else {
                         TransactionCellView(tx: tx, symbol: symbol, isCell: false)
                     }

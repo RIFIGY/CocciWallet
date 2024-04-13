@@ -12,7 +12,7 @@ struct NetworkView: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
     @Environment(PriceModel.self) private var priceModel
     
-    @Bindable var card: EthereumNetworkCard
+    @Binding var card: EthereumNetworkCard
     var address: EthereumAddress { card.address }
     
     @State private var showSettings = false
@@ -42,13 +42,13 @@ struct NetworkView: View {
             }
         }
 
-        .sheet(isPresented: $showSettings) {
-            NavigationStack {
-                NetworkCardSettings(card: card) {
-                    remove()
-                }
-            }
-        }
+//        .sheet(isPresented: $showSettings) {
+//            NavigationStack {
+//                NetworkCardSettings(card: card) {
+//                    remove()
+//                }
+//            }
+//        }
     }
 }
 
@@ -58,7 +58,7 @@ struct NetworkView: View {
             NetworkCardView(card: .preview, animation: Namespace().wrappedValue)
                 .frame(height: 200)
                 .padding(.horizontal)
-            NetworkView(card: .preview){}
+            NetworkView(card: .constant(.preview)){}
                 .padding(.horizontal)
         }
         .background(Color.systemGray)

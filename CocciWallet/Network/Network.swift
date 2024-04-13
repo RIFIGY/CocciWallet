@@ -20,22 +20,23 @@ typealias EthereumNetworkCard = Web3Network
 
 extension EthereumNetworkCard {
     
-    convenience init(evm: EthereumCardEntity, address: Web3Kit.EthereumAddress){
+    init(evm: EthereumCardEntity, address: Web3Kit.EthereumAddress){
         self.init(address: address, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
     }
         
     
-    func update(clients network: NetworkManager, prices: Prices, currency: String) async {
-        guard let client = network.getClient(chain: self.chain) else {return}
-        let updated = await self.update(with: client.node) { address, explorer in
-            try await Etherscan.shared.getTransactions(for: address, explorer: explorer)
-        }
-
-        if updated {
-            let contracts = self.tokens.map{$0.key.contract.string}
-            await prices.fetchPrices(chain: self.chain, contracts: contracts, currency: currency)
-        }
-    }
+//    func update(clients network: NetworkManager, prices: Prices, currency: String) async -> Bool {
+//        guard let client = network.getClient(chain: self.chain) else {return false}
+//        let updated = await self.update(with: client.node) { address, explorer in
+//            try await Etherscan.shared.getTransactions(for: address, explorer: explorer)
+//        }
+//
+//        if updated {
+//            let contracts = self.tokens.map{$0.key.contract.string}
+//            await prices.fetchPrices(chain: self.chain, contracts: contracts, currency: currency)
+//        }
+//        return updated
+//    }
     
     var color: Color {
         Color(hex: hexColor)!

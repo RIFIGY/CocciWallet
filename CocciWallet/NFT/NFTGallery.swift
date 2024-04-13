@@ -8,14 +8,18 @@ The grid view used in the DonutGallery.
 import SwiftUI
 import WalletData
 
-struct NFTGalleryGrid: View {
-    var nfts: [NFT]
-    var width: Double
-    
+struct NFTGallery: View {
+
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+    @Environment(\.openWindow) private var openWindow
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
     @Environment(\.dynamicTypeSize) private var dynamicTypeSize
+    
+    
+    var nfts: [NFT]
+    var width: Double
     
     var useReducedThumbnailSize: Bool {
         #if os(iOS)
@@ -59,46 +63,52 @@ struct NFTGalleryGrid: View {
     var body: some View {
         LazyVGrid(columns: gridItems, spacing: 20) {
             ForEach(nfts) { nft in
-                NavigationLink {
-                    NFTDetail(nft: nft)
-                } label: {
-                    VStack {
-                        NFTImageView(nft: nft, contentMode: .fit)
-                            .frame(width: thumbnailSize, height: thumbnailSize)
+                if supportsMultipleWindows {
+                    Button {
+                        openWindow(id: NFTWindow.ID)
+                    } label: {
+                        Cell(nft: nft, thumbnailSize: thumbnailSize)
+                    }
+                } else {
+                    NavigationLink {
+                        NFTDetail(nft: nft)
+                    } label: {
+                        Cell(nft: nft, thumbnailSize: thumbnailSize)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .padding()
+    }
+    
+    struct Cell: View {
+        let nft: WalletData.NFT
+        let thumbnailSize: Double
+        var body: some View {
+            VStack {
+                NFTImageView(nft: nft, contentMode: .fit)
+                    .frame(width: thumbnailSize, height: thumbnailSize)
 
-                        VStack {
-                            Text(nft.metadata?.name ?? "Name")
+                VStack {
+                    Text(nft.metadata?.name ?? "Name")
 //                            HStack(spacing: 4) {
 //                                flavor.image
 //                                Text(flavor.name)
 //                            }
 //                            .font(.subheadline)
 //                            .foregroundStyle(.secondary)
-                        }
-                        .multilineTextAlignment(.center)
-                    }
                 }
-                .buttonStyle(.plain)
+                .multilineTextAlignment(.center)
             }
         }
-        .padding()
     }
 }
 
-//struct DonutGalleryGrid_Previews: PreviewProvider {
-//    struct Preview: View {
-//        @State private var donuts = Donut.all
-//        
-//        var body: some View {
-//            GeometryReader { geometryProxy in
-//                ScrollView {
-//                    DonutGalleryGrid(donuts: donuts, width: geometryProxy.size.width)
-//                }
-//            }
-//        }
-//    }
-//    
-//    static var previews: some View {
-//        Preview()
-//    }
-//}
+#Preview {
+    GeometryReader { geometryProxy in
+        ScrollView {
+            NFTGallery(nfts: [], width: geometryProxy.size.width)
+        }
+    }
+}

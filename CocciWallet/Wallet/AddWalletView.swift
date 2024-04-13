@@ -20,32 +20,30 @@ struct AddWalletView: View {
     var generator: WalletGenerator = WalletGenerator(storage: KeychainSwift.shared)
     
     var body: some View {
-        NavigationStack {
-            List{
-                ForEach(WalletOption.allCases) { option in
-                    NavigationLink(value: option) {
-                        VStack(alignment: .leading) {
-                            Image(systemName: option.symbol)
-                                .font(.title)
-                                .foregroundStyle(option.color)
-                            Text(option.title)
-                                .font(.title)
-                            Text(option.description)
-                                .font(.callout)
-                                .foregroundStyle(.secondary)
-                            
-                        }
-                        .padding(.vertical)
+        List{
+            ForEach(WalletOption.allCases) { option in
+                NavigationLink(value: option) {
+                    VStack(alignment: .leading) {
+                        Image(systemName: option.symbol)
+                            .font(.title)
+                            .foregroundStyle(option.color)
+                        Text(option.title)
+                            .font(.title)
+                        Text(option.description)
+                            .font(.callout)
+                            .foregroundStyle(.secondary)
+                        
                     }
+                    .padding(.vertical)
                 }
             }
-            .navigationTitle("New Wallet")
-            .navigationDestination(for: WalletOption.self) { option in
-                NewWalletView(generator: generator, option: option) { wallet in
-                    context.insert(wallet)
+        }
+        .navigationTitle("New Wallet")
+        .navigationDestination(for: WalletOption.self) { option in
+            NewWalletView(generator: generator, option: option) { wallet in
+                context.insert(wallet)
 //                    navigation.selected = wallet
-                    dismiss()
-                }
+                dismiss()
             }
         }
     }

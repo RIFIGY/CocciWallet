@@ -31,7 +31,7 @@ struct WalletSettingsView: View {
                     TextField("Name", text: $wallet.name)
                         .fixedSize()
                 }
-                NetworkSettingsList(wallet: wallet)
+//                NetworkSettingsList(wallet: wallet)
                 NavigationLink {
                     WalletKeySettings(wallet: wallet)
                 } label: {
@@ -63,36 +63,23 @@ struct WalletSettingsView: View {
 
 
 fileprivate struct NetworkSettingsList: View {
-    @Bindable var wallet: Wallet
+    @Binding var networks: [EthereumNetworkCard]
     
     var body: some View {
         NavigationLink {
             List {
                 Section("Web3") {
-                    ForEach(wallet.networks) { card in
-                        NavigationLink {
-                            NetworkCardSettings(card: card) {
-                                wallet.networks.remove(card)
-//                                wallet.remove(card)
-                            }
-                        } label: {
-                            IconCell(symbol: card.symbol, color: card.color) {
-                                Text(card.name)
-                            }
-                        }
-                    }
-                }
-                Section("Blockchain") {
-                    ForEach(wallet.networks) { card in
-                        NavigationLink {
+                    ForEach($networks) { card in
+//                        NavigationLink {
 //                            NetworkCardSettings(card: card) {
-//                                wallet.remove(card)
+//                                networks.remove(card.wrappedValue)
+////                                wallet.remove(card)
 //                            }
-                        } label: {
-                            IconCell(symbol: card.symbol, color: card.color) {
-                                Text(card.name)
-                            }
-                        }
+//                        } label: {
+//                            IconCell(symbol: card.wrappedValue.symbol, color: card.wrappedValue.color) {
+//                                Text(card.wrappedValue.name)
+//                            }
+//                        }
                     }
                 }
             }

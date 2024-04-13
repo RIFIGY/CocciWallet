@@ -9,18 +9,18 @@ import SwiftUI
 import BigInt
 
 struct NetworkCardSettings: View {
-    @Bindable var card: EthereumNetworkCard
+    @Binding var card: EthereumNetworkCard
     var remove: ()->Void = {}
     
     var body: some View {
-        Web3NetworkCardSettings(card: card, remove: remove)
+        Web3NetworkCardSettings(card: $card, remove: remove)
     }
 
 }
 
 struct Web3NetworkCardSettings: View {
     @AppStorage(AppStorageKeys.favoriteNFT, store: UserDefaults.group) var favoriteNFT: String = ""
-    @Bindable var card: EthereumNetworkCard
+    @Binding var card: EthereumNetworkCard
     
     var color: Color { card.color }
     var chain: Int { card.chain }
@@ -72,7 +72,7 @@ struct Web3NetworkCardSettings: View {
             if card.isCustom {
                 Section {
                     NavigationLink {
-                        AdvancedNetworkSettings(card: card)
+                        AdvancedNetworkSettings(card: $card)
                     } label: {
                         Text("Advanced")
                     }
@@ -118,7 +118,7 @@ struct AdvancedNetworkSettings: View {
     var color: Color { card.color }
     var chain: Int { card.chain }
     
-    @Bindable var card: EthereumNetworkCard
+    @Binding var card: EthereumNetworkCard
     
     @State private var testedRpc: Bool = false
     

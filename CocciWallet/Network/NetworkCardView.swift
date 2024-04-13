@@ -70,6 +70,10 @@ extension NetworkCardView {
         self.animation = animation
     }
     
+    init(card: EthereumNetworkCard, price: Double? = nil) {
+        self.init(card: card, animation: Namespace().wrappedValue)
+    }
+    
 }
 
 

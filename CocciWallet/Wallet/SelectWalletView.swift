@@ -13,7 +13,7 @@ struct SelectWalletView: View {
     @AppStorage("last_selected_wallet") private var selectedWallet: String = ""
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @Environment(Navigation.self) private var navigation
+//    @Environment(Navigation.self) private var navigation
     
     @Query private var wallets: [Wallet]
     

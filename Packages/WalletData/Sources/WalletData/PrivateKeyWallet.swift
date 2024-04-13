@@ -20,6 +20,7 @@ public class PrivateKeyWallet {
     public var name: String
     
     public var settings: Settings
+    
     public var networks: [WalletData.Network<Client>]
     
     public var type: Kind

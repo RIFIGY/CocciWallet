@@ -190,7 +190,7 @@ extension NftContractView {
     NavigationStack {
         NftContractView(ERC721.Munko)
             .environment(NetworkManager())
-            .environment(EthereumNetworkCard.preview)
+//            .environment(EthereumNetworkCard.preview)
     }
 }
 

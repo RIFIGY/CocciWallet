@@ -7,15 +7,15 @@
 
 import SwiftUI
 
+
 struct Sidebar: View {
     
-    @Environment(Navigation.self) private var navigation
-    
-    @Binding var selection: Wallet?
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
+    @Bindable var wallet: Wallet
 
     var body: some View {
-        let showWallets = Bindable(navigation).showWallets
-        
         Group {
             #if os(iOS)
             iosContent
@@ -23,52 +23,51 @@ struct Sidebar: View {
             content
             #endif
         }
-        .sheet(isPresented: showWallets) {
-            NavigationStack {
-                SelectWalletView(selected: $selection)
-                    #if os(macOS)
-                    .frame(minWidth: 300, minHeight: 250)
-                    #endif
-            }
-        }
+//        .sheet(isPresented: navigation.showWallets) {
+//            NavigationStack {
+//                SelectWalletView(selected: $selection)
+//                    #if os(macOS)
+//                    .frame(minWidth: 300, minHeight: 250)
+//                    #endif
+//            }
+//        }
+//        .sheet(isPresented: navigation.showSettings) {
+//            SettingsView(selection: $selection)
+//        }
     }
     
     @ViewBuilder
     var iosContent: some View {
-        if let selection {
-            NetworkCardStack(wallet: selection)
+        if UIDevice.current.userInterfaceIdiom == .pad {
+            content
         } else {
-            AddWalletView()
+            NetworkCardStack(wallet: wallet)
         }
     }
     
     @ViewBuilder
     var content: some View {
-        let showNewNetwork = Bindable(navigation).showNewNetwork
-        if let wallet = selection {
-            NetworkList(wallet: wallet)
-                .navigationTitle(wallet.name)
-                #if os(macOS)
-                .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
-                #endif
-                .sheet(isPresented: showNewNetwork) {
-                    AddNetworkView(address: wallet.address) { card in
-                        if !wallet.networks.compactMap({$0.chain}).contains(card.chain) {
-                            wallet.networks.append(card)
-                        }
-                    }
-                }
-                .toolbar {
-                    ToolbarItem(placement: .automatic) {
-                        Button("Wallets", systemImage: "wallet.pass") {
-                            self.navigation.showWallets = true
-                        }
-                    }
-                }
-                .navigationDestination(for: EthereumNetworkCard.self) { card in
-                    NetworkDetailView(card: card)
-                }
-        }
+        NetworkList(address: wallet.address, networks: $wallet.networks, settings: wallet.settings)
+            .navigationTitle(wallet.name)
+            #if os(macOS)
+            .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
+            #endif
+            .task {
+                
+            }
+
+//            .toolbar {
+//                ToolbarItem(placement: .automatic) {
+//                    Button("Wallets", systemImage: "wallet.pass") {
+//                        self.navigation.showWallets = true
+//                    }
+//                }
+//                ToolbarItem(placement: .automatic) {
+//                    Button("Settings", systemImage: "gearshape") {
+//                        self.navigation.showSettings = true
+//                    }
+//                }
+//            }
     }
 }
 

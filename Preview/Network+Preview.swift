@@ -9,8 +9,19 @@ import Foundation
 import ChainKit
 
 extension EthereumNetworkCard {
-    static let preview: EthereumNetworkCard = {
-        let card = EthereumNetworkCard(address: "0x956d6A728483F2ecC1Ed3534B44902Ab17Ca81b0", chain: 1, rpc: URL(string: "https://google.com")!, name: "Ethereum", symbol: "ETH", hexColor: "#627eea")
+    static let preview: EthereumNetworkCard = previewETH
+    
+    static let previewETH: EthereumNetworkCard = {
+        var card = EthereumNetworkCard(evm: .ETH, address: "0x956d6A728483F2ecC1Ed3534B44902Ab17Ca81b0")
+        card.nfts = [ .Munko : [ .munko2309, .munko2310] ]
+        card.balance = 400_000_000_000_000_000
+//        card.nfts = [ .Munko : [] ]
+        card.tokens = [ .USDC : 1_000_000_000]
+        return card
+    }()
+    
+    static let previewMatic: EthereumNetworkCard = {
+        var card = EthereumNetworkCard(evm: .MATIC, address: "0x956d6A728483F2ecC1Ed3534B44902Ab17Ca81b0")
         card.balance = 400_000_000_000_000_000
 //        card.nfts = [ .Munko : [] ]
         card.tokens = [ .USDC : 1_000_000_000]

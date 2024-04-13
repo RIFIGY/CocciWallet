@@ -76,7 +76,7 @@ extension TokenCell {
     init<C:Contract>(_ contract: C, balance: BigUInt?, network: Color, useNetworkColor: Bool = false) {
         self.name = contract.name
         self.symbol = contract.symbol
-        self.decimals = contract.decimals
+        self.decimals = contract.decimals ?? 18
         self.balance = balance
         self.contract = contract.contract.string
         self.useNetworkColor = useNetworkColor

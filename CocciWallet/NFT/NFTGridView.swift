@@ -58,7 +58,7 @@ struct NFTGridView<Token:Contract>: View {
     var grid: some View {
         GeometryReader { geometryProxy in
             ScrollView {
-                NFTGalleryGrid(nfts: filteredNFTs, width: geometryProxy.size.width)
+                NFTGallery(nfts: filteredNFTs, width: geometryProxy.size.width)
             }
         }
     }

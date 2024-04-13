@@ -23,8 +23,20 @@ extension Wallet {
 
     }()
 
-    static let wallet = Wallet(address: .wallet, name: "Wallet")
-    static let dave = Wallet(address: .dave, name: "Dave")
+    static let wallet: Wallet = {
+        let wallet = Wallet(address: .wallet, name: "Wallet")
+        wallet.networks.append(.preview)
+        return wallet
+
+    }()
+    
+    static let dave: Wallet = {
+        let wallet = Wallet(address: .dave, name: "Dave")
+        wallet.networks.append(.preview)
+        return wallet
+
+    }()
+    
     static let ganache = Wallet(address: .init(LocalChain.ganache_address), name: "Ganache")
 }
 

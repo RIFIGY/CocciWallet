@@ -31,22 +31,33 @@ struct ContentView: View {
 
     var body: some View {
         NavigationSplitView(columnVisibility: $columnVisibility) {
-            Sidebar(selection: $selected)
-        } detail: {
-            NavigationStack(path: $path) {
-                DetailCollumn(wallet: $selected)
+//            if let first = wallets.first {
+//                Sidebar(wallet: first)
+//            } else if !wallets.isEmpty {
+////                SelectWalletView(selected: $selected)
+//            } else {
+//                AddWalletView()
+//            }
+            if let selected {
+                Sidebar(wallet: selected)
             }
+
+        } detail: {
+//            NavigationStack(path: $path) {
+//                DetailCollumn(wallet: $selected)
+//            }
+            ContentUnavailableView("Select a Network", systemImage: "circle")
         }
         .onAppear{
             self.selected = wallets.first
-            prices.fetch(coinIDs: coinIDs, currency: currency)
         }
-        .onChange(of: selected) { _, _ in
-            print(path)
-            path.removeLast(path.count)
-            self.navigation.selectedNetwork = nil
-            print(path)
-        }
+        
+//        .onChange(of: selected) { _, _ in
+//            print(path)
+//            path.removeLast(path.count)
+//            self.navigation.selectedNetwork = nil
+//            print(path)
+//        }
 
         .environment(network)
         .environment(prices)
