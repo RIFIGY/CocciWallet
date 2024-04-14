@@ -139,19 +139,13 @@ extension NetworkEntity {
     static let ETH = NetworkEntity(id: EthereumCardEntity.ETH.chain.description, title: EthereumCardEntity.ETH.name, symbol: EthereumCardEntity.ETH.symbol)
 }
 
-extension ContractEntity {
-    static let munko = ContractEntity(contract: ERC721.Munko)
-}
-
-extension ContractEntity {
-    static let usdc = ContractEntity(contract: ERC20.USDC.contract.string, name: ERC20.USDC.name, symbol: ERC20.USDC.symbol)
-}
-
 import WalletData
-extension NftEntity {
-    static let munko2309 = NftEntity(nft: .munko2309)
-    static let munko2310 = NftEntity(nft: .munko2310)
+extension ContractEntity {
+    static let munko = ContractEntity(address: ERC721.Munko.contract.string, name: ERC721.Munko.name, symbol: ERC721.Munko.symbol, decimals: nil)
+    static let usdc = ContractEntity(address: ERC20.USDC.contract.string, name: ERC20.USDC.name, symbol: ERC20.USDC.symbol, decimals: ERC20.USDC.decimals)
+
 }
+
 extension NFTIntent {
     
     static var m2309: NFTIntent {

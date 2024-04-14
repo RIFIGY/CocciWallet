@@ -10,17 +10,17 @@ import ChainKit
 import Web3Kit
 import WalletData
 
-struct NFTGridView<Token:Contract>: View {
+struct NFTGridView: View {
     typealias NFT = WalletData.NFT
     
-    let nfts: [Token : [NFT]]
+    let nfts: [NFT]
         
     @State private var searchText = ""
     @State private var layout = BrowserLayout.grid
 
     
     var filteredNFTs: [NFT] {
-        nfts.flatMap{$0.value}
+        nfts
     }
     
     var tableImageSize: Double {
@@ -73,7 +73,7 @@ struct NFTGridView<Token:Contract>: View {
                         NFTImageView(nft: nft, contentMode: .fit)
                             .frame(width: tableImageSize, height: tableImageSize)
 
-                        Text(nft.metadata?.name ?? nft.tokenId.description)
+                        Text(nft.name ?? nft.tokenId)
                     }
 
                 }

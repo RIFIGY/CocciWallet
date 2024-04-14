@@ -130,7 +130,7 @@ extension AttributeCell {
 
 import WalletData
 #Preview("Grid") {
-    AttributeGrid(NFT.munko2309.metadata!.attributes!, columns: 4)
+    AttributeGrid(NFT.munko2309.opensea!.attributes!, columns: 4)
 }
 
 #Preview("Cell"){

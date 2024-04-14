@@ -8,9 +8,15 @@
 import SwiftUI
 import Web3Kit
 import OffChainKit
+import SwiftData
 
 struct AddNetworkView: View {
-    let address: Web3Kit.EthereumAddress
+    @Environment(\.modelContext) private var context
+    @Environment(Prices.self) private var prices
+    @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
+    @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIds = "ethereum"
+
+    @Bindable var wallet: Wallet
     var network: (EthereumNetworkCard) -> Void
     
     @Environment(\.dismiss) private var dismiss
@@ -30,7 +36,7 @@ struct AddNetworkView: View {
 
                 Section {
                     NavigationLink {
-                        AddCustomNetworkView(address: address) { evm in
+                        AddCustomNetworkView(wallet: wallet) { evm in
                             network(evm)
                             dismiss()
                         }
@@ -50,11 +56,20 @@ struct AddNetworkView: View {
     }
 
     func add(evm: EthereumCardEntity) {
-        let card = EthereumNetworkCard(address: address, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
+        let card = EthereumNetworkCard(wallet: wallet, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
+        context.insert(card)
+        wallet.networks.append(card)
         add(network: card)
     }
     
     func add(network: EthereumNetworkCard) {
+        if let coin = CoinGecko.AssetPlatform.NativeCoin(chainID: network.chain) {
+            var ids = self.coinIds
+            guard !ids.contains(coin) else {return}
+            self.coinIds = ids + ",coin"
+            prices.fetch(coin: coin, currency: currency)
+
+        }
         self.network(network)
         dismiss()
     }

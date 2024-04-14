@@ -57,7 +57,7 @@ struct NftProvider: AppIntentTimelineProvider {
 extension NftProvider {
     
     private func fetchImage(nft: NftEntity?) async throws -> PlatformImage? {
-        guard let imageUrl = nft?.imageUrl else {return nil}
+        guard let imageUrl = nft?.imageURL else {return nil}
         let gateway = IPFS.Gateway(imageUrl)
         let (data, _) = try await URLSession.shared.data(from: gateway)
         return PlatformImage(data: data)
@@ -68,7 +68,7 @@ extension NftProvider {
         let nfts = await WalletContainer.shared.fetchAllNFTs(wallet: wallet, networkID: network, contract: contract)
         if let random = nfts.randomElement() {
             #warning("fix this")
-            return NftEntity(tokenId: random.tokenId.description, contract: contract ?? "", imageUrl: random.uri)
+            return random
         } else {return nil}
         
     }

@@ -11,23 +11,7 @@ import Web3Kit
 import ChainKit
 import WalletData
 
-struct ContractEntity: AppEntity, Identifiable, Codable {
-    var id: String { contract }
-    
-    let contract: String
-    let name: String
-    
-    var symbol: String?
-    
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
-    }
-    
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Contract"
-    
-    static var defaultQuery = NftContractQuery()
-}
-
+//typealias ContractEntity = WalletData.ContractEntity
 
 struct NftContractQuery: EntityQuery {
     
@@ -35,17 +19,18 @@ struct NftContractQuery: EntityQuery {
     var nftIntent
     
     func suggestedEntities() async throws -> [ContractEntity] {
-        guard let wallet = nftIntent?.wallet,
-              let network = nftIntent?.network else {return []}
-        let contracts = await WalletContainer.shared.fetchNFTContracts(wallet: wallet.id, networkID: network.id)
-
-        if contracts.isEmpty {
-            return [ContractEntity(contract: "None", name: "none")]
-        } else {
-            return contracts.map { contract in
-                ContractEntity(contract: contract)
-            }
-        }
+        []
+//        guard let wallet = nftIntent?.wallet,
+//              let network = nftIntent?.network else {return []}
+//        let contracts = await WalletContainer.shared.fetchNFTContracts(wallet: wallet.id, networkID: network.id)
+//
+//        if contracts.isEmpty {
+//            return []
+//        } else {
+//            return contracts.map { contract in
+//                ContractEntity(contract: contract.contract, name: contract.name ?? contract.contract.shortened(), symbol: contract.symbol)
+//            }
+//        }
     }
     
     func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
@@ -59,18 +44,19 @@ struct TokenQuery: EntityQuery {
     var tokenIntent
         
     func suggestedEntities() async throws -> [ContractEntity] {
-        guard let wallet = tokenIntent?.wallet,
-              let network = tokenIntent?.network else {return []}
-        
-        let contracts = await WalletContainer.shared.fetchTokens(wallet: wallet.id, networkID: network.id)
-
-        if contracts.isEmpty {
-            return [ContractEntity(contract: "None", name: "none")]
-        } else {
-            return contracts.map { contract in
-                ContractEntity(contract: contract)
-            }
-        }
+        []
+//        guard let wallet = tokenIntent?.wallet,
+//              let network = tokenIntent?.network else {return []}
+//        
+//        let contracts = await WalletContainer.shared.fetchTokens(wallet: wallet.id, networkID: network.id)
+//
+//        if contracts.isEmpty {
+//            return [ContractEntity(contract: "None", name: "none")]
+//        } else {
+//            return contracts.map { contract in
+//                ContractEntity(contract: contract.contract, name: contract.name ?? contract.contract.shortened(), symbol: contract.symbol)
+//            }
+//        }
     }
     
     func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
@@ -78,11 +64,11 @@ struct TokenQuery: EntityQuery {
     }
     
 }
-
-extension ContractEntity {
-    init(contract: any Contract) {
-        self.contract = contract.contract.string
-        self.name = contract.title
-        self.symbol = contract.symbol
-    }
-}
+//
+//extension ContractEntity {
+//    init(contract: any Contract) {
+//        self.contract = contract.contract.string
+//        self.name = contract.title
+//        self.symbol = contract.symbol
+//    }
+//}

@@ -55,7 +55,7 @@ struct NetworkView: View {
 #Preview {
     NavigationStack {
         ScrollView {
-            NetworkCardView(card: .preview, animation: Namespace().wrappedValue)
+            NetworkCardView(card: .preview)
                 .frame(height: 200)
                 .padding(.horizontal)
             NetworkView(card: .constant(.preview)){}

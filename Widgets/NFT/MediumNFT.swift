@@ -22,11 +22,11 @@ struct MediumNftWidget: View {
                 .clipShape(RoundedRectangle(cornerRadius: 16))
             if let nft {
                 VStack(alignment: .leading) {
-                    Text(nft.contractName ?? nft.contract.shortened())
+                    Text(nft.contract.shortened())
                         .font(.title3)
                     Text("#\(nft.tokenId)")
                         .font(.title)
-                    if let name = nft.metadata?.name {
+                    if let name = nft.name {
                         Text(name)
                     }
                 }

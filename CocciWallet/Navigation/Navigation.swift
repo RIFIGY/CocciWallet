@@ -8,40 +8,56 @@
 import Foundation
 import WalletData
 import SwiftUI
+import OSLog
 
 @Observable
 class Navigation {
+    private let logger = Logger(subsystem: "app.rifigy.CocciWallet.Navigation", category: "navigation")
+    var wallet: Wallet?
+    var network: EthereumNetworkCard?
     
-//    var selected: Wallet?
-    var selectedNetwork: EthereumNetworkCard?
+    
+    var panel: Panel? = Panel.network
+
+    var path = NavigationPath()
+
     
     var showNewNetwork = false
     var showSettings = false
     var showNetworkSettings = false
     var showWallets = false
     
-        
     
-    func select(from wallets: [Wallet], lastSelected: String) {
-        
-        let wallet: Wallet?
-        
-        if lastSelected.isEmpty {
-            wallet = wallets.first
-        } else {
-            wallet = wallets.first{$0.id == lastSelected}
-        }
-        print("Selecting \(wallet?.name ?? "None")")
-//        self.selected = wallet
-//        self.selectedNetwork = wallet?.networks.last
+    func clearPath(count: Int? = nil) {
+        path.removeLast(count ?? path.count)
     }
     
-//    func select(wallet: Wallet) {
-//        guard self.selected != wallet else {return}
-//        self.selected = wallet
-//    }
-//    
-//    func deleted(wallet: Wallet, in wallets: [Wallet]) {
-//        self.selected = wallets.first{$0 != wallet}
-//    }
+    func select(_ wallet: Wallet?) {
+        withAnimation {
+            self.wallet = wallet
+            self.network = wallet?.networks.first
+        }
+    }
+    
+    func select(_ network: EthereumNetworkCard?) {
+        withAnimation {
+            self.network = network
+        }
+    }
+    
+    func onOpenURL(_ url: URL) {
+        logger.log("Received URL: \(url, privacy: .public)")
+        
+        let nft = "\(url.lastPathComponent)"
+        
+        let contract = "contract"
+        self.panel = Panel.nft("contract")
+        Task {
+            var newPath = NavigationPath()
+
+            newPath.append(Panel.nfts)
+            newPath.append(nft)
+            path = newPath
+        }
+    }
 }

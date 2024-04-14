@@ -45,7 +45,7 @@ struct CustomNetworkView: View {
 
 struct AddCustomNetworkView: View {
     
-    let address: Web3Kit.EthereumAddress
+    let wallet: Wallet
     
     @State private var name: String = ""
     @State private var chainId: Int?
@@ -80,7 +80,7 @@ struct AddCustomNetworkView: View {
                 
         self.network(
             EthereumNetworkCard(
-                address: address,
+                wallet: wallet,
                 chain: chainId,
                 rpc: rpc,
                 name: name,

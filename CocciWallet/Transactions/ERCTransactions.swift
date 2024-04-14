@@ -7,10 +7,10 @@
 
 import SwiftUI
 import Web3Kit
-import ChainKit
+import WalletData
 
-struct ERCTransactions<E:Contract, T:ERCTransfer>: View {
-    let transfers: [E]
+struct ERCTransactions<T:ERCTransfer>: View {
+    let transfers: [WalletData.Token]
     let transactions: [T]
 
     let address: Web3Kit.EthereumAddress
@@ -36,7 +36,7 @@ struct ERCTransactions<E:Contract, T:ERCTransfer>: View {
 //                    .toolbarRole(.editor)
 //                    #endif
                 } label: {
-                    if let erc20 = transfers.first(where: {$0.contract.string.lowercased() == tx.contract.string.lowercased()}) as? ERC20 {
+                    if let erc20 = transfers.first(where: {$0.address.lowercased() == tx.contract.string.lowercased()}) as? ERC20 {
                         TransactionCellView(tx: tx, symbol: erc20.symbol, decimals: erc20.decimals ?? 18, isCell: false)
                     } else {
                         TransactionCellView(tx: tx, symbol: symbol, isCell: false)

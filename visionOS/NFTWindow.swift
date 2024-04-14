@@ -22,15 +22,15 @@ struct NFTWindow: View {
     }
     
     var toke: [String] {
-        networks.flatMap{$0.tokens.map{$0.key.contract.string}}
+        networks.flatMap{$0.tokens.map{$0.address}}
     }
     
     var contracts: [String] {
-        networks.flatMap{$0.nfts.map{$0.key.contract.string}}
+        networks.flatMap{$0.nfts.map{$0.contract}}
     }
     
     var nfts: [NFT] {
-        networks.flatMap{$0.nfts.flatMap{$0.value}}
+        networks.flatMap{$0.nfts}
     }
     var nft: NFT? {
         nfts.first

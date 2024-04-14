@@ -91,7 +91,7 @@ struct NFTGallery: View {
                     .frame(width: thumbnailSize, height: thumbnailSize)
 
                 VStack {
-                    Text(nft.metadata?.name ?? "Name")
+                    Text(nft.name ?? "Name")
 //                            HStack(spacing: 4) {
 //                                flavor.image
 //                                Text(flavor.name)

@@ -58,6 +58,9 @@ struct SelectWalletView: View {
                 }
             }
         }
+        #if os(macOS)
+        .frame(minWidth: 300, minHeight: 250)
+        #endif
         .navigationTitle("Wallets")
         .toolbar {
             ToolbarItem(placement: .primaryAction) {
@@ -72,11 +75,13 @@ struct SelectWalletView: View {
             }
         }
         .sheet(isPresented: $showNewWallet, onDismiss: { dismiss() }) {
-            AddWalletView()
-                #if os(macOS)
-                .frame(minHeight: 450)
-                //        .frame(maxWidth: 800, maxHeight: 700)
-                #endif
+            NavigationStack {
+                AddWalletView()
+                    #if os(macOS)
+                    .frame(minHeight: 450)
+                    //        .frame(maxWidth: 800, maxHeight: 700)
+                    #endif
+            }
         }
         .alert("Delete Wallet", isPresented: presentAlert, presenting: walletToDelete) { wallet in
             Button("Delete", role: .destructive) {

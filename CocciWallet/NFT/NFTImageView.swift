@@ -91,13 +91,8 @@ extension NFTImageView {
 import Web3Kit
 extension NFTImageView {
     init(nft: WalletData.NFT, contentMode: ContentMode = .fit) where P == EmptyView {
-        if let image = nft.image {
-            self.image = image
-            self.url = nil
-        } else {
-            self.url = nft.imageURL
-            self.image = nil
-        }
+        self.url = nft.imageURL
+        self.image = nil
         self.contentMode = contentMode
         self.placeholder = nil
     }
@@ -110,4 +105,10 @@ extension NFTImageView {
 
 #Preview("URL") {
     NFTImageView(url: .image2309)
+}
+
+extension WalletData.NFT {
+    public var name: String? { opensea?.name }
+    public var opensea: OpenSeaMetadata? { try? JSONDecoder().decode(OpenSeaMetadata.self, from: metadata ?? Data()) }
+
 }

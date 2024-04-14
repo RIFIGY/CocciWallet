@@ -56,7 +56,7 @@ struct NetworkQuery: EntityQuery {
 }
 
 extension NetworkEntity {
-    init(network: Web3Network) {
+    init(network: WalletData.Network) {
         self.id = network.id
         self.title = network.name
         self.symbol = network.symbol

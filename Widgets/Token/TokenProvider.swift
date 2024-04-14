@@ -50,10 +50,10 @@ struct TokenProvider: AppIntentTimelineProvider {
         let balance = await WalletContainer.shared.fetchBalance(
             wallet: intent.wallet.id,
             networkID: intent.network.id,
-            contract: intent.contract.contract
+            contract: intent.contract.address
         )
         #warning("fix this")
-        var entry = TokenEntry(date: .now, intent: intent, balance: balance?.value(decimals: 18))
+        var entry = TokenEntry(date: .now, intent: intent, balance: balance)
         
         do {
             let currentPrice = try await fetchPrice(network: intent.network, contract: intent.contract, currency: intent.currency)
@@ -71,7 +71,7 @@ struct TokenProvider: AppIntentTimelineProvider {
     
     private func fetchPrice(network: NetworkEntity, contract entity: ContractEntity, currency: String) async throws -> Double {
         let chain = Int(network.id)
-        let contract = entity.contract
+        let contract = entity.address
         guard let chain, let platform = CoinGecko.AssetPlatform.NativeCoin(chainID: chain) else {
             throw NSError(domain: "CoinGeckoWidget", code: 2, userInfo: [NSLocalizedDescriptionKey: "No Native Platform ID"])
         }

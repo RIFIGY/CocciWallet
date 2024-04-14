@@ -30,7 +30,7 @@ public class Etherscan {
         
         let key = "\(address)_\(explorer)_tx"
         if let item: [Transaction] = cache?.fetch(for: key) {
-            print("Etherscan: \(item.count) TXs")
+//            print("Etherscan: \(item.count) TXs")
             return item
         }
 

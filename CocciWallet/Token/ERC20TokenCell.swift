@@ -16,7 +16,7 @@ struct TokenCell: View {
     let name: String?
     let symbol: String?
     let decimals: UInt8
-    let balance: BigUInt?
+    let balance: Double?
     
     let network: Color
     var useNetworkColor: Bool = false
@@ -33,7 +33,7 @@ struct TokenCell: View {
     
     
     var value: Double? {
-        balance?.value(decimals: decimals)
+        balance
     }
     
     var body: some View {
@@ -69,25 +69,23 @@ struct TokenCell: View {
     }
 }
 
-
-import ChainKit
-import BigInt
+import WalletData
 extension TokenCell {
-    init<C:Contract>(_ contract: C, balance: BigUInt?, network: Color, useNetworkColor: Bool = false) {
-        self.name = contract.name
-        self.symbol = contract.symbol
-        self.decimals = contract.decimals ?? 18
-        self.balance = balance
-        self.contract = contract.contract.string
+    init(_ token: Token, network: Color, useNetworkColor: Bool = false) {
+        self.name = token.name
+        self.symbol = token.symbol
+        self.decimals = token.decimals ?? 18
+        self.balance = token.balance
+        self.contract = token.address
         self.useNetworkColor = useNetworkColor
-        self.icon = Icon(symbol: contract.symbol)
+        self.icon = Icon(symbol: token.symbol)
         self.network = network
     }
 }
 
-#Preview {
-    List {
-        TokenCell(ERC20.USDC, balance: 353823, network: .ETH)
-    }
-    .environment(PriceModel() )
-}
+//#Preview {
+//    List {
+//        TokenCell(ERC20.USDC, balance: 353823, network: .ETH)
+//    }
+//    .environment(PriceModel() )
+//}

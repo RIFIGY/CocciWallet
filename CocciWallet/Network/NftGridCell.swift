@@ -16,7 +16,7 @@ struct NftGridCell: View {
 
     typealias NFT = WalletData.NFT
 
-    let nfts: [ERC721 : [NFT]]
+    let nfts: [NFT]
     let address: EthereumAddress
     
 //    let favorite: NftEntity?
@@ -24,7 +24,8 @@ struct NftGridCell: View {
     var imageSize: CGFloat = 160
 
     private var cover: NFT? {
-        nfts.flatMap{$0.value}.first{$0.imageURL != nil }
+        nil
+//        nfts.flatMap{$0.value}.first{$0.imageURL != nil }
 //        nfts.first?.value.first{$0.imageURL != nil}
     }
 
@@ -33,7 +34,7 @@ struct NftGridCell: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("NFT \(nfts.flatMap{$0.value}.count)")
+            Text("NFT \(nfts.count)")
             Group {
                 if let cover {
                     NFTImageView(nft: cover, contentMode: .fill)

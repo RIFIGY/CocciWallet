@@ -9,18 +9,8 @@ import SwiftUI
 import BigInt
 
 struct NetworkCardSettings: View {
-    @Binding var card: EthereumNetworkCard
-    var remove: ()->Void = {}
-    
-    var body: some View {
-        Web3NetworkCardSettings(card: $card, remove: remove)
-    }
-
-}
-
-struct Web3NetworkCardSettings: View {
     @AppStorage(AppStorageKeys.favoriteNFT, store: UserDefaults.group) var favoriteNFT: String = ""
-    @Binding var card: EthereumNetworkCard
+    @Bindable var card: EthereumNetworkCard
     
     var color: Color { card.color }
     var chain: Int { card.chain }
@@ -36,43 +26,11 @@ struct Web3NetworkCardSettings: View {
                     Toggle("Show Balance", isOn: $card.settings.showBalance)
                         .toggleStyle(SwitchToggleStyle(tint: color))
                 }
-                
-//                IconCell(systemImage: "photo.artframe", color: .purple) {
-//                    Text("Favorite NFT")
-//                    Spacer()
-//                    Menu(nftLabel) {
-//                        Button("Random") { card.settings.coverNFT = nil; withAnimation{ chooseNftTapped = false } }
-//                        Button("Choose") { withAnimation { chooseNftTapped = true } }
-//                    }
-//                }
-//                if let coverNFT = card.settings.coverNFT {
-//                    NavigationLink {
-//                        NftListView(tokens: card.nfts.tokens) { metadata in
-//                            self.favoriteNFT = metadata.tokenId.description
-//                            card.settings.coverNFT = .init(nft: metadata)
-//                        }
-//                    } label: {
-//                        Text(nftName ?? coverNFT.tokenId.description)
-//                    }
-//                } else if chooseNftTapped {
-//                    NavigationLink {
-//                        NftListView(tokens: card.nfts.tokens) { metadata in
-//                            self.favoriteNFT = metadata.tokenId.description
-//                            card.settings.coverNFT = .init(nft: metadata)
-//                        }
-//                    } label: {
-//                        HStack {
-//                            Spacer()
-//                            Text("Choose").foregroundStyle(.secondary)
-//                        }
-//                    }
-//                }
-
             }
             if card.isCustom {
                 Section {
                     NavigationLink {
-                        AdvancedNetworkSettings(card: $card)
+                        AdvancedNetworkSettings(card: card)
                     } label: {
                         Text("Advanced")
                     }
@@ -118,7 +76,7 @@ struct AdvancedNetworkSettings: View {
     var color: Color { card.color }
     var chain: Int { card.chain }
     
-    @Binding var card: EthereumNetworkCard
+    @Bindable var card: EthereumNetworkCard
     
     @State private var testedRpc: Bool = false
     
@@ -151,3 +109,33 @@ struct AdvancedNetworkSettings: View {
 //        NetworkCardSettings(card: .ETH)
 //    }
 //}
+//                IconCell(systemImage: "photo.artframe", color: .purple) {
+//                    Text("Favorite NFT")
+//                    Spacer()
+//                    Menu(nftLabel) {
+//                        Button("Random") { card.settings.coverNFT = nil; withAnimation{ chooseNftTapped = false } }
+//                        Button("Choose") { withAnimation { chooseNftTapped = true } }
+//                    }
+//                }
+//                if let coverNFT = card.settings.coverNFT {
+//                    NavigationLink {
+//                        NftListView(tokens: card.nfts.tokens) { metadata in
+//                            self.favoriteNFT = metadata.tokenId.description
+//                            card.settings.coverNFT = .init(nft: metadata)
+//                        }
+//                    } label: {
+//                        Text(nftName ?? coverNFT.tokenId.description)
+//                    }
+//                } else if chooseNftTapped {
+//                    NavigationLink {
+//                        NftListView(tokens: card.nfts.tokens) { metadata in
+//                            self.favoriteNFT = metadata.tokenId.description
+//                            card.settings.coverNFT = .init(nft: metadata)
+//                        }
+//                    } label: {
+//                        HStack {
+//                            Spacer()
+//                            Text("Choose").foregroundStyle(.secondary)
+//                        }
+//                    }
+//                }

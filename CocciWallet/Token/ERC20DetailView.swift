@@ -10,22 +10,22 @@ import BigInt
 import Web3Kit
 import OffChainKit
 import ChainKit
+import WalletData
 
-struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
+struct ERC20DetailView<T:ERCTransfer>: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
 
-    let contract: E
-    let address: String
-    let name: String?
-    let symbol: String?
-    let decimals: UInt8
-    
-    var balance: BigUInt?
+    let token: WalletData.Token
+    var address: String { token.address }
     var price: Double?
     
     let transactions: [T]
     
     let network: Color
+    
+    var symbol: String? {
+        token.symbol
+    }
     
     var icon: Icon? {
         Icon(symbol: symbol)
@@ -35,9 +35,12 @@ struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
         icon?.color ?? network
     }
     
+    var name: String {
+        token.name
+    }
     
     var value: Double? {
-        guard let price, let value = balance?.value(decimals: decimals) else {return nil}
+        guard let price, let value = token.balance else {return nil}
         return value * price
     }
     var body: some View {
@@ -45,7 +48,7 @@ struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
             VStack {
                 IconImage(symbol: symbol, size: 164, fallback: network)
 
-                Text(name ?? address.shortened())
+                Text(name)
                     .font(.largeTitle.weight(.semibold))
                 Text(symbol ?? "--")
                     .font(.title)
@@ -64,8 +67,8 @@ struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
 
                 Grid {
                     GridRow {
-                        if let balance {
-                            GridCell(title: "Balance", balance: balance.value(decimals: decimals), value: value)
+                        if let balance = token.balance {
+                            GridCell(title: "Balance", balance: balance, value: value)
                         }
                         if let price {
                             GridCell(title: "Price", detail: "1 \(symbol ?? "Token")", value: price.formatted(.currency(code: currency)))
@@ -88,7 +91,7 @@ struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
                         }
                     }
                 }
-                .networkTheme(symbol: self.symbol, color: color, decimals: decimals)
+                .networkTheme(symbol: self.symbol, color: color, decimals: token.decimals ?? 18)
 
                 if !transactions.isEmpty {
 //                    ERCTransactions(transfers: [contract], transactions: transactions, address: address, symbol: symbol)
@@ -120,27 +123,14 @@ struct ERC20DetailView<E:Contract, T:ERCTransfer>: View {
 //    }
 }
 
-extension ERC20DetailView {
-    init(_ contract: E, balance: BigUInt?, price: Double? = nil, tx: [T], network: Color ) {
-        self.contract = contract
-        self.address = contract.contract.string
-        self.name = contract.name
-        self.symbol = contract.symbol
-        self.decimals = contract.decimals ?? 18
-        self.balance = balance
-        self.price = price
-        self.transactions = tx
-        self.network = network
-        
-    }
-}
 
-#Preview {
-    ERC20DetailView(
-        ERC20.USDC,
-        balance: 20000000,
-        price: 1.00,
-        tx: [ERC20Transfer](),
-        network: .ETH
-    )
-}
+
+//#Preview {
+//    ERC20DetailView(
+//        ERC20.USDC,
+//        balance: 20000000,
+//        price: 1.00,
+//        tx: [ERC20Transfer](),
+//        network: .ETH
+//    )
+//}

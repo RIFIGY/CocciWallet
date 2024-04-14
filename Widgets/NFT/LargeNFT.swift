@@ -15,7 +15,7 @@ struct LargeNFT: View {
     let nft: NftEntity?
     let image: PlatformImage?
     
-    var metadata: OpenSeaMetadata? { nft?.metadata }
+    var metadata: OpenSeaMetadata? { nft?.opensea }
     
     let nfts: [NftEntity]
     let images: [PlatformImage?]

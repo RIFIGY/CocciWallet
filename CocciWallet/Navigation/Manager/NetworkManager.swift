@@ -37,7 +37,7 @@ class NetworkManager {
     }
     
 
-    func add(network: Web3Network) {
+    func add(network: WalletData.Network) {
         let chain = network.chain
         guard web3[chain] == nil,
                 let infuraURL = Infura.shared.URL(chainInt: chain) else {return}

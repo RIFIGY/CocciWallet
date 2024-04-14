@@ -6,14 +6,12 @@
 //
 
 import SwiftData
-import ChainKit
-import Web3Kit
 import SwiftUI
 
 @Model
 public class PrivateKeyWallet {
-    public typealias Client = EthereumClient.Client
-    public typealias Address = Client.Account.Address
+//    public typealias Client = EthereumClient.Client
+//    public typealias Address = Client.Account.Address
     
     @Attribute(.unique)
     public var id: String
@@ -21,12 +19,12 @@ public class PrivateKeyWallet {
     
     public var settings: Settings
     
-    public var networks: [WalletData.Network<Client>]
+    public var networks: [WalletData.Network]
     
     public var type: Kind
 
-    public init(address: Address, name: String, type: Kind = .watch) {
-        self.id = address.string
+    public init(address: String, name: String, type: Kind = .watch) {
+        self.id = address
         self.type = type
         self.name = name
         self.networks = []
@@ -43,12 +41,12 @@ public class PrivateKeyWallet {
     }
     
     @Transient
-    public var selected: WalletData.Network<Client>? = nil
+    public var selected: WalletData.Network? = nil
 }
 
 
 public extension PrivateKeyWallet {
-    var address: Address { .init(id) }
+//    var address: Address { .init(id) }
 
     var hasKey: Bool {
         type != .watch

@@ -13,7 +13,7 @@ struct NFTDetail: View {
     let nft: WalletData.NFT
     
     var metadata: OpenSeaMetadata? {
-        nft.metadata
+        nft.opensea
     }
     
     var nftImageName: some View {

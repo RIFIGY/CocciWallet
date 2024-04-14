@@ -27,8 +27,8 @@ extension Web3Kit.NFT {
 }
 
 extension WalletData.NFT {
-    static let munko2309 = WalletData.NFT(nft: Web3Kit.NFT.munko2309, contract: ERC721.Munko, json: MunkoJSON.data_2309)
-    static let munko2310 = WalletData.NFT(nft: Web3Kit.NFT.munko2310, contract: ERC721.Munko, json: MunkoJSON.data_2310)
+    static let munko2309 = WalletData.NFT(tokenId: "2309", contract: ERC721.Munko.contract.string, uri: .munko2309, metadata: MunkoJSON.data_2309, imageURL: .image2309)
+    static let munko2310 = WalletData.NFT(tokenId: "2310", contract: ERC721.Munko.contract.string, uri: .munko2310, metadata: MunkoJSON.data_2310, imageURL: .image2310)
 }
 
 extension ERC721 {

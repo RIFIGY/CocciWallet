@@ -22,12 +22,15 @@ let package = Package(
         .package(url: "https://github.com/argentlabs/web3.swift", from: "1.6.1"),
         .package(url: "https://github.com/attaswift/BigInt.git", from: "5.3.0"),
         .package(name: "ChainKit", path: "../ChainKit"),
+        .package(name: "OffChainKit", path: "../OffChainKit"),
+
 
     ],
     targets: [
         .target(
             name: "Web3Kit",
             dependencies: [
+                "OffChainKit",
                 "ChainKit",
                 .product(name: "BigInt", package: "BigInt"),
                 .product(name: "web3.swift", package: "web3.swift"),

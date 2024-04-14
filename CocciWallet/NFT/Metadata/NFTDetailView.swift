@@ -13,7 +13,7 @@ struct NFTDetailView: View {
     @Environment(\.colorScheme) private var colorScheme
 //    @Environment(EthereumNetworkCard.self) private var card
 
-    @Bindable var model: NFT
+    let model: NFT
 
     var body: some View {
         GeometryReader { proxy in
@@ -26,7 +26,7 @@ struct NFTDetailView: View {
                         .opacity(0.001)
                         .padding(.top, -16)
                     VStack(alignment: .leading) {
-                        Text(model.metadata?.name ?? "")
+                        Text(model.name ?? "")
                             .font(.largeTitle.weight(.bold))
                             .padding(.top)
                         Text(model.metadata?.description ?? "")
@@ -35,7 +35,7 @@ struct NFTDetailView: View {
                             .padding(.vertical, 4)
                         Section {
                             NavigationLink {
-                                NftContractView(model: .init(contract: model.contract), address: model.contract, name: model.contractName, symbol: model.symbol)
+//                                NftContractView(model: .init(contract: model.contract), address: model.contract, name: model.contractName, symbol: model.symbol)
 //                                    .environment(card)
                             } label: {
                                 AttributeCell(name: "") {
@@ -59,7 +59,7 @@ struct NFTDetailView: View {
                                 Headline("Addtitional")
                             }
                         }
-                        if let attributes = model.metadata?.attributes {
+                        if let attributes = model.opensea?.attributes {
                             Section {
                                 NftAttributeGrid(attributes: attributes)
                             } header: {

@@ -69,19 +69,33 @@ class Prices {
 }
 
 extension Prices {
+    
+    func fetch(coin id: String, currency: String) {
+        Task {
+            do {
+                let price = try await api.fetchPrice(coin: id, currency: currency)
+                withAnimation {
+                    self.prices[id] = [currency:price]
+                }
+            } catch {
+                print("Price Error: \(error)")
+            }
+        }
+    }
+    
     func fetch(coinIDs ids: String, currency: String) {
         let ids = ids.components(separatedBy: ",")
 
         Task {
             do {
                 let prices = try await api.fetchPrices(coins: ids, currency: currency)
-                prices.forEach { key, value in
-                    let coin = key.lowercased()
-                    let currency = currency.lowercased()
-                    
-                    withAnimation {
-                        self.prices[coin] = [currency:value]
-                    }
+                
+                let sheet = prices.reduce(into: [String : Price]()) { partialResult, result in
+                    let (id, price) = result
+                    partialResult[id] = [currency:price]
+                }
+                withAnimation {
+                    self.prices = sheet
                 }
             } catch {
                 print("Price Error: \(error)")

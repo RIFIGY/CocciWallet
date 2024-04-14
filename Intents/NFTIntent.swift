@@ -8,6 +8,7 @@
 import Foundation
 import AppIntents
 import WidgetKit
+import WalletData
 
 
 struct NFTIntent: WidgetConfigurationIntent {

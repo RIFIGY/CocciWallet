@@ -9,21 +9,19 @@ import SwiftUI
 import BigInt
 import Web3Kit
 import ChainKit
-
-struct TokensListView<Token: Contract, Transfer:ERCTransfer>: View {
-
+import WalletData
+struct TokensListView<Transfer:ERCTransfer>: View {
+    typealias Token = WalletData.Token
     @State private var showAddToken = false
     
     let network: Color
     let address: Web3Kit.EthereumAddress
     
-    let balances: [Token : BigUInt]
+    let balances: [Token]
     var transfers: [Transfer]
         
-    var sortedBalances: [(contract: Token, balance: BigUInt)] {
-        balances.map {
-            ($0.key, $0.value)
-        }.sorted { $0.contract.contract.string < $1.contract.contract.string }
+    var sortedBalances: [Token] {
+        balances.sorted { $0.address < $1.address }
     }
     
     var contractInteractions: [Web3Kit.EthereumAddress] {
@@ -32,8 +30,8 @@ struct TokensListView<Token: Contract, Transfer:ERCTransfer>: View {
     
     var transferContracts: [Token] {
         let contracts = Array(Set(transfers.map { $0.contract }))
-        let tokens = balances.map{$0.key}.filter{ contract in
-            contracts.map{$0.string}.contains(contract.contract.string)
+        let tokens = balances.filter{ contract in
+            contracts.map{$0.string.lowercased()}.contains(contract.address.lowercased())
         }
         return tokens
     }
@@ -42,11 +40,11 @@ struct TokensListView<Token: Contract, Transfer:ERCTransfer>: View {
     
     var body: some View {
         List {
-            ForEach(sortedBalances, id: \.contract.id) { token in
+            ForEach(sortedBalances, id: \.address) { token in
                 NavigationLink {
-                    ERC20DetailView(token.contract, balance: balances[token.contract], tx: [ERC20Transfer](), network: network)
+                    ERC20DetailView(token: token, transactions: transfers, network: network)
                 } label : {
-                    TokenCell(token.contract, balance: token.balance, network: network)
+                    TokenCell(token, network: network)
                 }
             }
             ERCTransactions(transfers: transferContracts, transactions: transfers, address: address, symbol: nil)
@@ -68,12 +66,12 @@ struct TokensListView<Token: Contract, Transfer:ERCTransfer>: View {
             SearchERC20View(chosen: addToken)
         }
         .navigationDestination(item: $selected) { token in
-            ERC20DetailView(token, balance: balances[token], tx: [ERC20Transfer](), network: network)
+            ERC20DetailView(token: token, transactions: [ERC20Transfer](), network: network)
         }
     }
     
-    func addToken(_ token: any ChainKit.Contract) async -> Bool {
-        !contractInteractions.map{$0.string.lowercased()}.contains(token.contract.string.lowercased())
+    func addToken(_ token: ContractEntity) async -> Bool {
+        !contractInteractions.map{$0.string.lowercased()}.contains(token.address.lowercased())
     }
     
 }

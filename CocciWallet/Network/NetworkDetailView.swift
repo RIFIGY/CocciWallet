@@ -9,13 +9,11 @@ import SwiftUI
 import Web3Kit
 
 struct NetworkDetailView: View {
-    let card: EthereumNetworkCard
+    @Bindable var card: EthereumNetworkCard
     
     var saved: ()->Void = {}
     var removed: ()->Void = {}
-    
-    @Namespace
-    var animation
+
     
     var address: EthereumAddress { card.address }
     
@@ -24,7 +22,7 @@ struct NetworkDetailView: View {
     var body: some View {
         ScrollView(.vertical) {
             VStack(spacing: 16) {
-                NetworkCardView(card: card, animation: animation)
+                NetworkCardView(card: card)
                     .frame(height: 200)
                     .frame(maxWidth: 600)
                     .padding(.horizontal)
@@ -45,20 +43,44 @@ struct NetworkDetailView: View {
                 }
             }
         }
-//        .sheet(isPresented: $showSettings) {
-//            NavigationStack {
-//                NetworkCardSettings(card: $card) {
-////                                    removed()
-//                }
-//                .toolbar {
-//                    ToolbarItem(placement: .cancellationAction) {
-//                        Button("Back", systemImage: "chevron.left") {
-//                            showSettings = false
-//                        }
-//                    }
-//                }
-//            }
-//        }
+        .navigationDestination(for: NetworkCardDestination.self) { destination in
+            Group {
+                switch destination {
+                case .send:
+                    Text("Send")
+                case .receive:
+                    AddressView(address: card.address.string, name: card.name)
+                case .stake:
+                    StakeView()
+                case .swap:
+                    SwapView()
+                case .nft:
+                    NFTGridView(nfts: card.nfts)
+                case .tokens:
+                    Text("Tokkens")
+//                    TokensListView(network: card.color, address: card.address, balances: card.tokens, transfers: [ERC20Transfer]())
+                case .balance:
+                    Text("Balance")
+                }
+            }
+            #if !os(tvOS)
+            .toolbarRole(.editor)
+            #endif
+        }
+        .sheet(isPresented: $showSettings) {
+            NavigationStack {
+                NetworkCardSettings(card: card) {
+//                                    removed()
+                }
+                .toolbar {
+                    ToolbarItem(placement: .cancellationAction) {
+                        Button("Back", systemImage: "chevron.left") {
+                            showSettings = false
+                        }
+                    }
+                }
+            }
+        }
 
 
     }
@@ -86,7 +108,7 @@ struct NetworkGrid: View {
                         NetworkGridCell(.balance, balance: card.value, value: value)
                         NetworkGridCell(
                             .tokens,
-                            balance: Double(card.tokens.keys.count),
+                            balance: Double(card.tokens.count),
                             value: tokenValue
                         )
                     }
@@ -124,9 +146,10 @@ struct NetworkGrid: View {
     
     var tokenValue: Double {
         card.tokens.reduce(into: 0.0) { total, entry in
-            let (contract, balance) = entry
-            let price = priceModel.price(contract: contract.contract.string, currency: currency)
-            let value = balance.value(decimals: contract.decimals ?? 18) * (price ?? 0)
+            let contract = entry
+            let balance = contract.balance
+            let price = priceModel.price(contract: contract.address, currency: currency)
+            let value = (balance ?? 0) * (price ?? 0)
             total += value
         }
     }

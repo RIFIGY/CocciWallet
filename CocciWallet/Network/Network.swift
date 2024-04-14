@@ -15,39 +15,24 @@ import SwiftUI
 import SwiftData
 import WalletData
 
-typealias Wallet = PrivateKeyWallet
-typealias EthereumNetworkCard = Web3Network
+typealias EthereumNetworkCard = WalletData.Network
 
 extension EthereumNetworkCard {
     
-    init(evm: EthereumCardEntity, address: Web3Kit.EthereumAddress){
-        self.init(address: address, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
+    var address: Web3Kit.EthereumAddress { wallet.address }
+    
+    convenience init(wallet: Wallet, evm: EthereumCardEntity, address: Web3Kit.EthereumAddress){
+        self.init(wallet: wallet, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
     }
-        
-    
-//    func update(clients network: NetworkManager, prices: Prices, currency: String) async -> Bool {
-//        guard let client = network.getClient(chain: self.chain) else {return false}
-//        let updated = await self.update(with: client.node) { address, explorer in
-//            try await Etherscan.shared.getTransactions(for: address, explorer: explorer)
-//        }
-//
-//        if updated {
-//            let contracts = self.tokens.map{$0.key.contract.string}
-//            await prices.fetchPrices(chain: self.chain, contracts: contracts, currency: currency)
-//        }
-//        return updated
-//    }
-    
+
     var color: Color {
         Color(hex: hexColor)!
     }
     
     var value: Double? {
-        balance?.value(decimals: decimals)
+        balance
     }
-    
-
-    
+        
     var isCustom: Bool {
         #warning("fix this")
         return false

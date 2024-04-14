@@ -14,7 +14,6 @@ struct NetworkCardView: View {
     @AppStorage(AppStorageKeys.showNetworkPriceHeader) private var showPrice = true
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     
-    let animation: Namespace.ID
     let title: String
     let symbol: String
     
@@ -60,18 +59,13 @@ struct NetworkCardView: View {
 }
 
 extension NetworkCardView {
-    init(card: EthereumNetworkCard, price: Double? = nil, animation: Namespace.ID) {
+    init(card: EthereumNetworkCard, price: Double? = nil) {
         self.title = card.name
         self.price = price
         self.color = card.color
         self.address = card.address.string
         self.balanceString = card.value?.string(decimals: 5) ?? "00"
         self.symbol = card.symbol
-        self.animation = animation
-    }
-    
-    init(card: EthereumNetworkCard, price: Double? = nil) {
-        self.init(card: card, animation: Namespace().wrappedValue)
     }
     
 }
@@ -80,8 +74,7 @@ extension NetworkCardView {
 #Preview {
     NetworkCardView(
         card: .preview,
-        price: 3254.32,
-        animation: Namespace().wrappedValue
+        price: 3254.32
     )
     .frame(height: 200)
     .padding(.horizontal)

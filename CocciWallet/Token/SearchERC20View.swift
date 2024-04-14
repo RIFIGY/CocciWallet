@@ -9,13 +9,14 @@ import SwiftUI
 import Web3Kit
 import OffChainKit
 import ChainKit
+import WalletData
 
 struct SearchERC20View: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(NetworkManager.self) private var network
-    @State private var result: (any Contract)? = nil
+    @State private var result: (ContractEntity)? = nil
     
-    var chosen: (any Contract) async -> Bool
+    var chosen: (ContractEntity) async -> Bool
     
     @State private var contract: String = ""
     @State private var symbol: String = ""

@@ -9,14 +9,16 @@ import SwiftUI
 
 
 struct Sidebar: View {
-    
+    @Environment(Navigation.self) private var navigation
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
+    
     @Bindable var wallet: Wallet
-    @Binding var selected: EthereumNetworkCard?
+//    @Binding var selected: EthereumNetworkCard?
 
     var body: some View {
+        let navigation = Bindable(navigation)
         Group {
             #if os(iOS)
             iosContent
@@ -24,17 +26,22 @@ struct Sidebar: View {
             content
             #endif
         }
-//        .sheet(isPresented: navigation.showWallets) {
-//            NavigationStack {
-//                SelectWalletView(selected: $selection)
-//                    #if os(macOS)
-//                    .frame(minWidth: 300, minHeight: 250)
-//                    #endif
-//            }
-//        }
-//        .sheet(isPresented: navigation.showSettings) {
-//            SettingsView(selection: $selection)
-//        }
+        .sheet(isPresented: navigation.showWallets) {
+            NavigationStack {
+                SelectWalletView(selected: navigation.wallet)
+            }
+        }
+        .sheet(isPresented: navigation.showSettings) {
+            SettingsView(selection: navigation.wallet)
+        }
+        .sheet(isPresented: navigation.showNewNetwork) {
+            AddNetworkView(wallet: wallet) { network in
+                guard !wallet.networks.map({$0.chain}).contains(network.chain) else {return}
+                self.wallet.networks.append(network)
+//                self.selected = network
+            }
+        }
+
     }
     
     @ViewBuilder
@@ -48,35 +55,32 @@ struct Sidebar: View {
     
     @ViewBuilder
     var content: some View {
-        NetworkList(address: wallet.address, networks: $wallet.networks, selection: $selected, settings: wallet.settings)
+        let navigation = Bindable(navigation)
+
+        NetworkList(address: wallet.address, networks: $wallet.networks, showNewNetwork: navigation.showNewNetwork)
             .navigationTitle(wallet.name)
             #if os(macOS)
             .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
             #endif
-            .task {
-                
+            .toolbar {
+                ToolbarItem(placement: .automatic) {
+                    Button("Wallets", systemImage: "wallet.pass") {
+                        self.navigation.showWallets = true
+                    }
+                }
+                ToolbarItem(placement: .automatic) {
+                    Button("Settings", systemImage: "gearshape") {
+                        self.navigation.showSettings = true
+                    }
+                }
             }
-
-//            .toolbar {
-//                ToolbarItem(placement: .automatic) {
-//                    Button("Wallets", systemImage: "wallet.pass") {
-//                        self.navigation.showWallets = true
-//                    }
-//                }
-//                ToolbarItem(placement: .automatic) {
-//                    Button("Settings", systemImage: "gearshape") {
-//                        self.navigation.showSettings = true
-//                    }
-//                }
-//            }
     }
 }
 
 
-enum Panel: String, Identifiable, CaseIterable, Hashable {
-    var id: String { rawValue }
-    case network, tokens, nfts, transactions
-    
+enum Panel: Hashable {
+    case network, tokens, nfts, transactions, nft(String)
+        
     var image: String {
         switch self {
         case .network:
@@ -86,6 +90,8 @@ enum Panel: String, Identifiable, CaseIterable, Hashable {
         case .nfts:
             "circle"
         case .transactions:
+            "circle"
+        case .nft( _):
             "circle"
         }
     }

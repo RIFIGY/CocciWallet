@@ -41,8 +41,7 @@ struct NetworkCardStack: View {
         ) { card in
             NetworkCardView(
                 card: card,
-                price: prices.price(chain: card.chain, currency: currency),
-                animation: animation
+                price: prices.price(chain: card.chain, currency: currency)
             )
                 .task {
 //                    await card.update(clients: networks, prices: prices, currency: currency)
@@ -62,13 +61,6 @@ struct NetworkCardStack: View {
         } cardIcon: { card in
             CardIcon(color: card?.color, symbol: card?.symbol)
         }
-//        .sheet(isPresented: $showNewNetwork) {
-//            AddNetworkView(address: wallet.address) { network in
-//                guard !wallet.networks.map({$0.chain}).contains(network.chain) else {return}
-//                wallet.networks.append(network)
-//                showNewNetwork = false
-//            }
-//        }
     }
     
     

@@ -9,6 +9,7 @@ import SwiftUI
 import Web3Kit
 import BigInt
 import WalletData
+import OffChainKit
 
 struct NftContractView: View {
     @Environment(NetworkManager.self) private var network
@@ -20,6 +21,8 @@ struct NftContractView: View {
     let name: String?
     let symbol: String?
     var description: String? = nil
+    
+    
         
     @State private var isEnumerable = false
     @State private var searchText = ""
@@ -90,10 +93,10 @@ struct NftContractView: View {
                 Section {
                     Text(owner).lineLimit(1).minimumScaleFactor(0.6)
                     HStack {
-                        if let name = token.metadata?.name {
+                        if let name = token.name {
                             Text(name)
-                            if !name.contains(token.tokenId.description) {
-                                Text("#\(token.tokenId.description)")
+                            if !name.contains(token.tokenId) {
+                                Text("#\(token.tokenId)")
                             }
                         }
                     }
@@ -153,10 +156,13 @@ class ERC721Model {
             let owner = try await client.ownerOf(tokenId: tokenId, in: .init(contract))
             let ownerString = owner
             let uri = try await client.getTokenURI(contract: .init(contract), tokenId: tokenId)
-            let nft = WalletData.NFT(tokenId: tokenId, contract: .init(contract), contractName: nil, symbol: nil, uri: uri)
-            await nft.fetch()
-            self.searchResult = (ownerString, nft)
-            print("Search found metadata \(nft.metadata?.name ?? tokenId.description)")
+//            let gateway = IPFS.Gateway(uri)
+//            let (data, _)
+//            let nft = WalletData.NFTEntity(tokenId: tokenId.description, contract: contract, uri: uri, metadata: <#T##Data?#>, imageURL: <#T##URL?#>)
+////            let nft = WalletData.NFT(tokenId: tokenId, contract: contract, contractName: nil, symbol: nil, uri: uri)
+//            await nft.fetch()
+//            self.searchResult = (ownerString, nft)
+//            print("Search found metadata \(nft.metadata?.name ?? tokenId.description)")
         } catch {
             print("Search Error")
             print(error)
