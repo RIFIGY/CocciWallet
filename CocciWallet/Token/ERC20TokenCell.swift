@@ -69,7 +69,7 @@ struct TokenCell: View {
     }
 }
 
-import WalletData
+
 extension TokenCell {
     init(_ token: Token, network: Color, useNetworkColor: Bool = false) {
         self.name = token.name

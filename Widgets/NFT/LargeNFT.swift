@@ -12,12 +12,12 @@ import Web3Kit
 struct LargeNFT: View {
     typealias Attribute = OpenSeaMetadata.Attribute
 
-    let nft: NftEntity?
+    let nft: NFTEntity?
     let image: PlatformImage?
     
     var metadata: OpenSeaMetadata? { nft?.opensea }
     
-    let nfts: [NftEntity]
+    let nfts: [NFTEntity]
     let images: [PlatformImage?]
     let symbol: String?
     let showBackground: Bool

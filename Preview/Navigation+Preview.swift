@@ -6,7 +6,7 @@
 //
 
 import Foundation
-import WalletData
+
 import SwiftData
 
 extension Navigation {

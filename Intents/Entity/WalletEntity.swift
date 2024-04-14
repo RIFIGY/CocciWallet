@@ -7,7 +7,7 @@
 
 import Foundation
 import AppIntents
-import WalletData
+
 
 struct WalletEntity: AppEntity, Identifiable, Codable {
     var id: String { address }

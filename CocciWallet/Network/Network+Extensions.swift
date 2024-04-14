@@ -13,9 +13,8 @@ import Logging
 import OffChainKit
 import SwiftUI
 import SwiftData
-import WalletData
 
-typealias EthereumNetworkCard = WalletData.Network
+typealias EthereumNetworkCard = Network
 
 extension EthereumNetworkCard {
     

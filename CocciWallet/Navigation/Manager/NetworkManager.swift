@@ -8,7 +8,6 @@
 import Foundation
 import Web3Kit
 import OffChainKit
-import WalletData
 
 @Observable
 class NetworkManager {
@@ -37,7 +36,7 @@ class NetworkManager {
     }
     
 
-    func add(network: WalletData.Network) {
+    func add(network: Network) {
         let chain = network.chain
         guard web3[chain] == nil,
                 let infuraURL = Infura.shared.URL(chainInt: chain) else {return}

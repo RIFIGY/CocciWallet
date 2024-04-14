@@ -6,15 +6,14 @@
 //
 
 import SwiftUI
-import WalletData
+
 import Web3Kit
 
 struct NftGridCell: View {
     @Environment(\.colorScheme) var colorScheme
-    @Environment(\.openWindow) private var openWindow
-    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
 
-    typealias NFT = WalletData.NFT
+
+    typealias NFT = NFTEntity
 
     let nfts: [NFT]
     let address: EthereumAddress
@@ -42,10 +41,7 @@ struct NftGridCell: View {
 
                 } else {
                     Button("Claim\nyour first \nNFT"){
-//                        self.showClaim = true
-                        if supportsMultipleWindows {
-                            openWindow(id: NFTWindow.ID)
-                        }
+                        self.showClaim = true
                     }
                         .foregroundStyle(color)
                         .font(.title.weight(.semibold))

@@ -6,9 +6,8 @@
 //
 
 import Foundation
-import AppIntents
 
-public struct ContractEntity: Codable, AppEntity {
+public struct ContractEntity: Codable, Sendable {
     public let address: String
     public let name: String
     public let symbol: String?
@@ -21,13 +20,7 @@ public struct ContractEntity: Codable, AppEntity {
         self.decimals = decimals
     }
     
-    public var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(name)")
-    }
-    
-    public static var typeDisplayRepresentation: TypeDisplayRepresentation = "Contract"
-    
-    public static var defaultQuery = AllContractsQuery()
+
 }
 
 extension ContractEntity: Identifiable, Equatable, Hashable {
@@ -43,18 +36,4 @@ extension ContractEntity: Identifiable, Equatable, Hashable {
 }
 
 
-public extension ContractEntity {
-    struct AllContractsQuery: EntityQuery {
-        public init(){}
-        
-        public func suggestedEntities() async throws -> [ContractEntity] {
-            await WalletContainer.shared.fetchAllContracts()
-        }
-        
-        public func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
-            try await suggestedEntities().filter{
-                identifiers.contains($0.id)
-            }
-        }
-    }
-}
+

@@ -11,7 +11,7 @@ import OffChainKit
 
 struct MediumNftWidget: View {
     
-    let nft: NftEntity?
+    let nft: NFTEntity?
     let image: PlatformImage?
     let showBackground: Bool
     let symbol: String?

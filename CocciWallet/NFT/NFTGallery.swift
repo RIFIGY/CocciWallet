@@ -6,10 +6,10 @@ The grid view used in the DonutGallery.
 */
 
 import SwiftUI
-import WalletData
+
 
 struct NFTGallery: View {
-
+    typealias NFT = NFTEntity
     @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
     @Environment(\.openWindow) private var openWindow
     #if os(iOS)
@@ -65,7 +65,7 @@ struct NFTGallery: View {
             ForEach(nfts) { nft in
                 if supportsMultipleWindows {
                     Button {
-                        openWindow(id: NFTWindow.ID)
+                        openWindow(id: NFTWindow.ID, value: nft)
                     } label: {
                         Cell(nft: nft, thumbnailSize: thumbnailSize)
                     }
@@ -83,7 +83,7 @@ struct NFTGallery: View {
     }
     
     struct Cell: View {
-        let nft: WalletData.NFT
+        let nft: NFT
         let thumbnailSize: Double
         var body: some View {
             VStack {

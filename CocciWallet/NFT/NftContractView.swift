@@ -8,7 +8,7 @@
 import SwiftUI
 import Web3Kit
 import BigInt
-import WalletData
+
 import OffChainKit
 
 struct NftContractView: View {
@@ -143,7 +143,7 @@ class ERC721Model {
     
     var isSearching = false
     
-    var searchResult: (String, WalletData.NFT)?
+    var searchResult: (String, NFTEntity)?
     
     var baseURI: URL?
     
@@ -158,8 +158,8 @@ class ERC721Model {
             let uri = try await client.getTokenURI(contract: .init(contract), tokenId: tokenId)
 //            let gateway = IPFS.Gateway(uri)
 //            let (data, _)
-//            let nft = WalletData.NFTEntity(tokenId: tokenId.description, contract: contract, uri: uri, metadata: <#T##Data?#>, imageURL: <#T##URL?#>)
-////            let nft = WalletData.NFT(tokenId: tokenId, contract: contract, contractName: nil, symbol: nil, uri: uri)
+//            let nft = NFTEntity(tokenId: tokenId.description, contract: contract, uri: uri, metadata: <#T##Data?#>, imageURL: <#T##URL?#>)
+////            let nft = NFT(tokenId: tokenId, contract: contract, contractName: nil, symbol: nil, uri: uri)
 //            await nft.fetch()
 //            self.searchResult = (ownerString, nft)
 //            print("Search found metadata \(nft.metadata?.name ?? tokenId.description)")

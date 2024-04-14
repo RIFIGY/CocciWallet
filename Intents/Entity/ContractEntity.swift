@@ -9,14 +9,66 @@ import Foundation
 import AppIntents
 import Web3Kit
 import ChainKit
-import WalletData
 
-//typealias ContractEntity = WalletData.ContractEntity
+
+public struct ContractEntity: Codable, Sendable {
+    public let address: String
+    public let name: String
+    public let symbol: String?
+    public let decimals: UInt8?
+    
+    public init(address: String, name: String, symbol: String?, decimals: UInt8?) {
+        self.address = address
+        self.name = name
+        self.symbol = symbol
+        self.decimals = decimals
+    }
+    
+
+}
+
+extension ContractEntity: Identifiable, Equatable, Hashable {
+    public var id: String { address }
+
+    public static func == (lhs: ContractEntity, rhs: ContractEntity) -> Bool {
+        lhs.id == rhs.id
+    }
+    
+    public func hash(into hasher: inout Hasher) {
+        hasher.combine(id)
+    }
+}
+
+extension ContractEntity: AppEntity {
+    public var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(name)")
+    }
+    
+    public static var typeDisplayRepresentation: TypeDisplayRepresentation = "Contract"
+    
+    public static var defaultQuery = AllContractsQuery()
+    
+    public struct AllContractsQuery: EntityQuery {
+        public init(){}
+        
+        public func suggestedEntities() async throws -> [ContractEntity] {
+            await WalletContainer.shared.fetchAllContracts().map{
+                .init(address: $0.address, name: $0.name, symbol: $0.symbol, decimals: $0.decimals)
+            }
+        }
+        
+        public func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
+            try await suggestedEntities().filter{
+                identifiers.contains($0.id)
+            }
+        }
+    }
+}
 
 struct NftContractQuery: EntityQuery {
     
-    @IntentParameterDependency<NFTIntent>(\.$wallet, \.$network)
-    var nftIntent
+//    @IntentParameterDependency<NFTIntent>(\.$wallet, \.$network)
+//    var nftIntent
     
     func suggestedEntities() async throws -> [ContractEntity] {
         []
@@ -40,8 +92,8 @@ struct NftContractQuery: EntityQuery {
 
 struct TokenQuery: EntityQuery {
     
-    @IntentParameterDependency<TokenIntent>(\.$wallet, \.$network)
-    var tokenIntent
+//    @IntentParameterDependency<TokenIntent>(\.$wallet, \.$network)
+//    var tokenIntent
         
     func suggestedEntities() async throws -> [ContractEntity] {
         []

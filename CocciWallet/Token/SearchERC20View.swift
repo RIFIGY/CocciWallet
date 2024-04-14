@@ -9,7 +9,7 @@ import SwiftUI
 import Web3Kit
 import OffChainKit
 import ChainKit
-import WalletData
+
 
 struct SearchERC20View: View {
     @Environment(\.dismiss) private var dismiss

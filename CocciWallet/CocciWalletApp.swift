@@ -7,7 +7,6 @@
 
 import SwiftUI
 import SwiftData
-import WalletData
 
 @main
 struct CocciWalletApp: App {
@@ -19,8 +18,10 @@ struct CocciWalletApp: App {
         .windowResizability(.contentSize)
         .modelContainer(WalletContainer.shared.container)
         
-        WindowGroup(id: NFTWindow.ID) {
-            NFTWindow()
+        WindowGroup(id: NFTWindow.ID, for: NFTEntity.self) { $entity in
+            NFTWindow(nft: $entity)
+        } defaultValue: {
+            NFTEntity(tokenId: "0", contract: "", uri: nil, metadata: nil)
         }
         #if os(visionOS)
         .windowStyle(.plain)

@@ -7,7 +7,7 @@
 
 import WidgetKit
 import OffChainKit
-import WalletData
+
 
 struct TokenEntry: TimelineEntry {
     let date: Date

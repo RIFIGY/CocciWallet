@@ -36,12 +36,12 @@ public class EthClient {
     }
     
 
-    func fetchNativeBalance(for address: String, decimals: UInt8) async throws -> Double {
+    public func fetchNativeBalance(for address: String, decimals: UInt8) async throws -> Double {
         let balance = try await client.eth_getBalance(address: .init(address), block: .Latest)
         return balance.double(decimals)
     }
     
-    func fetchContract<T:ERC20P>(for address: String) async throws -> T {
+    public func fetchContract<T:ERC20P>(for address: String) async throws -> T {
         let contract = EthereumAddress(address)
         async let name: String? = try? await erc20.name(tokenContract: contract)
         async let symbol: String? = try? await erc20.symbol(tokenContract: contract)
@@ -55,7 +55,7 @@ public class EthClient {
         )
     }
     
-    func fetchNFT<N:NFTP>(tokenId: String, contract: EthereumAddress) async -> N {
+    public func fetchNFT<N:NFTP>(tokenId: String, contract: EthereumAddress) async -> N {
         let uri = try? await erc721Metadata.tokenURI(contract: contract, tokenID: .init(stringLiteral: tokenId))
         let emptyNFT = N(tokenId: tokenId.description, contract: contract.string, uri: uri, metadata: nil, imageURL: nil)
 
@@ -77,7 +77,7 @@ public class EthClient {
     }
     
     
-    func fetchTokenBalances<T:ERC20P>(for address: String) async throws -> [ (T,Double) ] {
+    public func fetchTokenBalances<T:ERC20P>(for address: String) async throws -> [ (T,Double) ] {
         let erc20: web3.ERC20 = .init(client: client)
         let interactions = try await client.getTransferEvents(for: .init(address))
         let contracts = Array(Set(interactions.map{$0.contract.string}))
@@ -105,7 +105,7 @@ public class EthClient {
         }
     }
     
-    func fetchNFTs<N:NFTP>(for address: String) async throws -> [N] {
+    public func fetchNFTs<N:NFTP>(for address: String) async throws -> [N] {
         let interactions = try await client.getTokenTransferEvents(for: .init(address))
         let dict = filter(transfers: interactions, for: .init(address))
         

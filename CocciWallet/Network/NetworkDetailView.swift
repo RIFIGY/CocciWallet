@@ -26,7 +26,7 @@ struct NetworkDetailView: View {
                     .frame(height: 200)
                     .frame(maxWidth: 600)
                     .padding(.horizontal)
-                    NetworkGrid(card: card)
+                NetworkGrid(card: card)
             }
         }
         #if os(iOS)

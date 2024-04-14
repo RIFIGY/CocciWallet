@@ -7,7 +7,7 @@
 
 import Foundation
 import AppIntents
-import WalletData
+
 
 struct NetworkEntity: AppEntity {
     let id: String
@@ -26,25 +26,26 @@ struct NetworkEntity: AppEntity {
 
 struct NetworkQuery: EntityQuery {
     
-    @IntentParameterDependency<NFTIntent>(
-        \.$wallet
-    )
-    var nftIntent
+//    @IntentParameterDependency<NFTIntent>(
+//        \.$wallet
+//    )
+//    var nftIntent
+//    
+//    @IntentParameterDependency<TokenIntent>(
+//        \.$wallet
+//    )
+//    var tokenIntent
     
-    @IntentParameterDependency<TokenIntent>(
-        \.$wallet
-    )
-    var tokenIntent
-    
-    private var wallet: WalletEntity? {
-        nftIntent?.wallet ?? tokenIntent?.wallet
-    }
+//    private var wallet: WalletEntity? {
+//        nftIntent?.wallet ?? tokenIntent?.wallet
+//    }
         
     func suggestedEntities() async throws -> [NetworkEntity] {
-        guard let wallet else {return []}
-        return try await WalletContainer.shared.fetchNetworks(wallet: wallet.id).map{
-            NetworkEntity(network: $0)
-        }
+        []
+//        guard let wallet else {return []}
+//        return try await WalletContainer.shared.fetchNetworks(wallet: wallet.id).map{
+//            NetworkEntity(network: $0)
+//        }
 
     }
 
@@ -52,13 +53,5 @@ struct NetworkQuery: EntityQuery {
         try await suggestedEntities().filter {
             identifiers.contains($0.id)
         }
-    }
-}
-
-extension NetworkEntity {
-    init(network: WalletData.Network) {
-        self.id = network.id
-        self.title = network.name
-        self.symbol = network.symbol
     }
 }

@@ -9,9 +9,8 @@ import SwiftUI
 import BigInt
 import Web3Kit
 import ChainKit
-import WalletData
+
 struct TokensListView<Transfer:ERCTransfer>: View {
-    typealias Token = WalletData.Token
     @State private var showAddToken = false
     
     let network: Color

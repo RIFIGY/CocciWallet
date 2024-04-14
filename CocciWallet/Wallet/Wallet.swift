@@ -6,7 +6,6 @@
 //
 
 import Foundation
-import WalletData
 import Web3Kit
 
 typealias Wallet = PrivateKeyWallet

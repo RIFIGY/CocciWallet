@@ -7,7 +7,7 @@
 
 import WidgetKit
 import OffChainKit
-import WalletData
+
 
 struct NftEntry: TimelineEntry {
     let date: Date
@@ -56,7 +56,7 @@ struct NftProvider: AppIntentTimelineProvider {
 
 extension NftProvider {
     
-    private func fetchImage(nft: NftEntity?) async throws -> PlatformImage? {
+    private func fetchImage(nft: NFTEntity?) async throws -> PlatformImage? {
         guard let imageUrl = nft?.imageURL else {return nil}
         let gateway = IPFS.Gateway(imageUrl)
         let (data, _) = try await URLSession.shared.data(from: gateway)
@@ -64,11 +64,11 @@ extension NftProvider {
 
     }
     
-    private func randomNFT(for wallet: Wallet.ID, network: String, contract: String? = nil) async -> NftEntity? {
+    private func randomNFT(for wallet: Wallet.ID, network: String, contract: String? = nil) async -> NFTEntity? {
         let nfts = await WalletContainer.shared.fetchAllNFTs(wallet: wallet, networkID: network, contract: contract)
         if let random = nfts.randomElement() {
             #warning("fix this")
-            return random
+            return .init(random)
         } else {return nil}
         
     }
@@ -83,7 +83,7 @@ extension NftProvider {
         return nextUpdateDate
     }
     
-    private func getImages(nfts: [NftEntity]?) async -> [PlatformImage?] {
+    private func getImages(nfts: [NFTEntity]?) async -> [PlatformImage?] {
         if let nfts, nfts.count == 2 {
             let nft1 = nfts[0]
             let image1 = try? await fetchImage(nft: nft1)

@@ -7,10 +7,10 @@
 
 import SwiftUI
 import Web3Kit
-import WalletData
+
 
 struct ERCTransactions<T:ERCTransfer>: View {
-    let transfers: [WalletData.Token]
+    let transfers: [Token]
     let transactions: [T]
 
     let address: Web3Kit.EthereumAddress

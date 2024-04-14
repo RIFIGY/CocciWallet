@@ -10,12 +10,12 @@ import BigInt
 import Web3Kit
 import OffChainKit
 import ChainKit
-import WalletData
+
 
 struct ERC20DetailView<T:ERCTransfer>: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
 
-    let token: WalletData.Token
+    let token: Token
     var address: String { token.address }
     var price: Double?
     

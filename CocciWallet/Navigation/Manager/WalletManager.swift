@@ -11,7 +11,7 @@ import KeychainSwift
 //import web3
 import OffChainKit
 import ChainKit
-import WalletData
+
 
 
 extension Wallet {

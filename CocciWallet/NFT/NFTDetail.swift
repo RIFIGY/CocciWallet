@@ -7,10 +7,10 @@
 
 import SwiftUI
 import Web3Kit
-import WalletData
+
 
 struct NFTDetail: View {
-    let nft: WalletData.NFT
+    let nft: NFTEntity
     
     var metadata: OpenSeaMetadata? {
         nft.opensea

@@ -8,7 +8,7 @@
 import Foundation
 import AppIntents
 import WidgetKit
-import WalletData
+
 
 
 struct NFTIntent: WidgetConfigurationIntent {
@@ -34,10 +34,10 @@ struct NFTIntent: WidgetConfigurationIntent {
     var contract: ContractEntity?
     
     @Parameter(title: "NFT")
-    var nft: NftEntity?
+    var nft: NFTEntity?
     
     @Parameter(title: "NFTs", default: [], size: 3)
-    var nfts: [NftEntity]?
+    var nfts: [NFTEntity]?
     
     @Parameter(title: "Show Network Background", default: false)
     var showBackground: Bool

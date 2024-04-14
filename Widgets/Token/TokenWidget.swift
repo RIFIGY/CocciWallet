@@ -139,7 +139,6 @@ extension NetworkEntity {
     static let ETH = NetworkEntity(id: EthereumCardEntity.ETH.chain.description, title: EthereumCardEntity.ETH.name, symbol: EthereumCardEntity.ETH.symbol)
 }
 
-import WalletData
 extension ContractEntity {
     static let munko = ContractEntity(address: ERC721.Munko.contract.string, name: ERC721.Munko.name, symbol: ERC721.Munko.symbol, decimals: nil)
     static let usdc = ContractEntity(address: ERC20.USDC.contract.string, name: ERC20.USDC.name, symbol: ERC20.USDC.symbol, decimals: ERC20.USDC.decimals)
@@ -153,7 +152,7 @@ extension NFTIntent {
         intent.wallet = .rifigy
         intent.network = .ETH
         intent.contract = .munko
-        intent.nft = .munko2309
+//        intent.nft = .munko2309
         intent.randomNFT = false
         intent.nfts = []
         return intent
@@ -164,7 +163,7 @@ extension NFTIntent {
         intent.wallet = .rifigy
         intent.network = .ETH
         intent.contract = .munko
-        intent.nft = .munko2310
+//        intent.nft = .munko2310
         intent.showBackground = true
 
         intent.randomNFT = false
@@ -178,9 +177,9 @@ extension NFTIntent {
         intent.wallet = .rifigy
         intent.network = .ETH
         intent.contract = .munko
-        intent.nft = .munko2309
+//        intent.nft = .munko2309
         intent.randomNFT = false
-        intent.nfts = [.munko2309, .munko2310, .munko2309, .munko2310]
+//        intent.nfts = [.munko2309, .munko2310, .munko2309, .munko2310]
         return intent
     }
     
@@ -189,9 +188,9 @@ extension NFTIntent {
         intent.wallet = .rifigy
         intent.network = .ETH
         intent.contract = .munko
-        intent.nft = .munko2309
+//        intent.nft = .munko2309
         intent.randomNFT = false
-        intent.nfts = [.munko2309, .munko2310]
+//        intent.nfts = [.munko2309, .munko2310]
         return intent
     }
     

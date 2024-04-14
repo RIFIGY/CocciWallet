@@ -8,10 +8,10 @@
 import SwiftUI
 import ChainKit
 import Web3Kit
-import WalletData
+
 
 struct NFTGridView: View {
-    typealias NFT = WalletData.NFT
+    typealias NFT = NFTEntity
     
     let nfts: [NFT]
         

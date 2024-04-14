@@ -54,6 +54,27 @@ struct NetworkList: View {
     }
     
     private func updateCard(network: EthereumNetworkCard) async {
+        guard let rpc = Infura.shared.URL(chainInt: network.chain) else {return}
+        let client = EthClient(rpc: rpc, chain: network.chain)
+        
+        let balance = try? await client.fetchNativeBalance(for: network.wallet.id, decimals: network.decimals)
+        let nfts:[NFTEntity]? = try? await client.fetchNFTs(for: network.wallet.id)
+        let tokens: [(ContractEntity, Double)]? = try? await client.fetchTokenBalances(for: network.wallet.id)
+        let transactions = try? await Etherscan.shared.getTransactions(for: network.wallet.id, explorer: "etherscan.io")
+        
+        Task{@MainActor in
+            network.balance = balance
+            if let nfts {
+                network.nfts = nfts
+            }
+            if let tokens {
+                network.tokens = tokens.map{ contract, balance in .init(address: contract.address, name: contract.name, symbol: contract.symbol, decimals: contract.decimals, balance: balance) }
+            }
+            if let transactions {
+                network.transactions = transactions
+            }
+        }
+//        network.balance = balance
 //        print("Updating")
 //        guard let ethClient = clients.getClient(chain: network.chain) else {return}
 //        let client = ethClient.node
@@ -75,9 +96,9 @@ struct NetworkList: View {
 //        }
     }
 }
+extension ContractEntity: Web3Kit.ERC721P {}
+extension NFTEntity: Web3Kit.NFTP {}
 
-
-import WalletData
 struct NetworkCell: View {
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
     @Environment(NetworkManager.self) private var networks

@@ -7,7 +7,7 @@
 
 import SwiftUI
 import OffChainKit
-import WalletData
+
 
 struct NFTImageView<P:View>: View {
     @Environment(\.colorScheme) var colorScheme
@@ -90,7 +90,7 @@ extension NFTImageView {
 
 import Web3Kit
 extension NFTImageView {
-    init(nft: WalletData.NFT, contentMode: ContentMode = .fit) where P == EmptyView {
+    init(nft: NFTEntity, contentMode: ContentMode = .fit) where P == EmptyView {
         self.url = nft.imageURL
         self.image = nil
         self.contentMode = contentMode
@@ -107,8 +107,6 @@ extension NFTImageView {
     NFTImageView(url: .image2309)
 }
 
-extension WalletData.NFT {
-    public var name: String? { opensea?.name }
-    public var opensea: OpenSeaMetadata? { try? JSONDecoder().decode(OpenSeaMetadata.self, from: metadata ?? Data()) }
 
-}
+
+

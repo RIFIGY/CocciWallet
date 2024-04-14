@@ -7,7 +7,7 @@
 
 import SwiftUI
 import SwiftData
-import WalletData
+
 
 struct SelectWalletView: View {
     @AppStorage("last_selected_wallet") private var selectedWallet: String = ""

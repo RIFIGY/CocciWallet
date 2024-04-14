@@ -9,7 +9,7 @@ import Foundation
 import AppIntents
 import WidgetKit
 import OffChainKit
-import WalletData
+
 
 struct TokenIntent: WidgetConfigurationIntent {
     static var title: LocalizedStringResource = "Token"
