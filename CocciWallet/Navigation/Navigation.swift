@@ -14,18 +14,19 @@ import OSLog
 class Navigation {
     private let logger = Logger(subsystem: "app.rifigy.CocciWallet.Navigation", category: "navigation")
     var wallet: Wallet?
-    var network: EthereumNetworkCard?
-    
+    var network: Network?
     
     var panel: Panel? = Panel.network
 
     var path = NavigationPath()
-
     
+    var showWallets = false
+
     var showNewNetwork = false
+
     var showSettings = false
     var showNetworkSettings = false
-    var showWallets = false
+    var showTokenSettings = false
     
     
     func clearPath(count: Int? = nil) {
@@ -35,11 +36,11 @@ class Navigation {
     func select(_ wallet: Wallet?) {
         withAnimation {
             self.wallet = wallet
-            self.network = wallet?.networks.first
+//            self.network = wallet?.networks.first
         }
     }
     
-    func select(_ network: EthereumNetworkCard?) {
+    func select(_ network: Network?) {
         withAnimation {
             self.network = network
         }

@@ -26,6 +26,7 @@ struct CustomNetworkView: View {
             Text("Network Name")
         }
         Section {
+            #warning("fix to not allow chain from selection")
             TextField("Chain ID", value: $chainId, format: .number.grouping(.never))
             #if os(iOS)
                 .keyboardType(.numberPad)
@@ -45,7 +46,7 @@ struct CustomNetworkView: View {
 
 struct AddCustomNetworkView: View {
     
-    let wallet: Wallet
+//    let wallet: Wallet
     
     @State private var name: String = ""
     @State private var chainId: Int?
@@ -53,7 +54,7 @@ struct AddCustomNetworkView: View {
     @State private var rpc: URL?
     @State private var explorer: String?
     
-    var network: (EthereumNetworkCard) -> Void
+    var network: (NetworkEntity) -> Void
     
     var body: some View {
         Form {
@@ -69,7 +70,7 @@ struct AddCustomNetworkView: View {
     
     var validValues: Bool {
         guard rpc != nil, let chainId else {return false}
-        let notFromSelection = !EthereumCardEntity.chains.contains(chainId)
+        let notFromSelection = !NetworkEntity.chains.contains(chainId)
         return chainId > 0 && notFromSelection
     }
     
@@ -78,16 +79,21 @@ struct AddCustomNetworkView: View {
         let name = name.isEmpty ? "Chain \(chainId)" : name
         let symbol = symbol.isEmpty ? "COIN" : symbol
                 
-        self.network(
-            EthereumNetworkCard(
-                wallet: wallet,
-                chain: chainId,
-                rpc: rpc,
-                name: name,
-                symbol: symbol,
-                hexColor: "#627eea"
-            )
+        let color = "#627eea"
+        let decimals: UInt8 = 18
+        
+        let entity = NetworkEntity(
+            chain: chainId,
+            rpc: rpc,
+            name: name,
+            hexColor: color,
+            coin: name,
+            symbol: symbol,
+            decimals: decimals,
+            explorer: explorer ?? ""
         )
+        
+        self.network(entity)
         
     }
 }

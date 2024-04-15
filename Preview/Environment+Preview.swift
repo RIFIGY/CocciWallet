@@ -27,7 +27,7 @@ struct Preview {
     
     init(){
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
-        let container = try! ModelContainer(for: Wallet.self, configurations: config)
+        let container = try! ModelContainer(for: Wallet.self, Network.self, Token.self, NFT.self, configurations: config)
         self.container = container
     }
     

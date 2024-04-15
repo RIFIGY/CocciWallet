@@ -103,7 +103,7 @@ struct SelectWalletView: View {
                 withAnimation {
                     self.selected = wallet
                 }
-                self.selectedWallet = wallet.id
+                self.selectedWallet = wallet.string
 //                navigation.select(wallet: wallet)
                 dismiss()
             } label: {

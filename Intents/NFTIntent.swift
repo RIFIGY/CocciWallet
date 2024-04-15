@@ -7,11 +7,9 @@
 
 import Foundation
 import AppIntents
-import WidgetKit
+//import WidgetKit
 
-
-
-struct NFTIntent: WidgetConfigurationIntent {
+struct NFTIntent: AppIntent {
     static var title: LocalizedStringResource = "NFT"
     static var description = IntentDescription("Display NFT")
     
@@ -30,7 +28,7 @@ struct NFTIntent: WidgetConfigurationIntent {
     @Parameter(title: "Network")
     var network: NetworkEntity?
     
-    @Parameter(title: "Contract", query: NftContractQuery())
+    @Parameter(title: "Contract", query: ContractEntity.NFTQuery())
     var contract: ContractEntity?
     
     @Parameter(title: "NFT")
@@ -44,6 +42,18 @@ struct NFTIntent: WidgetConfigurationIntent {
     
     @Parameter(title: "Show Network Badge", default: false)
     var showNetwork: Bool
+    
+    init(){}
+    
+    func perform() async throws -> some IntentResult {
+//        let predicate = #Predicate<Item> { item in
+//            item.id == modelId
+//        }
+//        if let item = try? await sharedModelContainer.mainContext.fetch(.init(predicate: predicate)).first {
+//            item.completedDate = .now
+//        }
+        return .result()
+    }
     
     
     static var parameterSummary: some ParameterSummary {

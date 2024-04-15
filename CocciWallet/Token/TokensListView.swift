@@ -11,9 +11,10 @@ import Web3Kit
 import ChainKit
 
 struct TokensListView<Transfer:ERCTransfer>: View {
+    @Environment(\.networkTheme) private var theme
     @State private var showAddToken = false
     
-    let network: Color
+    var network: Color { theme.color }
     let address: Web3Kit.EthereumAddress
     
     let balances: [Token]
@@ -23,10 +24,6 @@ struct TokensListView<Transfer:ERCTransfer>: View {
         balances.sorted { $0.address < $1.address }
     }
     
-    var contractInteractions: [Web3Kit.EthereumAddress] {
-        Array(Set(transfers.map{$0.contract}))
-    }
-    
     var transferContracts: [Token] {
         let contracts = Array(Set(transfers.map { $0.contract }))
         let tokens = balances.filter{ contract in
@@ -34,16 +31,14 @@ struct TokensListView<Transfer:ERCTransfer>: View {
         }
         return tokens
     }
-    
-    @State private var selected: Token?
-    
+        
     var body: some View {
         List {
-            ForEach(sortedBalances, id: \.address) { token in
+            ForEach(sortedBalances) { token in
                 NavigationLink {
-                    ERC20DetailView(token: token, transactions: transfers, network: network)
+                    ERC20DetailView(token: token, transactions: [Transfer]())
                 } label : {
-                    TokenCell(token, network: network)
+                    TokenCell(token)
                 }
             }
             ERCTransactions(transfers: transferContracts, transactions: transfers, address: address, symbol: nil)
@@ -64,21 +59,22 @@ struct TokensListView<Transfer:ERCTransfer>: View {
         .sheet(isPresented: $showAddToken) {
             SearchERC20View(chosen: addToken)
         }
-        .navigationDestination(item: $selected) { token in
-            ERC20DetailView(token: token, transactions: [ERC20Transfer](), network: network)
-        }
     }
     
     func addToken(_ token: ContractEntity) async -> Bool {
-        !contractInteractions.map{$0.string.lowercased()}.contains(token.address.lowercased())
+        let contractInteractions = Array(Set(transfers.map{$0.contract}))
+        return !contractInteractions.map{$0.string.lowercased()}.contains(token.address.lowercased())
     }
     
 }
 
 
 
-//#Preview {
-//    TokensListView<Web3Kit.ERC20>(evm: .ETH, balances: [:], transfers: [:])
-//        .environmentPreview(.rifigy)
-//}
+#Preview {
+    let preview = Preview()
 
+    return NavigationStack {
+        TokensListView(address: .rifigy, balances: [.USDC], transfers: [ERC20Transfer]())
+    }
+        .environmentPreview()
+}

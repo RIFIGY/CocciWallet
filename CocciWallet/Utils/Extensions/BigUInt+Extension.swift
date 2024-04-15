@@ -43,6 +43,11 @@ extension BigUInt {
         return formatter.string(from: NSNumber(value: eth))!
     }
     
+    func double(_ decimals: UInt8) -> Double {
+        let divisor = BigUInt(10).power(Int(decimals))
+        return Double(self) / Double(divisor)
+    }
+    
     
 }
 

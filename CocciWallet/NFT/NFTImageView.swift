@@ -90,6 +90,20 @@ extension NFTImageView {
 
 import Web3Kit
 extension NFTImageView {
+    init(nft: NFT, contentMode: ContentMode = .fit) where P == EmptyView {
+//        if let image = nft.image {
+//            self.image = image
+//            self.url = nil
+//        } else {
+//            self.url = nft.imageURL
+//            self.image = nil
+//        }
+        self.url = nft.imageURL
+        self.image = nil
+        self.contentMode = contentMode
+        self.placeholder = nil
+    }
+    
     init(nft: NFTEntity, contentMode: ContentMode = .fit) where P == EmptyView {
         self.url = nft.imageURL
         self.image = nil
@@ -99,14 +113,14 @@ extension NFTImageView {
 }
 
 
-#Preview("NFT") {
-    NFTImageView(nft: .munko2309)
-}
-
-#Preview("URL") {
-    NFTImageView(url: .image2309)
-}
-
-
+//#Preview("NFT") {
+//    NFTImageView(nft: .munko2309)
+//}
+//
+//#Preview("URL") {
+//    NFTImageView(url: .image2309)
+//}
+//
+//
 
 

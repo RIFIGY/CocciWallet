@@ -9,7 +9,7 @@ import SwiftUI
 
 public struct NetworkTheme: Hashable, Equatable, Codable {
         
-    let symbol: String?
+    let symbol: String
     let color: Color
     let decimals: UInt8
 }
@@ -41,7 +41,7 @@ extension View {
         self.modifier(NetworkColorModifier())
     }
     
-    func networkTheme(symbol: String?, color: Color, decimals: UInt8) -> some View {
+    func networkTheme(symbol: String, color: Color, decimals: UInt8) -> some View {
         self.environment(\.networkTheme, .init(
             symbol: symbol,
             color: color,
@@ -49,7 +49,7 @@ extension View {
         ))
   }
 
-    func networkTheme(card: EthereumNetworkCard) -> some View {
+    func networkTheme(card: Network) -> some View {
         self.environment(\.networkTheme, .init(
             symbol: card.symbol,
             color: card.color,

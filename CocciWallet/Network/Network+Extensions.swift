@@ -1,70 +1,47 @@
 //
-//  EthereumNetworkCard.swift
+//  Network.swift
 //  CocciWallet
 //
 //  Created by Michael on 4/7/24.
 //
 
-import Foundation
-import Web3Kit
-import ChainKit
-import BigInt
-import Logging
-import OffChainKit
 import SwiftUI
-import SwiftData
+import Web3Kit
 
-typealias EthereumNetworkCard = Network
-
-extension EthereumNetworkCard {
+extension Network {
     
-    var address: Web3Kit.EthereumAddress { wallet.address }
+    var address: Web3Kit.EthereumAddress { .init(addressString) }
     
-    convenience init(wallet: Wallet, evm: EthereumCardEntity, address: Web3Kit.EthereumAddress){
-        self.init(wallet: wallet, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
-    }
-
     var color: Color {
         Color(hex: hexColor)!
     }
-    
-    var value: Double? {
-        balance
-    }
         
     var isCustom: Bool {
-        #warning("fix this")
-        return false
-//        .selection.map{$0.id}.contains(id)
+        !NetworkEntity.chains.contains(self.chain)
     }
 }
 
 
 
-struct EthereumCardEntity: Identifiable {
+extension NetworkEntity {
     
-    static let selection: [EthereumCardEntity] = [.ETH, .ARB, .AVAX, .MATIC] // .BNB]
-    static var chains: [Int] { selection.map{$0.chain} }
-    var id: String { chain.description }
+    static let selection: [NetworkEntity] = [.ETH, .ARB, .AVAX, .MATIC] // .BNB]
     
-    let chain: Int
-    let rpc: URL
-    let name: String
-    let symbol: String
-    var explorer: String? = nil
-    let color: String
+    static let chains: [Int] = selection.map{$0.chain}
     
-    init(chain: Int, rpc: URL? = nil, name: String, symbol: String, explorer: String? = nil, color: String) {
+    fileprivate init(chain: Int, rpc: URL? = nil, name: String, coin: String? = nil, symbol: String, explorer: String? = nil, color: String) {
         self.chain = chain
         let rpc = rpc ?? Infura.shared.URL(chainInt: chain)!
         self.rpc = rpc
+        self.hexColor = color
         self.name = name
+        self.coin = coin ?? name
         self.symbol = symbol
-        self.explorer = explorer
-        self.color = color
+        self.decimals = 18
+        self.explorer = explorer ?? ""
     }
     
-    static let ETH = EthereumCardEntity(
+    static let ETH = NetworkEntity(
         chain: 1,
         name: "Ethereum",
         symbol: "ETH",
@@ -72,28 +49,21 @@ struct EthereumCardEntity: Identifiable {
         color: "#627eea"
     )
     
-//    static let BNB = EthereumCardEntity(
-//        chain: 56,
-//        name:"Binance",
-//        symbol: "BNB",
-//        color: "#f3ba2f"
-//    )
-    
-    static let MATIC = EthereumCardEntity(
+    static let MATIC = NetworkEntity(
         chain: 137,
         name: "Polygon",
         symbol: "MATIC",
         explorer: "polygonscan.com",
         color: "#6f41d8"
     )
-    static let ARB = EthereumCardEntity(
+    static let ARB = NetworkEntity(
         chain: 42161,
         name: "Arbitrum",
         symbol: "ARB",
         color: "#162C4E"
     )
     
-    static let AVAX = EthereumCardEntity(
+    static let AVAX = NetworkEntity(
         chain: 43114,
         name: "Avalanche",
         symbol: "AVAX",
@@ -104,9 +74,9 @@ struct EthereumCardEntity: Identifiable {
 
 }
 
-extension EthereumCardEntity {
-    static func Local(url: URL? = nil) -> EthereumCardEntity {
-        EthereumCardEntity(
+extension NetworkEntity {
+    static func Local(url: URL? = nil) -> NetworkEntity {
+        NetworkEntity(
             chain: 1337,
             rpc: url ?? URL(string: "HTTP://127.0.0.1:7545")!,
             name: "Ganache",

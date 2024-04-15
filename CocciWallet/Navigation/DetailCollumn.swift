@@ -13,12 +13,12 @@ struct DetailCollumn: View {
     @Environment(\.modelContext) private var context
     
     let walletSelected: Bool
-    @Binding var selected: EthereumNetworkCard?
+    @Binding var selected: Network?
     
     var body: some View {
         Group {
             if !walletSelected {
-                ContentUnavailableView("Select a Network", systemImage: "circle")
+                AddWalletView()
             } else if let selected  {
                 NetworkDetailView(card: selected)
             } else {

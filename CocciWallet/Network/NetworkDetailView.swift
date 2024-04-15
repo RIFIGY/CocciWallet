@@ -9,7 +9,8 @@ import SwiftUI
 import Web3Kit
 
 struct NetworkDetailView: View {
-    @Bindable var card: EthereumNetworkCard
+    @Environment(Navigation.self) private var navigation
+    let card: Network
     
     var saved: ()->Void = {}
     var removed: ()->Void = {}
@@ -55,10 +56,14 @@ struct NetworkDetailView: View {
                 case .swap:
                     SwapView()
                 case .nft:
-                    NFTGridView(nfts: card.nfts)
+                    NFTGallery(nfts: card.nfts)
                 case .tokens:
-                    Text("Tokkens")
-//                    TokensListView(network: card.color, address: card.address, balances: card.tokens, transfers: [ERC20Transfer]())
+                    TokensListView(
+                        address: card.address,
+                        balances: card.tokens,
+                        transfers: [ERC20Transfer]()
+                    )
+                    .networkTheme(card: self.card)
                 case .balance:
                     Text("Balance")
                 }
@@ -69,9 +74,7 @@ struct NetworkDetailView: View {
         }
         .sheet(isPresented: $showSettings) {
             NavigationStack {
-                NetworkCardSettings(card: card) {
-//                                    removed()
-                }
+                NetworkSettings(card: card, remove: removed)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("Back", systemImage: "chevron.left") {
@@ -81,8 +84,6 @@ struct NetworkDetailView: View {
                 }
             }
         }
-
-
     }
     
 
@@ -92,7 +93,7 @@ struct NetworkGrid: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
     @Environment(PriceModel.self) private var priceModel
 
-    let card: EthereumNetworkCard
+    let card: Network
     
     typealias Destination = NetworkCardDestination
     
@@ -105,7 +106,7 @@ struct NetworkGrid: View {
                 }
                 GridRow {
                     VStack {
-                        NetworkGridCell(.balance, balance: card.value, value: value)
+                        NetworkGridCell(.balance, balance: card.balance, value: value)
                         NetworkGridCell(
                             .tokens,
                             balance: Double(card.tokens.count),
@@ -113,7 +114,7 @@ struct NetworkGrid: View {
                         )
                     }
                     NavigationLink {
-                        NFTGridView(nfts: card.nfts)
+                        NFTGallery(nfts: card.nfts)
                     } label: {
                         NftGridCell(nfts: card.nfts, address: card.address, color: card.color)
 
@@ -140,7 +141,7 @@ struct NetworkGrid: View {
     }
     
     var value: Double? {
-        guard let balance = card.value, let price else {return nil}
+        guard let balance = card.balance, let price else {return nil}
         return balance * price
     }
     

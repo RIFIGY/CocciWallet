@@ -8,8 +8,8 @@
 import SwiftUI
 import SwiftData
 
-@Observable
-public class Token: Codable{
+@Model
+public class Token {
     
     let contract: ContractEntity
     
@@ -20,6 +20,11 @@ public class Token: Codable{
         self.balance = nil
     }
     
+    public init(contract: ContractEntity, balance: Double? = nil) {
+        self.contract = contract
+        self.balance = balance
+    }
+    
     
     public var address: String { contract.address }
     public var name: String { contract.name }
@@ -28,16 +33,15 @@ public class Token: Codable{
     
 }
 
-
-
-extension Token: Identifiable, Equatable, Hashable {
-    public static func == (lhs: Token, rhs: Token) -> Bool {
-        lhs.id == rhs.id
-    }
+import Web3Kit
+extension Token {
     
-    public func hash(into hasher: inout Hasher) {
-        hasher.combine(id)
+    @MainActor
+    func fetchBalance(for address: String, with client: EthClient) async throws {
+        let balance = try await client.fetchTokenBalance(contract: contract.address, address: address)
+        let value = balance.double(self.decimals ?? 18)
+        print("\t\(name) \(value.formatted(.number))")
+        self.balance = value
     }
-    
-    public var id: ContractEntity { contract }
 }
+

@@ -11,34 +11,33 @@ import OffChainKit
 import SwiftData
 
 struct AddNetworkView: View {
-    @Environment(\.modelContext) private var context
-    @Environment(Prices.self) private var prices
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
     @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIds = "ethereum"
+    
+    @Environment(\.modelContext) private var context
+    @Environment(Prices.self) private var prices
 
     @Bindable var wallet: Wallet
-    var network: (EthereumNetworkCard) -> Void
     
     @Environment(\.dismiss) private var dismiss
         
     var body: some View {
         NavigationStack {
             List {
-                ForEach(EthereumCardEntity.selection) { evm in
+                ForEach(NetworkEntity.selection) { evm in
                     HStack{
                         IconImage(symbol: evm.symbol, glyph: .white)
                         Button(evm.name) {
                             add(evm: evm)
                         }
-                        .foregroundStyle(Color(hex: evm.color) ?? .ETH)
+                        .foregroundStyle(Color(hex: evm.hexColor) ?? .ETH)
                     }
                 }
 
                 Section {
                     NavigationLink {
-                        AddCustomNetworkView(wallet: wallet) { evm in
-                            network(evm)
-                            dismiss()
+                        AddCustomNetworkView { evm in
+                            add(evm: evm)
                         }
                     } label: {
                         HStack{
@@ -55,14 +54,22 @@ struct AddNetworkView: View {
         }
     }
 
-    func add(evm: EthereumCardEntity) {
-        let card = EthereumNetworkCard(wallet: wallet, chain: evm.chain, rpc: evm.rpc, name: evm.name, symbol: evm.symbol, hexColor: evm.color)
-        context.insert(card)
-        wallet.networks.append(card)
-        add(network: card)
+    func add(evm: NetworkEntity) {
+        guard !wallet.networks.map({$0.chain}).contains(evm.chain) else {return}
+        let network = Network(address: wallet.string, card: evm, settings: .init())
+        withAnimation {
+            context.insert(network)
+            wallet.networks.append(network)
+        }
+        add(network: evm)
+//        let card = Network(address: wallet.string, entity: evm)
+//        wallet.networks.append(evm)
+//        print(wallet.networks.count)
+//        add(network: evm)
     }
+
     
-    func add(network: EthereumNetworkCard) {
+    func add(network: NetworkEntity) {
         if let coin = CoinGecko.AssetPlatform.NativeCoin(chainID: network.chain) {
             var ids = self.coinIds
             guard !ids.contains(coin) else {return}
@@ -70,7 +77,7 @@ struct AddNetworkView: View {
             prices.fetch(coin: coin, currency: currency)
 
         }
-        self.network(network)
+//        self.network(network)
         dismiss()
     }
 }

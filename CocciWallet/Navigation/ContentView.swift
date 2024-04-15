@@ -29,12 +29,6 @@ struct ContentView: View {
                 Sidebar(
                     wallet: wallet
                 )
-            } else if !wallets.isEmpty {
-                SelectWalletView(
-                    selected: $navigation.wallet
-                )
-            } else {
-                AddWalletView()
             }
         } detail: {
             NavigationStack(path: $navigation.path) {

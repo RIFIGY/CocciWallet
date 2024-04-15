@@ -7,7 +7,7 @@
 
 import WidgetKit
 import OffChainKit
-
+import AppIntents
 
 struct NftEntry: TimelineEntry {
     let date: Date
@@ -16,6 +16,8 @@ struct NftEntry: TimelineEntry {
     var images: [PlatformImage?] = []
     var error: String?
 }
+
+extension NFTIntent: WidgetConfigurationIntent {}
 
 struct NftProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> NftEntry {
@@ -64,12 +66,13 @@ extension NftProvider {
 
     }
     
-    private func randomNFT(for wallet: Wallet.ID, network: String, contract: String? = nil) async -> NFTEntity? {
-        let nfts = await WalletContainer.shared.fetchAllNFTs(wallet: wallet, networkID: network, contract: contract)
-        if let random = nfts.randomElement() {
-            #warning("fix this")
-            return .init(random)
-        } else {return nil}
+    private func randomNFT(for wallet: String, network: String, contract: String? = nil) async -> NFTEntity? {
+        nil
+//        let nfts = await WalletContainer.shared.fetchAllNFTs(wallet: wallet, networkID: network, contract: contract)
+//        if let random = nfts.randomElement() {
+//            #warning("fix this")
+//            return .init(random)
+//        } else {return nil}
         
     }
     

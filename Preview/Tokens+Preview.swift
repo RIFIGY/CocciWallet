@@ -14,3 +14,6 @@ extension EthereumClient {
 }
 
 
+extension Token {
+    static let USDC = Token(contract: .usdc, balance: 3000)
+}

@@ -46,75 +46,79 @@ extension ContractEntity: AppEntity {
     
     public static var typeDisplayRepresentation: TypeDisplayRepresentation = "Contract"
     
-    public static var defaultQuery = AllContractsQuery()
+    public static var defaultQuery = Query()
     
-    public struct AllContractsQuery: EntityQuery {
+    public struct Query: EntityQuery {
         public init(){}
         
-        public func suggestedEntities() async throws -> [ContractEntity] {
-            await WalletContainer.shared.fetchAllContracts().map{
-                .init(address: $0.address, name: $0.name, symbol: $0.symbol, decimals: $0.decimals)
-            }
+        @MainActor
+        public func suggestedEntities() throws -> [ContractEntity] {
+            let tokens: [Token] = try sharedModelContainer.mainContext.fetch(.init())
+            return tokens.map { $0.contract }
         }
         
-        public func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
-            try await suggestedEntities().filter{
+        @MainActor
+        public func entities(for identifiers: [ContractEntity.ID]) throws -> [ContractEntity] {
+            try suggestedEntities().filter{
                 identifiers.contains($0.id)
             }
         }
     }
 }
 
-struct NftContractQuery: EntityQuery {
+extension ContractEntity {
     
-//    @IntentParameterDependency<NFTIntent>(\.$wallet, \.$network)
-//    var nftIntent
-    
-    func suggestedEntities() async throws -> [ContractEntity] {
-        []
-//        guard let wallet = nftIntent?.wallet,
-//              let network = nftIntent?.network else {return []}
-//        let contracts = await WalletContainer.shared.fetchNFTContracts(wallet: wallet.id, networkID: network.id)
-//
-//        if contracts.isEmpty {
-//            return []
-//        } else {
-//            return contracts.map { contract in
-//                ContractEntity(contract: contract.contract, name: contract.name ?? contract.contract.shortened(), symbol: contract.symbol)
-//            }
-//        }
-    }
-    
-    func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
-        try await suggestedEntities().filter{ identifiers.contains($0.id) }
+    struct NFTQuery: EntityQuery {
+        
+        @IntentParameterDependency<NFTIntent>(\.$wallet, \.$network)
+        var nftIntent
+        
+        @MainActor
+        func suggestedEntities() throws -> [ContractEntity] {
+            guard let wallet = nftIntent?.wallet, let network = nftIntent?.network else {return []}
+            
+            let predicate = #Predicate<Network> { item in
+                wallet.address == item.addressString &&
+                item.chain == network.chain
+            }
+            guard let networkModel = try sharedModelContainer.mainContext.fetch(.init(predicate: predicate)).first else {
+                return []
+            }
+            
+            return networkModel.nfts.map{ .init(address: $0.contract, name: "", symbol: nil, decimals: nil) }
+        }
+        
+        @MainActor
+        func entities(for identifiers: [ContractEntity.ID]) throws -> [ContractEntity] {
+            try suggestedEntities().filter{ identifiers.contains($0.id) }
+        }
     }
 }
 
-struct TokenQuery: EntityQuery {
+extension ContractEntity {
     
-//    @IntentParameterDependency<TokenIntent>(\.$wallet, \.$network)
-//    var tokenIntent
+    struct TokenQuery: EntityQuery {
         
-    func suggestedEntities() async throws -> [ContractEntity] {
-        []
-//        guard let wallet = tokenIntent?.wallet,
-//              let network = tokenIntent?.network else {return []}
-//        
-//        let contracts = await WalletContainer.shared.fetchTokens(wallet: wallet.id, networkID: network.id)
-//
-//        if contracts.isEmpty {
-//            return [ContractEntity(contract: "None", name: "none")]
-//        } else {
-//            return contracts.map { contract in
-//                ContractEntity(contract: contract.contract, name: contract.name ?? contract.contract.shortened(), symbol: contract.symbol)
-//            }
-//        }
+        @IntentParameterDependency<TokenIntent>(\.$wallet, \.$network)
+        var tokenIntent
+        
+        @MainActor
+        func suggestedEntities() throws -> [ContractEntity] {
+            guard let wallet = tokenIntent?.wallet, let network = tokenIntent?.network else {return []}
+            
+            let predicate = #Predicate<Network> { item in
+                wallet.address == item.addressString &&
+                item.chain == network.chain
+            }
+            guard let networkModel = try sharedModelContainer.mainContext.fetch(.init(predicate: predicate)).first else {
+                return []
+            }
+            
+            return networkModel.tokens.map{ $0.contract }
+            
+        }
+        
     }
-    
-    func entities(for identifiers: [ContractEntity.ID]) async throws -> [ContractEntity] {
-        try await suggestedEntities().filter{ identifiers.contains($0.id) }
-    }
-    
 }
 //
 //extension ContractEntity {

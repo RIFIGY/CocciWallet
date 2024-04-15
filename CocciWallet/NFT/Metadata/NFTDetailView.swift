@@ -11,7 +11,7 @@ import SwiftUI
 struct NFTDetailView: View {
     @Environment(\.theme) private var theme
     @Environment(\.colorScheme) private var colorScheme
-//    @Environment(EthereumNetworkCard.self) private var card
+//    @Environment(Network.self) private var card
 
     let model: NFTEntity
 

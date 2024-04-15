@@ -137,5 +137,5 @@ extension RpcTextField {
 }
 
 #Preview {
-    RpcTextField(rpc: .constant(EthereumNetworkCard.preview.rpc), chain: 1, validURL: .constant(false))
+    RpcTextField(rpc: .constant(Network.preview.rpc), chain: 1, validURL: .constant(false))
 }

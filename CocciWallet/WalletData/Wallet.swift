@@ -1,6 +1,6 @@
 //
 //  File.swift
-//  
+//
 //
 //  Created by Michael on 4/10/24.
 //
@@ -8,23 +8,24 @@
 import SwiftData
 import SwiftUI
 
+public typealias Wallet = PrivateKeyWallet
+
 @Model
 public class PrivateKeyWallet {
-//    public typealias Client = EthereumClient.Client
-//    public typealias Address = Client.Account.Address
     
     @Attribute(.unique)
-    public var id: String
+    public var string: String
     public var name: String
     
     public var settings: Settings
     
+    @Relationship(deleteRule: .nullify)
     public var networks: [Network]
     
     public var type: Kind
 
     public init(address: String, name: String, type: Kind = .watch) {
-        self.id = address
+        self.string = address
         self.type = type
         self.name = name
         self.networks = []
@@ -33,24 +34,26 @@ public class PrivateKeyWallet {
     
     /// UUID generated from seed, not seed itself
     public init(seedID: String, name: String, type: Kind = .watch) {
-        self.id = seedID
+        self.string = seedID
         self.type = type
         self.name = name
         self.networks = []
         self.settings = .init()
     }
     
-    @Transient
-    public var selected: Network? = nil
+//    @Transient
+//    public var selected: Network? = nil
 }
 
 
 public extension PrivateKeyWallet {
-//    var address: Address { .init(id) }
-
     var hasKey: Bool {
         type != .watch
     }
+    
+}
+
+public extension PrivateKeyWallet {
     struct Settings: Codable {
         public var displayAsCards = true
         public var groupTokens = true
@@ -88,9 +91,30 @@ public extension PrivateKeyWallet {
 
 }
 
-extension PrivateKeyWallet: Identifiable, Equatable, Hashable {
-    
-}
 
-public typealias Web3Wallet = PrivateKeyWallet
-public typealias SolanaWallet = PrivateKeyWallet
+// MARK: - SeedWallet
+
+@Model
+public class SeedWallet {
+    
+    @Attribute(.unique)
+    public var id: UUID
+    public var name: String
+    
+    public var settings: Settings
+    
+    public var web3: PrivateKeyWallet?
+    public var solana: PrivateKeyWallet?
+
+    public init(name: String) {
+        self.id = UUID()
+        self.name = name
+        self.settings = .init()
+    }
+}
+public extension SeedWallet {
+    struct Settings: Codable {
+        public var displayAsCards = true
+        public var groupTokens = true
+    }
+}

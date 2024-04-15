@@ -8,50 +8,102 @@
 import Foundation
 import AppIntents
 
-
-struct NetworkEntity: AppEntity {
-    let id: String
-
-    let title: String
-    let symbol: String?
-
-    var displayRepresentation: DisplayRepresentation {
-        DisplayRepresentation(title: "\(title)")
-    }
-    static var typeDisplayRepresentation: TypeDisplayRepresentation = "Network"
-
-    static var defaultQuery = NetworkQuery()
+public struct NetworkEntity: Codable {
     
+    public var chain: Int
+    public var rpc: URL
+    
+    public var name: String
+    public var hexColor: String
+
+    public var coin: String
+    public var symbol: String
+    public var decimals: UInt8
+    public var explorer: String
+    
+    public var title: String { name }
+
+    public init(chain: Int, rpc: URL, name: String, hexColor: String, coin: String, symbol: String, decimals: UInt8, explorer: String = "") {
+        self.chain = chain
+        self.rpc = rpc
+        self.name = name
+        self.hexColor = hexColor
+        self.coin = coin
+        self.symbol = symbol
+        self.decimals = decimals
+        self.explorer = explorer
+    }
 }
 
-struct NetworkQuery: EntityQuery {
-    
-//    @IntentParameterDependency<NFTIntent>(
-//        \.$wallet
-//    )
-//    var nftIntent
-//    
-//    @IntentParameterDependency<TokenIntent>(
-//        \.$wallet
-//    )
-//    var tokenIntent
-    
-//    private var wallet: WalletEntity? {
-//        nftIntent?.wallet ?? tokenIntent?.wallet
-//    }
-        
-    func suggestedEntities() async throws -> [NetworkEntity] {
-        []
-//        guard let wallet else {return []}
-//        return try await WalletContainer.shared.fetchNetworks(wallet: wallet.id).map{
-//            NetworkEntity(network: $0)
-//        }
+extension NetworkEntity: Identifiable {
+    public var id: Int {chain}
+}
 
+extension NetworkEntity: AppEntity {
+    
+    public var displayRepresentation: DisplayRepresentation {
+        DisplayRepresentation(title: "\(title)")
     }
+    
+    public static var typeDisplayRepresentation: TypeDisplayRepresentation = "Network"
 
-    func entities(for identifiers: [NetworkEntity.ID]) async throws -> [NetworkEntity] {
-        try await suggestedEntities().filter {
-            identifiers.contains($0.id)
+    public static var defaultQuery = Query()
+    
+    public struct Query: EntityQuery {
+        public init(){}
+        
+        @MainActor
+        public func suggestedEntities() throws -> [NetworkEntity] {
+            let networks: [Network] = try sharedModelContainer.mainContext.fetch(.init())
+            return networks.map { $0.card }
+        }
+        
+        @MainActor
+        public func entities(for identifiers: [NetworkEntity.ID]) throws -> [NetworkEntity] {
+            try suggestedEntities().filter {
+                identifiers.contains($0.id)
+            }
         }
     }
+}
+
+extension NetworkEntity {
+    
+    public struct WalletQuery: EntityQuery {
+        
+        @IntentParameterDependency<NFTIntent>(
+            \.$wallet
+        )
+        var nftIntent
+        
+        @IntentParameterDependency<TokenIntent>(
+            \.$wallet
+        )
+        var tokenIntent
+        
+        private var wallet: WalletEntity? {
+            nftIntent?.wallet ?? tokenIntent?.wallet
+        }
+        public init(){}
+        
+        @MainActor
+        public func suggestedEntities() throws -> [NetworkEntity] {
+            guard let wallet else {return []}
+            let predicate = #Predicate<Network> { network in
+                network.addressString == wallet.address
+            }
+            return try sharedModelContainer.mainContext.fetch(.init(predicate: predicate)).map{
+                $0.card
+            }
+            
+        }
+        
+        @MainActor
+        public func entities(for identifiers: [NetworkEntity.ID]) throws -> [NetworkEntity] {
+            try suggestedEntities().filter {
+                identifiers.contains($0.id)
+            }
+        }
+    }
+    
 }

@@ -21,14 +21,14 @@ struct NetworkCardStack: View {
     @Bindable var wallet: Wallet
     
     var name: String { wallet.name }
-//    @Binding var networks: [EthereumNetworkCard]
+//    @Binding var networks: [Network]
     
     @Namespace var animation
 
     
     
     @State private var showDetail = false
-    @State private var selected: EthereumNetworkCard?
+    @State private var selected: Network?
     
     var body: some View {
         CardListView(
@@ -39,27 +39,25 @@ struct NetworkCardStack: View {
             header: header,
             footer: footer
         ) { card in
-            NetworkCardView(
-                card: card,
-                price: prices.price(chain: card.chain, currency: currency)
-            )
+            NetworkCardView(card: card, price: prices.price(chain: card.chain, currency: currency))
                 .task {
 //                    await card.update(clients: networks, prices: prices, currency: currency)
                 }
         } cardDetail: { card in
-            NetworkView(card: .constant(card)){
-                withAnimation{
-                    wallet.networks.remove(card)
-                    selected = nil
-                }
-            }
+            NetworkGrid(card: card)
+//            NetworkView(card: .constant(card)){
+//                withAnimation{
+//                    wallet.networks.remove(card)
+//                    selected = nil
+//                }
+//            }
             #if os(iOS)
             .navigationBarTitleDisplayMode(.inline)
             #endif
 //            .environment(wallet)
 //            .navigationBarBackButton(wallet.name, color: card.color)
         } cardIcon: { card in
-            CardIcon(color: card?.color, symbol: card?.symbol)
+//            CardIcon(color: card?.color, symbol: card?.symbol)
         }
     }
     

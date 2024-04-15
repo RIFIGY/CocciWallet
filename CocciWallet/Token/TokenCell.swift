@@ -12,13 +12,15 @@ import OffChainKit
 struct TokenCell: View {
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
     @Environment(PriceModel.self) private var priceModel
+    @Environment(\.networkTheme) private var theme
+
     let contract: String
     let name: String?
     let symbol: String?
     let decimals: UInt8
     let balance: Double?
     
-    let network: Color
+    var network: Color { theme.color }
     var useNetworkColor: Bool = false
         
     let icon: Icon?
@@ -71,7 +73,7 @@ struct TokenCell: View {
 
 
 extension TokenCell {
-    init(_ token: Token, network: Color, useNetworkColor: Bool = false) {
+    init(_ token: Token, useNetworkColor: Bool = false) {
         self.name = token.name
         self.symbol = token.symbol
         self.decimals = token.decimals ?? 18
@@ -79,13 +81,14 @@ extension TokenCell {
         self.contract = token.address
         self.useNetworkColor = useNetworkColor
         self.icon = Icon(symbol: token.symbol)
-        self.network = network
     }
 }
 
-//#Preview {
-//    List {
-//        TokenCell(ERC20.USDC, balance: 353823, network: .ETH)
-//    }
-//    .environment(PriceModel() )
-//}
+#Preview {
+    let preview = Preview()
+    return List {
+        TokenCell(.USDC)
+    }
+    .environmentPreview()
+}
+

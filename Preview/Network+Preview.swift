@@ -8,11 +8,11 @@
 import Foundation
 import ChainKit
 
-extension EthereumNetworkCard {
-    static let preview: EthereumNetworkCard = previewETH
+extension Network {
+    static let preview: Network = previewETH
     
-    static let previewETH: EthereumNetworkCard = {
-        var card = EthereumNetworkCard(wallet: .rifigy, evm: .ETH, address: "0x956d6A728483F2ecC1Ed3534B44902Ab17Ca81b0")
+    static let previewETH: Network = {
+        var card = Network(address: "", card: .ETH)
 //        card.nfts = [ .Munko : [ .munko2309, .munko2310] ]
 //        card.balanceString = "400000000000000000"
 //        card.nfts = [ .Munko : [] ]
@@ -20,8 +20,8 @@ extension EthereumNetworkCard {
         return card
     }()
     
-    static let previewMatic: EthereumNetworkCard = {
-        var card = EthereumNetworkCard(wallet: .rifigy, evm: .MATIC, address: "0x956d6A728483F2ecC1Ed3534B44902Ab17Ca81b0")
+    static let previewMatic: Network = {
+        var card = Network(address: "", card: .MATIC)
 //        card.balanceString = "400000000000000000"
 //        card.nfts = [ .Munko : [] ]
 //        card.tokens = [ .USDC : 1_000_000_000]

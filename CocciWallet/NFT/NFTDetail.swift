@@ -10,7 +10,7 @@ import Web3Kit
 
 
 struct NFTDetail: View {
-    let nft: NFTEntity
+    let nft: NFT
     
     var metadata: OpenSeaMetadata? {
         nft.opensea

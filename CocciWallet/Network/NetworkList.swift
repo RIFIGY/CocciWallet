@@ -16,12 +16,12 @@ import SwiftData
 struct NetworkList: View {
     @AppStorage(AppStorageKeys.lastSavedCoingeckoCoins) private var coinIds = "ethereum"
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
-    @Environment(NetworkManager.self) private var clients
-    @Environment(Prices.self) private var prices
-    let address: Web3Kit.EthereumAddress
     
-    @Binding var networks: [EthereumNetworkCard]
-//    @Binding var selection: EthereumNetworkCard?
+    @Environment(\.modelContext) private var context
+    @Environment(Prices.self) private var prices
+        
+    let networks: [Network]
+    
     @Binding var showNewNetwork: Bool
     
     var body: some View {
@@ -32,10 +32,6 @@ struct NetworkList: View {
                 } label: {
                     NetworkCell(network: card)
                 }
-                    
-//                    .onTapGesture {
-//                        self.selection = card.wrappedValue
-//                    }
             }
             Button("Add"){
                 self.showNewNetwork = true
@@ -44,60 +40,35 @@ struct NetworkList: View {
         }
         .onAppear {
             prices.fetch(coinIDs: coinIds, currency: currency)
+        }
+        .task {
+            await updateCards()
+        }
+//        .task {
+//            await
+//        }
+    }
+    
+    func updateCards() async {
+        await withTaskGroup(of: Void.self) { group in
             networks.forEach { network in
-                Task {
-                    await updateCard(network:network)
+                group.addTask { @MainActor in
+                    guard network.needsUpdate() else {return}
+                    do {
+                        try await network.update(context: context)
+                    } catch {
+                        print(error)
+                    }
+                    await prices.fetchPrices(chain: network.chain, contracts: network.tokens.map{$0.contract.address}, currency: currency)
+
                 }
             }
         }
         
+
     }
-    
-    private func updateCard(network: EthereumNetworkCard) async {
-        guard let rpc = Infura.shared.URL(chainInt: network.chain) else {return}
-        let client = EthClient(rpc: rpc, chain: network.chain)
-        
-        let balance = try? await client.fetchNativeBalance(for: network.wallet.id, decimals: network.decimals)
-        let nfts:[NFTEntity]? = try? await client.fetchNFTs(for: network.wallet.id)
-        let tokens: [(ContractEntity, Double)]? = try? await client.fetchTokenBalances(for: network.wallet.id)
-        let transactions = try? await Etherscan.shared.getTransactions(for: network.wallet.id, explorer: "etherscan.io")
-        
-        Task{@MainActor in
-            network.balance = balance
-            if let nfts {
-                network.nfts = nfts
-            }
-            if let tokens {
-                network.tokens = tokens.map{ contract, balance in .init(address: contract.address, name: contract.name, symbol: contract.symbol, decimals: contract.decimals, balance: balance) }
-            }
-            if let transactions {
-                network.transactions = transactions
-            }
-        }
-//        network.balance = balance
-//        print("Updating")
-//        guard let ethClient = clients.getClient(chain: network.chain) else {return}
-//        let client = ethClient.node
-//        let updated = await network.update(with: client) { address, explorer in
-//            try await Etherscan.shared.getTransactions(for: address, explorer: explorer)
-//        }
-//        if updated {
-//            await prices.fetchPrices(chain: network.chain, contracts: network.tokens.map{$0.contract}, currency: currency)
-//            print(
-//                network.name + " " +
-//                network.address.string.suffix(6) +
-//                "\n\tTransactions:\(network.transactions.count)" +
-//                "\n\tBalance:\(network.balance?.formatted(.crypto(decimals: network.decimals)) ?? "nil")" +
-//                "\n\tTokens:\(network.tokens.count)" +
-//                "\n\tNFTs:\(network.nfts.count), \(network.nfts.flatMap{$0.value}.count)"
-//            )
-//        } else {
-//            print("Skipped: \(network.name)")
-//        }
-    }
+
 }
-extension ContractEntity: Web3Kit.ERC721P {}
-extension NFTEntity: Web3Kit.NFTP {}
 
 struct NetworkCell: View {
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
@@ -105,8 +76,8 @@ struct NetworkCell: View {
     @Environment(Prices.self) private var prices
     enum CellType { case banner, cell, card }
     
-    @Bindable var network: EthereumNetworkCard
-    
+    let network: Network
+        
     var type: CellType = .banner
     var size: CGFloat = 42
     var price: Double? {

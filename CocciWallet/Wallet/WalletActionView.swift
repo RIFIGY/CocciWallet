@@ -47,7 +47,7 @@ extension WalletAction {
         let address: EthereumAddress = .init("")
         var size: CGFloat = 164
         
-        init(_ destination: WalletAction, card: EthereumNetworkCard, size: CGFloat = 164) {
+        init(_ destination: WalletAction, card: Network, size: CGFloat = 164) {
             self.destination = destination
             self.name = card.name
             self.color = card.color

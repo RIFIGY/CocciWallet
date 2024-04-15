@@ -7,21 +7,20 @@
 
 import Foundation
 import AppIntents
-import WidgetKit
 import OffChainKit
 
 
-struct TokenIntent: WidgetConfigurationIntent {
+struct TokenIntent: AppIntent {
     static var title: LocalizedStringResource = "Token"
     static var description = IntentDescription("Token Balance")
     
     @Parameter(title: "Wallet")
     var wallet: WalletEntity
     
-    @Parameter(title: "Network")
+    @Parameter(title: "Network", query: NetworkEntity.WalletQuery())
     var network: NetworkEntity
     
-    @Parameter(title: "Token", query: TokenQuery())
+    @Parameter(title: "Token", query: ContractEntity.TokenQuery())
     var contract: ContractEntity
     
     @Parameter(title: "Currency", optionsProvider: CurrenciesProvider())
@@ -36,6 +35,12 @@ struct TokenIntent: WidgetConfigurationIntent {
     @Parameter(title: "Color Background", default: true)
     var showBackground: Bool
 
+    
+    init(){}
+    
+    func perform() async throws -> some IntentResult {
+        .result()
+    }
 
     static var parameterSummary: some ParameterSummary {
         When(\.$showBalance, .equalTo, true) {

@@ -16,7 +16,7 @@ struct CocciWalletApp: App {
             ContentView()
         }
         .windowResizability(.contentSize)
-        .modelContainer(WalletContainer.shared.container)
+        .modelContainer(sharedModelContainer)
         
         WindowGroup(id: NFTWindow.ID, for: NFTEntity.self) { $entity in
             NFTWindow(nft: $entity)
@@ -27,7 +27,7 @@ struct CocciWalletApp: App {
         .windowStyle(.plain)
         .defaultSize(.infinity)
         #endif
-        .modelContainer(WalletContainer.shared.container)
+        .modelContainer(sharedModelContainer)
     }
     
     init(){

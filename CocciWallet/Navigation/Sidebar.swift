@@ -15,7 +15,7 @@ struct Sidebar: View {
     #endif
     
     @Bindable var wallet: Wallet
-//    @Binding var selected: EthereumNetworkCard?
+//    @Binding var selected: Network?
 
     var body: some View {
         let navigation = Bindable(navigation)
@@ -35,11 +35,7 @@ struct Sidebar: View {
             SettingsView(selection: navigation.wallet)
         }
         .sheet(isPresented: navigation.showNewNetwork) {
-            AddNetworkView(wallet: wallet) { network in
-                guard !wallet.networks.map({$0.chain}).contains(network.chain) else {return}
-                self.wallet.networks.append(network)
-//                self.selected = network
-            }
+            AddNetworkView(wallet: wallet)
         }
 
     }
@@ -57,8 +53,8 @@ struct Sidebar: View {
     var content: some View {
         let navigation = Bindable(navigation)
 
-        NetworkList(address: wallet.address, networks: $wallet.networks, showNewNetwork: navigation.showNewNetwork)
-            .navigationTitle(wallet.name)
+        NetworkList(networks: wallet.networks, showNewNetwork: navigation.showNewNetwork)
+            .navigationTitle(wallet.name + wallet.networks.count.description)
             #if os(macOS)
             .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
             #endif

@@ -13,11 +13,10 @@ import SwiftData
 
 struct NFTWindow: View {
     
-    typealias NFT = NFTEntity
-    @Binding var nft: NFT
+    @Binding var nft: NFTEntity
 //    @Query private var wallets: [Wallet]
 //    
-//    var networks: [EthereumNetworkCard] {
+//    var networks: [Network] {
 //        wallets.flatMap{$0.networks}
 //    }
 //    

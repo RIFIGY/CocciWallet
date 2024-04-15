@@ -1,162 +1,119 @@
-//
-//  NFTGridView.swift
-//  CocciWallet
-//
-//  Created by Michael on 4/11/24.
-//
+/*
+See the LICENSE.txt file for this sample’s licensing information.
+
+Abstract:
+The grid view used in the DonutGallery.
+*/
 
 import SwiftUI
-import ChainKit
-import Web3Kit
 
 
 struct NFTGridView: View {
-    typealias NFT = NFTEntity
+    @Environment(\.supportsMultipleWindows) private var supportsMultipleWindows
+    @Environment(\.openWindow) private var openWindow
+    #if os(iOS)
+    @Environment(\.horizontalSizeClass) private var sizeClass
+    #endif
+    @Environment(\.dynamicTypeSize) private var dynamicTypeSize
     
-    let nfts: [NFT]
+    
+    var nfts: [NFT]
+    var width: Double
+    var onTap: ((NFT) -> Void)? = nil
+    
+    var useReducedThumbnailSize: Bool {
+        #if os(iOS)
+        if sizeClass == .compact {
+            return true
+        }
+        #endif
+        if dynamicTypeSize >= .xxxLarge {
+            return true
+        }
         
-    @State private var searchText = ""
-    @State private var layout = BrowserLayout.grid
-
-    
-    var filteredNFTs: [NFT] {
-        nfts
+        #if os(iOS)
+        if width <= 390 {
+            return true
+        }
+        #elseif os(macOS)
+        if width <= 520 {
+            return true
+        }
+        #endif
+        
+        return false
     }
     
-    var tableImageSize: Double {
-        #if os(macOS)
-        return 30
+    var cellSize: Double {
+        useReducedThumbnailSize ? 100 : 150
+    }
+    
+    var thumbnailSize: Double {
+        #if os(iOS)
+        return useReducedThumbnailSize ? 60 : 100
         #else
-        return 60
+        return useReducedThumbnailSize ? 40 : 80
         #endif
+    }
+    
+    var gridItems: [GridItem] {
+        [GridItem(.adaptive(minimum: cellSize), spacing: 20, alignment: .top)]
     }
     
     var body: some View {
-        ZStack {
-            if layout == .grid {
-                grid
-            } else {
-                table
-            }
-        }
-        .background()
-        #if os(iOS)
-        .toolbarRole(.browser)
-        #endif
-        .toolbar {
-            ToolbarItemGroup {
-                toolbarItems
-            }
-        }
-        .searchable(text: $searchText)
-        .navigationTitle("Donuts")
-//        .navigationDestination(for: NFTMetadata.self) { nft in
-//            NFTDetailView(model: nft)
-//        }
-    }
-    
-    var grid: some View {
-        GeometryReader { geometryProxy in
-            ScrollView {
-                NFTGallery(nfts: filteredNFTs, width: geometryProxy.size.width)
-            }
-        }
-    }
-    
-    var table: some View {
-        Table(filteredNFTs) {
-            TableColumn("Name") { nft in
-                NavigationLink {
-                    NFTDetail(nft: nft)
-                } label: {
-                    HStack {
-                        NFTImageView(nft: nft, contentMode: .fit)
-                            .frame(width: tableImageSize, height: tableImageSize)
-
-                        Text(nft.name ?? nft.tokenId)
+        LazyVGrid(columns: gridItems, spacing: 20) {
+            ForEach(nfts) { nft in
+                if let onTap {
+                    Cell(nft: nft, thumbnailSize: thumbnailSize)
+                        .onTapGesture{
+                            onTap(nft)
+                        }
+                } else if supportsMultipleWindows {
+                    Button {
+                        openWindow(id: NFTWindow.ID, value: nft.token)
+                    } label: {
+                        Cell(nft: nft, thumbnailSize: thumbnailSize)
                     }
-
+                } else {
+                    NavigationLink {
+                        NFTDetail(nft: nft)
+                    } label: {
+                        Cell(nft: nft, thumbnailSize: thumbnailSize)
+                    }
+                    .buttonStyle(.plain)
                 }
             }
         }
+        .padding()
     }
-    @ViewBuilder
-    var toolbarItems: some View {
-        NavigationLink(value: "New Donut") {
-            Label("Create Donut", systemImage: "plus")
-        }
-        
-        Menu {
-            Picker("Layout", selection: $layout) {
-                ForEach(BrowserLayout.allCases) { option in
-                    Label(option.title, systemImage: option.imageName)
-                        .tag(option)
-                }
-            }
-            .pickerStyle(.inline)
+    
+    struct Cell: View {
+        let nft: NFT
+        let thumbnailSize: Double
+        var body: some View {
+            VStack {
+                NFTImageView(nft: nft, contentMode: .fit)
+                    .frame(width: thumbnailSize, height: thumbnailSize)
 
-//            Picker("Sort", selection: $sort) {
-//                Label("Name", systemImage: "textformat")
-//                    .tag(DonutSortOrder.name)
-//                Label("Popularity", systemImage: "trophy")
-//                    .tag(DonutSortOrder.popularity(popularityTimeframe))
-//                Label("Flavor", systemImage: "fork.knife")
-//                    .tag(DonutSortOrder.flavor(sortFlavor))
-//            }
-//            .pickerStyle(.inline)
-//            
-//            if case .popularity = sort {
-//                Picker("Timeframe", selection: $popularityTimeframe) {
-//                    Text("Today")
-//                        .tag(Timeframe.today)
-//                    Text("Week")
-//                        .tag(Timeframe.week)
-//                    Text("Month")
-//                        .tag(Timeframe.month)
-//                    Text("Year")
-//                        .tag(Timeframe.year)
-//                }
-//                .pickerStyle(.inline)
-//            } else if case .flavor = sort {
-//                Picker("Flavor", selection: $sortFlavor) {
-//                    ForEach(Flavor.allCases) { flavor in
-//                        Text(flavor.name)
-//                            .tag(flavor)
-//                    }
-//                }
-//                .pickerStyle(.inline)
-//            }
-        } label: {
-            Label("Layout Options", systemImage: layout.imageName)
-                .labelStyle(.iconOnly)
+                VStack {
+                    Text(nft.name ?? "Name")
+//                            HStack(spacing: 4) {
+//                                flavor.image
+//                                Text(flavor.name)
+//                            }
+//                            .font(.subheadline)
+//                            .foregroundStyle(.secondary)
+                }
+                .multilineTextAlignment(.center)
+            }
         }
     }
 }
 
-enum BrowserLayout: String, Identifiable, CaseIterable {
-    case grid
-    case list
-
-    var id: String {
-        rawValue
-    }
-
-    var title: LocalizedStringKey {
-        switch self {
-        case .grid: return "Icons"
-        case .list: return "List"
-        }
-    }
-
-    var imageName: String {
-        switch self {
-        case .grid: return "square.grid.2x2"
-        case .list: return "list.bullet"
+#Preview {
+    GeometryReader { geometryProxy in
+        ScrollView {
+            NFTGridView(nfts: [], width: geometryProxy.size.width)
         }
     }
 }
-
-//
-//#Preview {
-//    NFTGridView()
-//}

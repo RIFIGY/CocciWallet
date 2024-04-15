@@ -8,15 +8,15 @@
 import SwiftUI
 import BigInt
 
-struct NetworkCardSettings: View {
+struct NetworkSettings: View {
     @AppStorage(AppStorageKeys.favoriteNFT, store: UserDefaults.group) var favoriteNFT: String = ""
-    @Bindable var card: EthereumNetworkCard
+    @Bindable var card: Network
     
     var color: Color { card.color }
     var chain: Int { card.chain }
     var remove: ()->Void = {}
     
-    @State private var chooseNftTapped = false
+
     
     
     var body: some View {
@@ -27,6 +27,37 @@ struct NetworkCardSettings: View {
                         .toggleStyle(SwitchToggleStyle(tint: color))
                 }
             }
+            
+//            SelectNFTCell(nfts: card.nfts, nft: $card.settings.coverNFT)
+            
+            Section {
+                NavigationLink {
+                    List {
+                        ForEach(card.settings.blockList, id: \.self) { contract in
+                            Text(contract)
+                                .minimumScaleFactor(0.6)
+                                .lineLimit(1)
+                                
+                        }
+                        .onDelete{ indexSet in
+                            card.settings.blockList.remove(atOffsets: indexSet)
+                        }
+                    }
+                    #if os(iOS)
+                    .toolbar {
+                        ToolbarItem{
+                            EditButton()
+                        }
+                    }
+                    #endif
+                } label: {
+                    IconCell(systemImage: "triangle", color: .orange) {
+                        Text("Block List")
+                    }
+                }
+            }
+            
+            
             if card.isCustom {
                 Section {
                     NavigationLink {
@@ -47,36 +78,61 @@ struct NetworkCardSettings: View {
             }
         }
         .navigationTitle(card.name)
+
     }
+}
+
+struct SelectNFTCell: View {
+    let nfts: [NFT]
+    @Binding var nft: NFTEntity?
     
-    var nftName: String? {
-        nil
-//        if let coverNFT = card.settings.coverNFT {
-//            if let contractName = coverNFT.contractName, coverNFT.metadata?.name == coverNFT.tokenId.description {
-//                return contractName + ": " + coverNFT.tokenId.description
-//            } else if let name = coverNFT.metadata?.name, name != coverNFT.tokenId.description {
-//                return name
-//            } else {
-//                return coverNFT.tokenId.description
-//            }
-//        } else {return nil}
-    }
+    @State private var chooseNftTapped = false
+    @State private var randomNFT = true
     
-    var nftLabel: String {
-        if let nftName {
-            nftName
-        } else {
-            "Random"
+    var body: some View {
+        Section {
+            IconCell(systemImage: "square", color: .indigo) {
+                HStack {
+                    Text("Cover NFT")
+                    Spacer()
+                    Button(randomNFT ? "Random" : "Choose NFT") {
+                        self.randomNFT.toggle()
+                    }
+                }
+            }
+            if !randomNFT {
+                HStack {
+                    Spacer()
+                    if let nft {
+                        Text(nft.name ?? nft.tokenId)
+                    } else {
+                        Button("Choose NFT") {
+                            self.chooseNftTapped = true
+                        }
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $chooseNftTapped) {
+            NavigationStack {
+                NFTGallery(nfts: nfts) { nft in
+                    chooseNftTapped = false
+//                    Task{@MainActor in
+//                        self.card.settings.coverNFT = nft.token
+//                    }
+                }
+            }
         }
     }
 }
+
 struct AdvancedNetworkSettings: View {
     @Environment(\.dismiss) private var dismiss
     
     var color: Color { card.color }
     var chain: Int { card.chain }
     
-    @Bindable var card: EthereumNetworkCard
+    @Bindable var card: Network
     
     @State private var testedRpc: Bool = false
     
@@ -87,7 +143,7 @@ struct AdvancedNetworkSettings: View {
             if card.isCustom {
 //                CustomNetworkView(name: $card.name, chainId: $card.chain, symbol: $card.nativeCoin.symbol, rpc: $card.rpc)
             } else {
-                RpcTextField(rpc: $card.rpc, chain: chain, color: color, label: "RPC", validURL: $testedRpc)
+//                RpcTextField(rpc: $card.entity.rpc, chain: chain, color: color, label: "RPC", validURL: $testedRpc)
             }
         }
         .toolbar {

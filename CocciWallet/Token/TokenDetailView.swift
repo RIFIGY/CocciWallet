@@ -13,6 +13,9 @@ import ChainKit
 
 
 struct ERC20DetailView<T:ERCTransfer>: View {
+    @Environment(Navigation.self) private var navigation
+    @Environment(\.networkTheme) private var theme
+
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
 
     let token: Token
@@ -21,7 +24,7 @@ struct ERC20DetailView<T:ERCTransfer>: View {
     
     let transactions: [T]
     
-    let network: Color
+    var network: Color { theme.color }
     
     var symbol: String? {
         token.symbol
@@ -43,6 +46,8 @@ struct ERC20DetailView<T:ERCTransfer>: View {
         guard let price, let value = token.balance else {return nil}
         return value * price
     }
+    
+    
     var body: some View {
         ScrollView(.vertical, showsIndicators: false) {
             VStack {
@@ -91,7 +96,6 @@ struct ERC20DetailView<T:ERCTransfer>: View {
                         }
                     }
                 }
-                .networkTheme(symbol: self.symbol, color: color, decimals: token.decimals ?? 18)
 
                 if !transactions.isEmpty {
 //                    ERCTransactions(transfers: [contract], transactions: transactions, address: address, symbol: symbol)
@@ -101,6 +105,13 @@ struct ERC20DetailView<T:ERCTransfer>: View {
             .padding(.horizontal)
         }
         .background(Color.systemGray)
+        .toolbar {
+            ToolbarItem {
+                Button("Settings", systemImage: "gear") {
+                    self.navigation.showTokenSettings = true
+                }
+            }
+        }
         .navigationBarBackButton(name, color: color)
     }
     

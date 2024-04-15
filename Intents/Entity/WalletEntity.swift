@@ -14,8 +14,6 @@ struct WalletEntity: AppEntity, Identifiable, Codable {
 
     var name: String
     let address: String
-//    var cards: [NetworkEntity] = []
-//    var custom: [NetworkEntity] = []
 
     var displayRepresentation: DisplayRepresentation {
         DisplayRepresentation(title: "\(name)")
@@ -24,20 +22,20 @@ struct WalletEntity: AppEntity, Identifiable, Codable {
     static var typeDisplayRepresentation: TypeDisplayRepresentation = "Wallet"
 
     static var defaultQuery = WalletQuery()
-    
-    enum CodingKeys: String, CodingKey {
-        case address
-        case name = "_name"
-    }
 }
 
 struct WalletQuery: EntityQuery {
     
-    func suggestedEntities() async throws -> [WalletEntity] {
-        await WalletContainer.shared.allWallets().map{ .init(name: $0.name, address: $0.address.string) }
+    @MainActor
+    func suggestedEntities() throws -> [WalletEntity] {
+        let wallets:[Wallet] = try sharedModelContainer.mainContext.fetch(.init())
+        return wallets.map{
+            .init(name: $0.name, address: $0.string)
+        }
     }
 
-    func entities(for identifiers: [WalletEntity.ID]) async throws -> [WalletEntity] {
-        try await suggestedEntities().filter{ identifiers.contains($0.id) }
+    @MainActor
+    func entities(for identifiers: [WalletEntity.ID]) throws -> [WalletEntity] {
+        try suggestedEntities().filter{ identifiers.contains($0.id) }
     }
 }

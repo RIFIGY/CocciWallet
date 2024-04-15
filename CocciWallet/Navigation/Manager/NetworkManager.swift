@@ -22,21 +22,21 @@ class NetworkManager {
         }
     }
             
-    init() {
-        
-        Task {
-            let wallets = await WalletContainer.shared.allWallets()
-            
-            wallets.forEach { wallet in
-                wallet.networks.forEach { evm in
-                    self.add(network: evm)
-                 }
-            }
-        }
-    }
+//    init() {
+//        
+//        Task {
+//            let wallets = await WalletContainer.shared.allWallets()
+//            
+//            wallets.forEach { wallet in
+//                wallet.networks.forEach { evm in
+//                    self.add(network: evm)
+//                 }
+//            }
+//        }
+//    }
     
 
-    func add(network: Network) {
+    func add(network: NetworkEntity) {
         let chain = network.chain
         guard web3[chain] == nil,
                 let infuraURL = Infura.shared.URL(chainInt: chain) else {return}

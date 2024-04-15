@@ -59,13 +59,23 @@ struct NetworkCardView: View {
 }
 
 extension NetworkCardView {
-    init(card: EthereumNetworkCard, price: Double? = nil) {
+    init(card: Network, price: Double? = nil) {
         self.title = card.name
         self.price = price
         self.color = card.color
         self.address = card.address.string
-        self.balanceString = card.value?.string(decimals: 5) ?? "00"
+        self.balanceString = card.balance?.string(decimals: 5) ?? "00"
         self.symbol = card.symbol
+    }
+    
+    init(entity: NetworkEntity, price: Double? = nil) {
+        self.title = entity.title
+        self.price = price
+        self.symbol = entity.symbol
+
+        self.color = Color(hex: entity.hexColor) ?? .indigo
+        self.address = entity.rpc.absoluteString
+        self.balanceString = "-00-"
     }
     
 }

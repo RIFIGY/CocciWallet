@@ -63,7 +63,7 @@ struct WalletSettingsView: View {
 
 
 fileprivate struct NetworkSettingsList: View {
-    @Binding var networks: [EthereumNetworkCard]
+    @Binding var networks: [Network]
     
     var body: some View {
         NavigationLink {

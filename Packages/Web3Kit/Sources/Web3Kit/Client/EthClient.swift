@@ -43,13 +43,14 @@ public class EthClient {
     
     public func fetchContract<T:ERC20P>(for address: String) async throws -> T {
         let contract = EthereumAddress(address)
-        async let name: String? = try? await erc20.name(tokenContract: contract)
-        async let symbol: String? = try? await erc20.symbol(tokenContract: contract)
+        print(contract)
+        async let name: String = try await erc20.name(tokenContract: contract)
+        async let symbol: String = try await erc20.symbol(tokenContract: contract)
         async let decimals: UInt8 = try await erc20.decimals(tokenContract: contract)
 
         return try await T(
             address: contract.string,
-            name: name ?? "",
+            name: name,
             symbol: symbol,
             decimals: decimals
         )
@@ -77,27 +78,41 @@ public class EthClient {
     }
     
     
-    public func fetchTokenBalances<T:ERC20P>(for address: String) async throws -> [ (T,Double) ] {
-        let erc20: web3.ERC20 = .init(client: client)
+    public func fetchTokenBalance(contract: String, address: String) async throws -> BigUInt {
+        let balance = try await erc20.balanceOf(tokenContract: .init(contract), address: .init(address))
+        return balance
+
+    }
+    
+    public func fetchTokenInteractions(for address: String) async throws -> [String] {
         let interactions = try await client.getTransferEvents(for: .init(address))
-        let contracts = Array(Set(interactions.map{$0.contract.string}))
+        return Array(Set(interactions.map{$0.contract.string}))
+    }
+    
+    public func fetchContractBalance<T:ERC20P>(contract: String, address: String) async throws -> (T, Double?) {
+        let token: T = try await self.fetchContract(for: contract)
+        let balance = try? await self.erc20.balanceOf(tokenContract: .init(contract), address: .init(address))
+        let value = balance?.double(token.decimals ?? 18)
+        return (token, value)
+
+    }
+    
+    public func fetchTokenBalances<T:ERC20P>(interactions contracts:[String], address: String) async throws -> [ (T,Double?) ] {
         
-        return await withTaskGroup(of: (T,Double)?.self) { group in
+        return await withTaskGroup(of: (T,Double?)?.self) { group in
             contracts.forEach { contract in
                 let contract = EthereumAddress(contract)
                 group.addTask {
                     do {
-                        let token: T = try await self.fetchContract(for: address)
-                        let balance = try await erc20.balanceOf(tokenContract: contract, address: .init(address))
-                        
-                        return (token, balance.double(token.decimals ?? 18) )
+                        let (token, balance): (T,Double?)  = try await self.fetchContractBalance(contract: contract.asString(), address: address)
+                        return (token, balance)
                     } catch {
                         return nil
                     }
                 }
             }
             
-            return await group.reduce(into: [(T, Double)]()) { partialResult, result in
+            return await group.reduce(into: [(T, Double?)]()) { partialResult, result in
                 if let result {
                     partialResult.append(result)
                 }
@@ -105,11 +120,15 @@ public class EthClient {
         }
     }
     
-    public func fetchNFTs<N:NFTP>(for address: String) async throws -> [N] {
+    
+    public func fetchNFTHoldings(for address: String) async throws -> [EthereumAddress : [BigUInt] ] {
         let interactions = try await client.getTokenTransferEvents(for: .init(address))
         let dict = filter(transfers: interactions, for: .init(address))
-        
-        return await withTaskGroup(of: N.self) { group in
+        return dict
+    }
+    
+    public func fetchNFTs<N:NFTP>(holdings dict: [EthereumAddress : [BigUInt] ]) async throws -> [N] {
+        await withTaskGroup(of: N.self) { group in
             dict.forEach { contract, tokenIds in
                 tokenIds.forEach { tokenId in
                     group.addTask {
@@ -128,7 +147,7 @@ public class EthClient {
     
 }
 
-public protocol ERCP: Codable {
+public protocol ERCP {
     var decimals: UInt8? {get}
     init(address: String, name: String, symbol: String?, decimals: UInt8?)
 }

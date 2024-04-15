@@ -7,6 +7,7 @@
 
 import WidgetKit
 import OffChainKit
+import AppIntents
 
 
 struct TokenEntry: TimelineEntry {
@@ -36,6 +37,8 @@ fileprivate extension TokenIntent {
     }
 }
 
+extension TokenIntent: WidgetConfigurationIntent {}
+
 struct TokenProvider: AppIntentTimelineProvider {
     func placeholder(in context: Context) -> TokenEntry {
         TokenEntry(date: .now, intent: .placeholder)
@@ -47,11 +50,12 @@ struct TokenProvider: AppIntentTimelineProvider {
     
     func timeline(for intent: TokenIntent, in context: Context) async -> Timeline<TokenEntry> {
         
-        let balance = await WalletContainer.shared.fetchBalance(
-            wallet: intent.wallet.id,
-            networkID: intent.network.id,
-            contract: intent.contract.address
-        )
+//        let balance = await WalletContainer.shared.fetchBalance(
+//            wallet: intent.wallet.id,
+//            networkID: intent.network.chain.description + "_" + intent.wallet.id,
+//            contract: intent.contract.address
+//        )
+        let balance: Double? = nil
         #warning("fix this")
         var entry = TokenEntry(date: .now, intent: intent, balance: balance)
         
@@ -70,9 +74,8 @@ struct TokenProvider: AppIntentTimelineProvider {
     private let api = CoinGecko.shared
     
     private func fetchPrice(network: NetworkEntity, contract entity: ContractEntity, currency: String) async throws -> Double {
-        let chain = Int(network.id)
         let contract = entity.address
-        guard let chain, let platform = CoinGecko.AssetPlatform.NativeCoin(chainID: chain) else {
+        guard let platform = CoinGecko.AssetPlatform.NativeCoin(chainID: network.chain) else {
             throw NSError(domain: "CoinGeckoWidget", code: 2, userInfo: [NSLocalizedDescriptionKey: "No Native Platform ID"])
         }
         

@@ -6,15 +6,13 @@
 //
 
 import SwiftUI
-
+import SwiftData
 import Web3Kit
 
 struct NftGridCell: View {
     @Environment(\.colorScheme) var colorScheme
-
-
-    typealias NFT = NFTEntity
-
+    @Query private var stored: [NFT]
+    
     let nfts: [NFT]
     let address: EthereumAddress
     
@@ -33,7 +31,7 @@ struct NftGridCell: View {
     
     var body: some View {
         VStack(alignment: .leading, spacing: 4) {
-            Text("NFT \(nfts.count)")
+            Text("NFT \(stored.count)")
             Group {
                 if let cover {
                     NFTImageView(nft: cover, contentMode: .fill)
