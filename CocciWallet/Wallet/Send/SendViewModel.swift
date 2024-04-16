@@ -12,9 +12,10 @@ import web3
 
 @Observable
 class SendViewModel {
-    let evm: Network
-    var address: String
-    let decimals: UInt8
+    
+//    let evm: Network
+//    var address: String
+//    let decimals: UInt8
     
     var amount: Double?
     
@@ -34,11 +35,11 @@ class SendViewModel {
     var done = false
     
 
-    init(evm: Network, address: String, decimals: UInt8) {
-        self.evm = evm
-        self.address = address
-        self.decimals = decimals
-    }
+//    init(evm: Network, address: String, decimals: UInt8) {
+//        self.evm = evm
+//        self.address = address
+//        self.decimals = decimals
+//    }
     
     func fetchGas(client: EthereumClient) async {
         let gasPrice = try? await client.node.getGasPrice()
@@ -47,7 +48,7 @@ class SendViewModel {
         }
     }
     
-    func fetchGasEstimate(value: BigUInt?, client: EthereumClient) async {
+    func fetchGasEstimate(from address: String, value: BigUInt?, client: EthereumClient, chain: Int) async {
         guard let value else {return}
         var transaction: EthereumTransaction { .init(
             from: .init(address),
@@ -57,7 +58,7 @@ class SendViewModel {
             nonce: nonce,
             gasPrice: gasPrice,
             gasLimit: gasLimit,
-            chainId: evm.chain
+            chainId: chain
         )
         }
         do {

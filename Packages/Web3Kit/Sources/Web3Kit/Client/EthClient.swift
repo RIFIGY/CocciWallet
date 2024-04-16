@@ -22,7 +22,7 @@ public class EthClient {
     typealias Account = EthereumAccount
     typealias Address = EthereumAddress
         
-    private let client: EthereumHttpClient
+    public let client: EthereumHttpClient
     private let erc20: web3.ERC20
     private let erc721Metadata: web3.ERC721Metadata
     public var rpc: URL { client.rpc }

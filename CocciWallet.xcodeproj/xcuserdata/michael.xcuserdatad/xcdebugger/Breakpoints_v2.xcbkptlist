@@ -40,7 +40,7 @@
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
             uuid = "16A9B728-011D-4D1D-99A1-6B035A5A131C"
-            shouldBeEnabled = "Yes"
+            shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "../../../../../var/folders/vm/4jn9fpxs2dx3q9jb3b913b4h0000gn/T/swift-generated-sources/@__swiftmacro_11CocciWallet7NetworkC8settings18_PersistedPropertyfMa_.swift"

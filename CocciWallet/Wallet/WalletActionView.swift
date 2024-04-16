@@ -34,7 +34,7 @@ extension WalletAction {
     
     struct GridButton: View {
 //        @Environment(WalletHolder.self) private var manager
-        @Environment(NetworkManager.self) private var network
+//        @Environment(NetworkManager.self) private var network
         
         let destination: WalletAction
 //        let card: NetworkCard
@@ -72,8 +72,6 @@ extension WalletAction {
                         case .stake: StakeView()
                         }
                     }
-//                    .environment(manager)
-                    .environment(network)
                     .toolbar {
                         ToolbarItem(placement: .cancellationAction) {
                             Button(systemName: "chevron.left") {

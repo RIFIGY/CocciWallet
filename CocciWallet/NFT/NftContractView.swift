@@ -12,7 +12,6 @@ import BigInt
 import OffChainKit
 
 struct NftContractView: View {
-    @Environment(NetworkManager.self) private var network
 //    @Environment(Network.self) private var card
     
     @State var model: ERC721Model
@@ -195,7 +194,6 @@ extension NftContractView {
 #Preview {
     NavigationStack {
         NftContractView(ERC721.Munko)
-            .environment(NetworkManager())
 //            .environment(Network.preview)
     }
 }

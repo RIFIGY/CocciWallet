@@ -13,76 +13,78 @@ import OffChainKit
 
 struct NetworkCardStack: View {
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
-    @Environment(NetworkManager.self) private var networks
-    @Environment(PriceModel.self) private var prices
-    @Environment(Navigation.self) private var navigation
 
-    
-    @Bindable var wallet: Wallet
-    
-    var name: String { wallet.name }
-//    @Binding var networks: [Network]
+    let wallet: Wallet
+    @Binding var selected: Network?
+    @State private var selection: Network?
+
+    @Binding var showNewNetwork: Bool
+    @Binding var showWallets: Bool
+    @Binding var showSettings: Bool
     
     @Namespace var animation
-
-    
-    
     @State private var showDetail = false
-    @State private var selected: Network?
     
     var body: some View {
-        CardListView(
-            cards: wallet.networks,
-            additional: [],
-            showDetail: $showDetail,
-            animation: animation,
-            header: header,
-            footer: footer
-        ) { card in
-            NetworkCardView(card: card, price: prices.price(chain: card.chain, currency: currency))
-                .task {
-//                    await card.update(clients: networks, prices: prices, currency: currency)
-                }
-        } cardDetail: { card in
-            NetworkGrid(card: card)
-//            NetworkView(card: .constant(card)){
-//                withAnimation{
-//                    wallet.networks.remove(card)
-//                    selected = nil
-//                }
-//            }
-            #if os(iOS)
-            .navigationBarTitleDisplayMode(.inline)
-            #endif
-//            .environment(wallet)
-//            .navigationBarBackButton(wallet.name, color: card.color)
-        } cardIcon: { card in
-//            CardIcon(color: card?.color, symbol: card?.symbol)
+        Group {
+            if wallet.settings.displayAsCards {
+                stack
+            } else {
+                NetworkList(networks: wallet.networks, selected: $selected, showNewNetwork: $showNewNetwork)
+            }
+        }
+//        .navigationDestination(item: $selected) { card in
+//            NetworkDetailView(card: card)
+//        }
+        .sheet(isPresented: $showNewNetwork) {
+            NavigationStack {
+                AddNetworkView(wallet: wallet)
+            }
         }
     }
     
+    var stack: some View {
+        CardList(
+            animation: animation,
+            cards: wallet.networks.filter{!$0.isCustom}.sorted{$0.chain > $1.chain},
+            additional: wallet.networks.filter{$0.isCustom},
+            selected: $selection,
+            header: header
+        ) { card in
+            NetworkCardView(card: card)
+        } cardDetail: { card in
+            NetworkDetailView(card: card)
+                .navigationBarTitleDisplayMode(.inline)
+        } cardIcon: { card in
+            CardIcon(color: card?.color, symbol: card?.symbol)
+        }
+
+
+    }
+    
+
     
     var footer: some View {
         Button("Add"){
-            navigation.showNewNetwork = true
+            showNewNetwork = true
         }
         .buttonStyle(.bordered)
-        .padding(.vertical, 32)
+//        .padding(.vertical, 32)
     }
 
     var header: some View {
         HStack {
-            Text(name)
+            Text(wallet.name)
                 .font(.largeTitle.weight(.bold))
             Spacer()
             HStack {
-                HeaderButton(systemName: "wallet.pass") {
-                    withAnimation {
-                        navigation.showWallets = true
-                    }
-                }
-                HeaderButton(systemName: "gearshape") {
-                    navigation.showSettings = true
+//                HeaderButton(systemName: "wallet.pass") {
+//                    withAnimation {
+//                        showWallets = true
+//                    }
+//                }
+                HeaderButton(systemName: "plus") {
+                    showNewNetwork = true
                 }
             }
         }

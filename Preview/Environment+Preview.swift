@@ -16,7 +16,6 @@ extension View {
     func environmentPreview(_ preview: Preview = Preview()) -> some View {
         self
             .environment(PriceModel.preview)
-            .environment(NetworkManager())
             .environment(Navigation.preview)
             .modelContainer(preview.container)
     }

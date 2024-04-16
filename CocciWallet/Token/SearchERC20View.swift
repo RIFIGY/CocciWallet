@@ -13,7 +13,6 @@ import ChainKit
 
 struct SearchERC20View: View {
     @Environment(\.dismiss) private var dismiss
-    @Environment(NetworkManager.self) private var network
     @State private var result: (ContractEntity)? = nil
     
     var chosen: (ContractEntity) async -> Bool

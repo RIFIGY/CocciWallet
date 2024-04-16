@@ -17,7 +17,7 @@ struct NFTGallery: View {
 
     @State private var searchText = ""
     @State private var layout = BrowserLayout.grid
-
+    @State private var group = true
     
     var filteredNFTs: [NFT] {
         nfts
@@ -36,7 +36,7 @@ struct NFTGallery: View {
             if layout == .grid {
                 grid
             } else {
-                table
+                NFTTable(nfts: nfts, group: group)
             }
         }
         .background()
@@ -50,54 +50,20 @@ struct NFTGallery: View {
         }
         .searchable(text: $searchText)
         .navigationTitle("Donuts")
-//        .navigationDestination(for: NFTMetadata.self) { nft in
-//            NFTDetailView(model: nft)
-//        }
     }
     
     var grid: some View {
         GeometryReader { geometryProxy in
             ScrollView {
-                NFTGridView(nfts: filteredNFTs, width: geometryProxy.size.width, onTap: onTap)
+                NFTGridView(nfts: filteredNFTs, width: geometryProxy.size.width, group: group, onTap: onTap)
             }
         }
     }
     
-    var table: some View {
-        Table(filteredNFTs) {
-            TableColumn("Name") { nft in
-                if let onTap {
-                    TableCell(nft)
-                        .onTapGesture {
-                            onTap(nft)
-                        }
-                } else {
-                    NavigationLink {
-                        NFTDetail(nft: nft)
-                    } label: {
-                        TableCell(nft)
-                    }
-                }
-            }
-        }
-    }
-    
-    @ViewBuilder
-    func TableCell(_ nft: NFT) -> some View {
-        HStack {
-            NFTImageView(nft: nft, contentMode: .fit)
-                .frame(width: tableImageSize, height: tableImageSize)
 
-            Text(nft.name ?? nft.tokenId)
-        }
-    }
     
     @ViewBuilder
     var toolbarItems: some View {
-        NavigationLink(value: "New Donut") {
-            Label("Create Donut", systemImage: "plus")
-        }
-        
         Menu {
             Picker("Layout", selection: $layout) {
                 ForEach(BrowserLayout.allCases) { option in
@@ -106,6 +72,7 @@ struct NFTGallery: View {
                 }
             }
             .pickerStyle(.inline)
+            Toggle("Group", isOn: $group)
 
 //            Picker("Sort", selection: $sort) {
 //                Label("Name", systemImage: "textformat")
@@ -144,6 +111,8 @@ struct NFTGallery: View {
         }
     }
 }
+
+
 
 enum BrowserLayout: String, Identifiable, CaseIterable {
     case grid

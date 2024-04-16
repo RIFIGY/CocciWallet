@@ -19,7 +19,16 @@ struct NFTGridView: View {
     
     var nfts: [NFT]
     var width: Double
+    var group: Bool
     var onTap: ((NFT) -> Void)? = nil
+    
+    var grouped: [String : [NFT] ] {
+        Dictionary(grouping: nfts, by: {$0.contract})
+    }
+    
+    var contracts: [String] {
+        grouped.keys.map{$0}
+    }
     
     var useReducedThumbnailSize: Bool {
         #if os(iOS)
@@ -57,46 +66,47 @@ struct NFTGridView: View {
     }
     
     var gridItems: [GridItem] {
-        [GridItem(.adaptive(minimum: cellSize), spacing: 20, alignment: .top)]
+        [GridItem(.adaptive(minimum: cellSize), spacing: 10, alignment: .top)]
     }
     
     var body: some View {
-        LazyVGrid(columns: gridItems, spacing: 20) {
-            ForEach(nfts) { nft in
-                if let onTap {
-                    Cell(nft: nft, thumbnailSize: thumbnailSize)
-                        .onTapGesture{
-                            onTap(nft)
+        if group {
+            VStack {
+                ForEach(grouped.keys.map{$0}, id: \.self) { contract in
+                    if let nfts = grouped[contract] {
+                        Section(contract) {
+                            LazyVGrid(columns: gridItems, spacing: 10) {
+                                ForEach(nfts) { nft in
+                                    Cell(nft: nft, thumbnailSize: thumbnailSize)
+                                }
+                            }
+                            .padding()
                         }
-                } else if supportsMultipleWindows {
-                    Button {
-                        openWindow(id: NFTWindow.ID, value: nft.token)
-                    } label: {
-                        Cell(nft: nft, thumbnailSize: thumbnailSize)
                     }
-                } else {
-                    NavigationLink {
-                        NFTDetail(nft: nft)
-                    } label: {
-                        Cell(nft: nft, thumbnailSize: thumbnailSize)
-                    }
-                    .buttonStyle(.plain)
                 }
             }
+        } else {
+            LazyVGrid(columns: gridItems, spacing: 10) {
+                ForEach(nfts) { nft in
+                    Cell(nft: nft, thumbnailSize: thumbnailSize)
+                }
+            }
+            .padding()
         }
-        .padding()
     }
     
     struct Cell: View {
         let nft: NFT
         let thumbnailSize: Double
-        var body: some View {
+        var onTap: ((NFT) -> Void)? = nil
+
+        var cell: some View {
             VStack {
-                NFTImageView(nft: nft, contentMode: .fit)
+                NFTImageView(nft: nft.token, contentMode: .fit)
                     .frame(width: thumbnailSize, height: thumbnailSize)
 
                 VStack {
-                    Text(nft.name ?? "Name")
+                    Text(nft.title)
 //                            HStack(spacing: 4) {
 //                                flavor.image
 //                                Text(flavor.name)
@@ -107,13 +117,37 @@ struct NFTGridView: View {
                 .multilineTextAlignment(.center)
             }
         }
+        
+        var body: some View {
+            if let onTap {
+                cell
+                    .onTapGesture{
+                        onTap(nft)
+                    }
+            } else {
+                #if os(visionOS)
+                Button {
+                    openWindow(id: NFTWindow.ID, value: nft.token)
+                } label: {
+                    cell
+                }
+                #else
+                NavigationLink {
+                    NFTDetail(nft: nft)
+                } label: {
+                    cell
+                }
+                .buttonStyle(.plain)
+                #endif
+            }
+        }
     }
 }
 
 #Preview {
     GeometryReader { geometryProxy in
         ScrollView {
-            NFTGridView(nfts: [], width: geometryProxy.size.width)
+            NFTGridView(nfts: [.init(token: .munko2309)], width: geometryProxy.size.width, group: true)
         }
     }
 }

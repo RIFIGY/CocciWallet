@@ -9,7 +9,7 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
-    @Environment(Navigation.self) private var navigation
+    @Environment(\.dismiss) private var dismiss
 
     @Binding var selection: Wallet?
     var body: some View {
@@ -26,7 +26,7 @@ struct SettingsView: View {
             .toolbar {
                 ToolbarItem(placement: .cancellationAction) {
                     Button("Back", systemImage: "chevron.left") {
-                        self.navigation.showSettings = false
+                        dismiss()
                     }
                 }
             }

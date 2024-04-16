@@ -13,14 +13,17 @@ import OffChainKit
 struct NetworkCardView: View {
     @AppStorage(AppStorageKeys.showNetworkPriceHeader) private var showPrice = true
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
-    
+    @Environment(PriceModel.self) private var prices
+
     let title: String
     let symbol: String
     
     let address: String
-
+    let chain: Int
     let color: Color
-    var price: Double?
+    var price: Double? {
+        prices.price(chain: chain, currency: currency)
+    }
     let balanceString: String
     
 
@@ -59,20 +62,19 @@ struct NetworkCardView: View {
 }
 
 extension NetworkCardView {
-    init(card: Network, price: Double? = nil) {
+    init(card: Network) {
         self.title = card.name
-        self.price = price
         self.color = card.color
+        self.chain = card.chain
         self.address = card.address.string
         self.balanceString = card.balance?.string(decimals: 5) ?? "00"
         self.symbol = card.symbol
     }
     
-    init(entity: NetworkEntity, price: Double? = nil) {
+    init(entity: NetworkEntity) {
         self.title = entity.title
-        self.price = price
         self.symbol = entity.symbol
-
+        self.chain = entity.chain
         self.color = Color(hex: entity.hexColor) ?? .indigo
         self.address = entity.rpc.absoluteString
         self.balanceString = "-00-"
@@ -83,8 +85,7 @@ extension NetworkCardView {
 
 #Preview {
     NetworkCardView(
-        card: .preview,
-        price: 3254.32
+        card: .preview
     )
     .frame(height: 200)
     .padding(.horizontal)

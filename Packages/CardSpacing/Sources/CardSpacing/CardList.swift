@@ -1,224 +1,155 @@
 //
-//  SwiftUIView.swift
-//  CocciWallet
+//  CardListView.swift
+//  CardList
 //
-//  Created by Michael Wilkowski on 3/16/24.
-//
-//
-//  WalletNetworkView.swift
-//  CocciWallet
-//
-//  Created by Michael Wilkowski on 3/12/24.
+//  Created by Michael Wilkowski on 3/22/24.
 //
 
 import SwiftUI
 
-
-public struct CardList<Card:Identifiable & Equatable, CardView: View, Header: View, Footer:View, Destination:View, DestinationCard:View>: View where Card.ID == String {
-
-    public let cardHeight: CGFloat
+public struct CardList<C:Identifiable, CardView: View, CardDetails: View, CardIcon: View, Header: View, Footer: View>: View {
     
-    @Binding public var selected: Card?
-    @Binding public var cards: [Card]
-    @Binding public var additional: [Card]
-    
-    @ViewBuilder
-    public var cardView: (Card) -> CardView
-    
-    @ViewBuilder
-    public var header: Header
-    
-    @ViewBuilder
-    public var footer: Footer
-    
-    @ViewBuilder
-    public var destination: (Card, AnyView) -> Destination
-    
-    public let destinationCard: (Card) -> DestinationCard
-    
-    @State private var draggedCard: Card?
-
     let animation: Namespace.ID
 
+    let cards: [C]
+    let additional: [C]
+    @Binding var selected: C?
+
+    @ViewBuilder var cardView: (C) -> CardView
+    @ViewBuilder var cardDetail: (C) -> CardDetails
+    @ViewBuilder var cardIcon: (C?) -> CardIcon
+    @ViewBuilder var header: Header
+    var footer: Footer?
+
+    private let cardHeight: CGFloat = 200
+
+    
+    @State private var showToolbar: (Bool, CGFloat) = (false,0)
+    
+    func dismissDetail() {
+        withAnimation(.easeIn(duration: 0.35)){
+            selected = nil
+            showToolbar = (false, 0)
+        }
+    }
+    
+#warning("Fix color for macOS")
 
     public var body: some View {
-        Group {
-            CardScrollView(cardHeight: cardHeight, cards: cards, additional: additional) { card in
-                cardView(card)
-                    .onTapGesture {
-                        withAnimation {
-                            self.selected = card
+        NavigationStack {
+            Group {
+                if let selected {
+                    DestinationView(
+                        card: selected,
+                        cardHeight: cardHeight,
+                        animation: animation,
+                        showToolbar: $showToolbar,
+                        dismiss: dismissDetail
+                    ) { card in
+                        cardView(card)
+                    } cardDetails: { card in
+                        cardDetail(card)
+                    }
+                    .toolbar {
+                        ToolbarItem(placement: .cancellationAction) {
+                            Button("Done"){
+                                dismissDetail()
+                            }
+                                .fontWeight(.semibold)
+//                                .foregroundStyle(card.evm.color)
+                        }
+                        ToolbarItem(placement: .principal) {
+                            cardIcon(selected)
+                            .frame(width: 40, height: 30)
+                            .clipShape(RoundedRectangle(cornerRadius: 8, style: .continuous))
+                            .opacity(showToolbar.0 ? 1 : 0)
+                            .offset(y: showToolbar.1)
+                            .transition(.move(edge: .bottom))
+                        }
+                        
+                    }
+                } else {
+                    VStack(spacing: 0){
+                        CardStack(
+                            animation: animation,
+                            cards: cards,
+                            additional: additional,
+                            height: cardHeight,
+                            currentCard: $selected,
+                            header: header,
+                            footer: footer
+                        ) { card in
+                            cardView(card)
                         }
                     }
-                #if !os(tvOS)
-                    .onDrag {
-                        self.draggedCard = card
-                        return NSItemProvider()
-                    } preview: {
-                        Color.white.opacity(0.001)
-                    }
-                    .onDrop(of: [.text],
-                            delegate: DropViewDelegate(destinationItem: card, colors: $additional, draggedItem: $draggedCard)
-                    )
-                #endif
-                    .matchedGeometryEffect(id: card.id + "_animation", in: animation)
-
-            } header: {
-                header
-            } bottom: {
-                footer
-            }
-        }
-//        if let card = selected {
-//            let destinationCard = AnyView(destinationCard(card).frame(height: cardHeight).matchedGeometryEffect(id: card.id + "_animation", in: animation))
-//            destination(card, destinationCard)
-//                
-//        } else{
-//            Group {
-//                CardScrollView(cardHeight: cardHeight, cards: cards, additional: additional) { card in
-//                    cardView(card)
-//                        .onTapGesture {
-//                            withAnimation {
-//                                self.selected = card
-//                            }
-//                        }
-//                    #if !os(tvOS)
-//                        .onDrag {
-//                            self.draggedColor = card
-//                            return NSItemProvider()
-//                        } preview: {
-//                            Color.white.opacity(0.001)
-//                        }
-//                        .onDrop(of: [.text],
-//                                delegate: DropViewDelegate(destinationItem: card, colors: $additional, draggedItem: $draggedColor)
-//                        )
-//                    #endif
-//                        .matchedGeometryEffect(id: card.id + "_animation", in: animation)
-//
-//                } header: {
-//                    header
-//                } bottom: {
-//                    footer
-//                }
-//            }
-//
-//        }
-
-    }
-
-}
-
-#if !os(tvOS)
-extension CardList {
-    struct DropViewDelegate: DropDelegate {
-        
-        let destinationItem: Card
-        @Binding var colors: [Card]
-        @Binding var draggedItem: Card?
-        
-        func dropUpdated(info: DropInfo) -> DropProposal? {
-            return DropProposal(operation: .move)
-        }
-        
-        func performDrop(info: DropInfo) -> Bool {
-            draggedItem = nil
-            return true
-        }
-        
-        func dropEntered(info: DropInfo) {
-            // Swap Items
-            if let draggedItem {
-                let fromIndex = colors.firstIndex(of: draggedItem)
-                if let fromIndex {
-                    let toIndex = colors.firstIndex(of: destinationItem)
-                    if let toIndex, fromIndex != toIndex {
-                        withAnimation {
-                            self.colors.move(fromOffsets: IndexSet(integer: fromIndex), toOffset: (toIndex > fromIndex ? (toIndex + 1) : toIndex))
+                    #if os(iOS)
+                    .navigationBarTitleDisplayMode(.inline)
+                    .toolbar {
+                        ToolbarItem(placement: .principal){
+                            Text(" ")
                         }
                     }
+                    #endif
                 }
             }
         }
     }
-}
-#endif
+    
 
+    
+    
+
+}
 
 public extension CardList {
-    typealias Dcard = (Card) -> DestinationCard
     init(
-        height: CGFloat = 200,
-        cards: Binding<[Card]>,
-        additional: Binding<[Card]> = .constant([]),
-        selected: Binding<Card?>,
         animation: Namespace.ID,
-        @ViewBuilder cardView: @escaping (Card) -> CardView,
-        @ViewBuilder header: () -> Header,
-        @ViewBuilder footer: () -> Footer,
-        @ViewBuilder destination: @escaping (Card, AnyView) -> Destination,
-        @ViewBuilder destinationCard: @escaping Dcard
-
-    ) {
-        self.cardHeight = height
-        self._cards = cards
-        self._additional = additional
+        cards: [C],
+        additional: [C] = [],
+        selected: Binding<C?>,
+        header: Header, 
+        footer: Footer,
+        @ViewBuilder cardView: @escaping (C) -> CardView,
+        @ViewBuilder cardDetail: @escaping (C) -> CardDetails,
+        @ViewBuilder cardIcon: @escaping (C?) -> CardIcon) 
+    {
+        self.cards = cards
         self._selected = selected
-        self.cardView = cardView
-        self.header = header()
-        self.footer = footer()
-        self.destination = destination
-        self.destinationCard = destinationCard
         self.animation = animation
-
+        self.cardView = cardView
+        self.cardDetail = cardDetail
+        self.cardIcon = cardIcon
+        self.header = header
+        self.footer = footer
+        self.additional = additional
     }
     
     init(
-        height: CGFloat = 200,
-        cards: Binding<[Card]>,
-        additional: Binding<[Card]> = .constant([]),
-        selected: Binding<Card?>,
         animation: Namespace.ID,
+        cards: [C],
+        additional: [C] = [],
+        selected: Binding<C?>,
         header: Header,
-        footer: Footer,
-        @ViewBuilder cardView: @escaping (Card) -> CardView,
-
-        @ViewBuilder destination: @escaping (Card, AnyView) -> Destination
-
-    ) where DestinationCard == CardView {
-        self.cardHeight = height
-        self._cards = cards
-        self._additional = additional
+        @ViewBuilder cardView: @escaping (C) -> CardView,
+        @ViewBuilder cardDetail: @escaping (C) -> CardDetails,
+        @ViewBuilder cardIcon: @escaping (C?) -> CardIcon) where Footer == EmptyView
+    {
+        self.cards = cards
         self._selected = selected
-        self.cardView = cardView
-        self.header = header
-        self.footer = footer
-        self.destination = destination
-        self.destinationCard = cardView
         self.animation = animation
-
+        self.cardView = cardView
+        self.cardDetail = cardDetail
+        self.cardIcon = cardIcon
+        self.header = header
+        self.additional = additional
+        self.footer = nil
     }
 }
 
-//#Preview {
-//    @State var cards: [Color] = {
-//        var colors = [Color]()
-//        for i in 0..<5 {
-//            colors.append(.random)
-//        }
-//        return colors
-//    }()
-//    
-//    @State var selected: Color?
-//    
-//    return CardList(cards: $cards, selected: $selected) { card in
-//        CardView(color: card, header: card.id)
-//    } header: {
-//        Text("Header")
-//            .font(.largeTitle)
-//    } footer: {
-//        Button("Button"){}.buttonStyle(.bordered)
-//    } destination: { card in
-//        CardView(color: card, header: card.id)
-//    }
+
 //
+//#Preview {
+//    CardListView(cards: Card.cards) { card in
+//        CardView(card: card)
+//    }
 //}

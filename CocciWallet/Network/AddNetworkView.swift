@@ -22,33 +22,31 @@ struct AddNetworkView: View {
     @Environment(\.dismiss) private var dismiss
         
     var body: some View {
-        NavigationStack {
-            List {
-                ForEach(NetworkEntity.selection) { evm in
+        List {
+            ForEach(NetworkEntity.selection) { evm in
+                HStack{
+                    IconImage(symbol: evm.symbol, glyph: .white)
+                    Button(evm.name) {
+                        add(evm: evm)
+                    }
+                    .foregroundStyle(Color(hex: evm.hexColor) ?? .ETH)
+                }
+            }
+
+            Section {
+                NavigationLink {
+                    AddCustomNetworkView { evm in
+                        add(evm: evm)
+                    }
+                } label: {
                     HStack{
-                        IconImage(symbol: evm.symbol, glyph: .white)
-                        Button(evm.name) {
-                            add(evm: evm)
-                        }
-                        .foregroundStyle(Color(hex: evm.hexColor) ?? .ETH)
+//                        IconView(symbol: "generic", size: 25, glyph: true)
+                        Text("Custom Network")
+                            .foregroundStyle(Color.ETH)
                     }
                 }
-
-                Section {
-                    NavigationLink {
-                        AddCustomNetworkView { evm in
-                            add(evm: evm)
-                        }
-                    } label: {
-                        HStack{
-    //                        IconView(symbol: "generic", size: 25, glyph: true)
-                            Text("Custom Network")
-                                .foregroundStyle(Color.ETH)
-                        }
-                    }
-                    Button("Local"){
-                        add(evm: .Local())
-                    }
+                Button("Local"){
+                    add(evm: .Local())
                 }
             }
         }
@@ -61,15 +59,6 @@ struct AddNetworkView: View {
             context.insert(network)
             wallet.networks.append(network)
         }
-        add(network: evm)
-//        let card = Network(address: wallet.string, entity: evm)
-//        wallet.networks.append(evm)
-//        print(wallet.networks.count)
-//        add(network: evm)
-    }
-
-    
-    func add(network: NetworkEntity) {
         if let coin = CoinGecko.AssetPlatform.NativeCoin(chainID: network.chain) {
             var ids = self.coinIds
             guard !ids.contains(coin) else {return}
@@ -77,9 +66,10 @@ struct AddNetworkView: View {
             prices.fetch(coin: coin, currency: currency)
 
         }
-//        self.network(network)
         dismiss()
+
     }
+
 }
 
 

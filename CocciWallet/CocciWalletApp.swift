@@ -11,9 +11,11 @@ import SwiftData
 @main
 struct CocciWalletApp: App {
     
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
+
         }
         .windowResizability(.contentSize)
         .modelContainer(sharedModelContainer)

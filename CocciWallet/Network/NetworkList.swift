@@ -22,57 +22,44 @@ struct NetworkList: View {
         
     let networks: [Network]
     
+    @Binding var selected: Network?
     @Binding var showNewNetwork: Bool
     
     var body: some View {
         List{
             ForEach(networks) { card in
-                NavigationLink {
-                    NetworkDetailView(card: card)
-                } label: {
+//                NavigationLink {
+//                    NetworkDetailView(card: card)
+//                } label: {
                     NetworkCell(network: card)
+                    .onTapGesture {
+                        print("Tapped \(card.name)")
+                        self.selected = card
+                        print("Selected \(self.selected?.name ?? "null")")
+
+                    }
+//                }
+            }
+        }
+        .toolbar {
+            ToolbarItem {
+                Button("Add", systemImage: "plus"){
+                    self.showNewNetwork = true
                 }
             }
-            Button("Add"){
-                self.showNewNetwork = true
-            }
-            .frame(maxWidth: .infinity)
         }
         .onAppear {
             prices.fetch(coinIDs: coinIds, currency: currency)
         }
-        .task {
-            await updateCards()
+        .onChange(of: selected) {_, newValue in
+            print("List \(newValue?.name ?? "null")")
         }
-//        .task {
-//            await
-//        }
-    }
-    
-    func updateCards() async {
-        await withTaskGroup(of: Void.self) { group in
-            networks.forEach { network in
-                group.addTask { @MainActor in
-                    guard network.needsUpdate() else {return}
-                    do {
-                        try await network.update(context: context)
-                    } catch {
-                        print(error)
-                    }
-                    await prices.fetchPrices(chain: network.chain, contracts: network.tokens.map{$0.contract.address}, currency: currency)
-
-                }
-            }
-        }
-        
 
     }
-
 }
 
 struct NetworkCell: View {
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency: String = "usd"
-    @Environment(NetworkManager.self) private var networks
     @Environment(Prices.self) private var prices
     enum CellType { case banner, cell, card }
     

@@ -12,18 +12,14 @@ import SwiftData
 struct DetailCollumn: View {
     @Environment(\.modelContext) private var context
     
-    let walletSelected: Bool
+//    @Binding var selection: NetworkCardDestination?
     @Binding var selected: Network?
-    
+
     var body: some View {
-        Group {
-            if !walletSelected {
-                AddWalletView()
-            } else if let selected  {
-                NetworkDetailView(card: selected)
-            } else {
-                ContentUnavailableView("Select a Network", systemImage: "circle")
-            }
+        if let card = selected {
+            NetworkDetailView(card: card)
+        } else {
+            ContentUnavailableView("Select a Card", systemImage: "square")
         }
     }
 }

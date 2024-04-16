@@ -89,7 +89,7 @@ struct TransactionDetailView: View {
                     Text(detail)
                     Text(subDetail)
                         .padding(4)
-                        .background(Color.systemGray)
+                        .systembackground()
                         .font(.caption2)
                         .foregroundStyle(.secondary)
                         .cornerRadius(6)

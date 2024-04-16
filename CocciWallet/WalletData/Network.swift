@@ -8,19 +8,18 @@
 import Foundation
 import SwiftData
 import OffChainKit
-import Web3Kit
 
 @Model
 public class Network {
     public typealias EtherscanFetch = (String, String?) async throws -> [Etherscan.Transaction]
     public typealias BalanceFetch = (String, UInt8) async throws -> Double
-
+    
     public let addressString: String
     public var card: NetworkEntity
-
+    
     public var balance: Double?
     public var transactions: [Etherscan.Transaction]
-        
+    
     @Relationship(deleteRule: .nullify)
     public var tokens: [Token]
     
@@ -50,78 +49,7 @@ public class Network {
         self.settings = settings
     }
     
-    
-    @MainActor
-    func update(context: ModelContext) async throws {
-        print(self.name + " " + self.addressString.suffix(6))
-        let client = EthClient(rpc: Infura.shared.URL(chainInt: card.chain)!, chain: card.chain)
-        
-        let balance = try? await client.fetchNativeBalance(for: addressString, decimals: 18)
-        print("\tBalance: \(balance?.formatted(.number) ?? "nil")")
-        self.balance = balance
-
-
-        await updateTokens(with: client, context: context)
-        await updateNFTs(with: client, context: context)
-        
-        if let transactions = try? await Etherscan.shared.getTransactions(for: addressString, explorer: card.explorer) {
-            print("\tTransactions:\(transactions.count)")
-            self.transactions = transactions
-        }
-        self.lastUpdate = .now
-        print("Updated \(self.name + " " + self.addressString.suffix(6))")
-    }
-    
-    @MainActor
-    func updateTokens(with client: EthClient, context: ModelContext) async {
-        do {
-            let interactions = try await client.fetchTokenInteractions(for: self.addressString)
-            
-            interactions.forEach { contract in
-                Task{ @MainActor in
-                    if let token = self.tokens.first(where: {$0.address.lowercased() == contract.lowercased()}) {
-                        try? await token.fetchBalance(for: self.addressString, with: client)
-                    } else {
-                        let (contract, balance): (ContractEntity, Double?) = try await client.fetchContractBalance(contract: contract, address: self.addressString)
-                        let token = Token(contract: contract, balance: balance)
-                        context.insert(token)
-                        self.tokens.append(token)
-                    }
-                }
-            }
-        } catch {
-            print("Token Error: \(error)")
-        }
-        print("\tTokens: \(self.tokens.count)")
-    }
-    
-    @MainActor
-    func updateNFTs(with client: EthClient, context: ModelContext) async {
-        do {
-            let interactions = try await client.fetchNFTHoldings(for: addressString)
-            
-            interactions.forEach { contract, tokenIds in
-                tokenIds.forEach { tokenId in
-                    Task { @MainActor in
-                        if let nft = self.nfts.first(where: {$0.tokenId == tokenId.description}) {
-                            
-                        } else {
-                            let entity:NFTEntity = await client.fetchNFT(tokenId: tokenId.description, contract: contract)
-                            let nft = NFT(token: entity)
-                            context.insert(nft)
-                            self.nfts.append(nft)
-                        }
-                    }
-                }
-
-            }
-            
-        } catch {
-            print("NFT Error: \(error)")
-        }
-    }
 }
-
 
 
 extension Network {
@@ -158,5 +86,3 @@ public extension Network {
     }
 }
 
-extension NFTEntity: NFTP{}
-extension ContractEntity: ERCP{}

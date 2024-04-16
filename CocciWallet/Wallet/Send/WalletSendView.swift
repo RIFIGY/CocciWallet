@@ -15,10 +15,10 @@ import KeychainSwift
 struct WalletSendView: View {
     @Environment(\.dismiss) private var dismiss
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
-    @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
     
-    @State private var model: SendViewModel
+    @State private var model = SendViewModel()
+    let network: Network
         
     @State private var showNext = false
     private var amountInCrypto: Bool {
@@ -28,9 +28,9 @@ struct WalletSendView: View {
     @State private var test = ""
     var body: some View {
         Form{
-            FromAddressText(from: $model.address)
+            FromAddressText(from: .constant(network.addressString))
             EthTextField(placeholder: "0x...", header: "To", input: $model.to, isValid: .constant(false))
-            AmountTextField(model: model)
+            AmountTextField(model: model, chain: network.chain, symbol: network.symbol)
         }
         .toolbar {
             ToolbarItem(placement: .automatic) {
@@ -42,12 +42,12 @@ struct WalletSendView: View {
             }
         }
         .navigationDestination(isPresented: $showNext) {
-            SendOverviewView(model: model)
+            SendOverviewView(model: model, chain: network.chain, from: network.addressString, decimals: network.decimals)
         }
         .task {
             do {
-                guard let client = network.getClient(chain: model.evm.chain, rpc: model.evm.rpc) else {return}
-                model.gasPrice = try await client.node.getGasPrice()
+                let client = EthClient(rpc: network.rpc, chain: network.chain)
+                model.gasPrice = try await client.client.getGasPrice()
             } catch {
                 print(error)
             }
@@ -106,18 +106,20 @@ fileprivate struct AmountTextField: View {
     @Environment(PriceModel.self) private var priceModel
     
     @Bindable var model: SendViewModel
+    let chain: Int
+    let symbol: String
 
     @Namespace private var animation
 
-    var price: Double? { priceModel.price(chain: model.evm.chain, currency: currency) }
+    var price: Double? { priceModel.price(chain: chain, currency: currency) }
     
     var body: some View {
         Section {
-            TrailingTextField(placeholder: "0", value: $model.amount, native: model.evm.symbol, valueIsInCrypto: model.amountIsInCrypto)
+            TrailingTextField(placeholder: "0", value: $model.amount, native: symbol, valueIsInCrypto: model.amountIsInCrypto)
 
         } header: {
             if model.amountIsInCrypto {
-                Text(model.evm.symbol)
+                Text(symbol)
                 .matchedGeometryEffect(id: "header_animation", in: animation)
 
             } else {
@@ -151,7 +153,7 @@ fileprivate struct AmountTextField: View {
                 .matchedGeometryEffect(id: "footer_animation", in: animation)
             } else {
                 Text(amount / price,
-                     format: .symbol(model.evm.symbol)
+                     format: .symbol(symbol)
                 )
                 .matchedGeometryEffect(id: "footer_animation", in: animation)
             }
@@ -230,22 +232,6 @@ fileprivate struct TrailingTextField: View {
 }
 
 
-//
-//extension WalletSendView {
-//    
-//    init(address: String,
-//         card: NetworkCard,
-//         decimals: UInt8
-//    ) {
-//        let evm = EthereumNetwork(rpc: card.rpc, chain: card.chain, name: card.title, symbol: card.symbol, explorer: card.explorer, hexColor: card.color.hexString, isCustom: card.isCustom)
-//
-//        self._model = .init(wrappedValue: .init(
-//            
-//            evm: evm,
-//            address: address,
-//            decimals: decimals)
-//        )
-//    }
 //}
 
 

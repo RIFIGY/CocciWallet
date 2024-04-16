@@ -13,7 +13,6 @@ import ChainKit
 
 
 struct ERC20DetailView<T:ERCTransfer>: View {
-    @Environment(Navigation.self) private var navigation
     @Environment(\.networkTheme) private var theme
 
     @AppStorage(AppStorageKeys.selectedCurrency) var currency: String = "usd"
@@ -104,11 +103,11 @@ struct ERC20DetailView<T:ERCTransfer>: View {
             }
             .padding(.horizontal)
         }
-        .background(Color.systemGray)
+        .systembackground()
         .toolbar {
             ToolbarItem {
                 Button("Settings", systemImage: "gear") {
-                    self.navigation.showTokenSettings = true
+//                    self.navigation.showTokenSettings = true
                 }
             }
         }

@@ -59,6 +59,21 @@ extension KeychainSwift {
         )
     }
     
+    func fetchPrivateKey<Address: ChainKit.Address>(for address: Address, password: String = "") async throws -> Data {
+        guard try await Authentication.authenticate() else { throw Error.access }
+        return try loadPrivateKey(for: address)
+    }
+    
+    func removePrivateKey<Address: ChainKit.Address>(for address: Address, password: String = "") async throws {
+        guard try await Authentication.authenticate() else { throw Error.access }
+        try deletePrivateKey(for: address)
+    }
+    
+    func clearKeys() async throws {
+        guard try await Authentication.authenticate() else { throw Error.access }
+        self.clear()
+    }
+    
 }
 
 class Authentication {

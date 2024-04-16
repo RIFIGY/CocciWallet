@@ -8,6 +8,7 @@
 import Foundation
 import AppIntents
 import Web3Kit
+import OffChainKit
 
 public struct NFTEntity: Codable, Sendable {
     public let tokenId: String
@@ -24,10 +25,9 @@ public struct NFTEntity: Codable, Sendable {
         self.metadata = metadata
         self.imageURL = imageURL
     }
-    
-    public var name: String? { opensea?.name }
-    public var opensea: OpenSeaMetadata? { try? JSONDecoder().decode(OpenSeaMetadata.self, from: metadata ?? Data()) }
+
 }
+
 
 extension NFTEntity: Identifiable, Equatable, Hashable{
     public var id: String { tokenId + "_" + contract }
@@ -46,6 +46,15 @@ extension NFTEntity {
         let dict = try? JSONSerialization.jsonObject(with: metadata, options: []) as? [String:Any]
         return dict ?? [:]
     }
+    public var name: String? {
+        opensea?.name
+    }
+    
+    public var gateway: URL? {
+        guard let imageURL else { return nil }
+        return IPFS.Gateway(imageURL)
+    }
+    public var opensea: OpenSeaMetadata? { try? JSONDecoder().decode(OpenSeaMetadata.self, from: metadata ?? Data()) }
 
 }
 extension NFTEntity: AppEntity {

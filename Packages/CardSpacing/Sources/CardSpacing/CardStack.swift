@@ -8,70 +8,37 @@
 import SwiftUI
 
 struct CardStack<C:Identifiable, CardView:View, Header: View, Footer: View>: View {
+    let animation: Namespace.ID
+
     let cards: [C]
     let additional: [C]
     let height: CGFloat
-    let animation: Namespace.ID
+    
 
     @Binding var currentCard: C?
-    @Binding var showDetailCard: Bool
+    
+    var header: Header
+    var footer: Footer?
     
     @ViewBuilder var cardView: (C) -> CardView
-    @ViewBuilder var header: Header
-    @ViewBuilder var footer: Footer
+
     
     @State private var offset: CGPoint = .zero
+    
+    var showDetailCard: Bool { currentCard != nil }
     
     var body: some View {
         OffsetObservingScrollView(offset: $offset) {
             header
                 .offset(y: localOffset(index: 0, for: 0))
-            VStack(spacing: -140){
-                ForEach(cards){card in
-                    GeometryReader { geometry in
-                        let minY = geometry.bounds(of: .scrollView)?.minY
-                        let index = getIndex(Card: card)
-                        cardView(card)
-                            .matchedGeometryEffect(id: card.id, in: animation)
-                            .offset(y: localOffset(index: index, for: minY) )
-                            .offset(y: transitionOffset(index: index, for: minY) )
-                    }
-                    .frame(height: height)
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.35)){
-                            currentCard = card
-                            showDetailCard = true
-                        }
-                    }
-                }
-            }
-            VStack(spacing: -140){
-                ForEach(additional){card in
-                    GeometryReader { geometry in
-                        let minY = geometry.bounds(of: .scrollView)?.minY
-                        let index = getIndex(Card: card)
-                        cardView(card)
-                            .matchedGeometryEffect(id: card.id, in: animation)
-//                            .offset(y: localOffset(index: index, for: minY) )
-                            .offset(y: transitionOffset(index: index, for: minY, custom: true) )
-                    }
-                    .frame(height: height)
-                    .padding(.horizontal)
-                    .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.35)){
-                            currentCard = card
-                            showDetailCard = true
-                        }
-                    }
-                }
-            }
+            Stack(cards: cards)
+            Stack(cards: additional, isAdditional: true)
             GeometryReader { geometry in
                 let minY = geometry.bounds(of: .scrollView)?.minY
                 footer
                     .opacity(!showDetailCard ? 1 : 0)
                     .frame(maxWidth: .infinity)
-                    .padding(.vertical, showDetailCard ? 0 : 30)
+                    .padding(.vertical, showDetailCard ? 0 : 32)
                     .offset(y: transitionOffset(index: cards.count, for: minY))
             }
             Rectangle().fill(Color.clear).frame(height: 100)
@@ -80,6 +47,29 @@ struct CardStack<C:Identifiable, CardView:View, Header: View, Footer: View>: Vie
     }
     
 
+    @ViewBuilder
+    func Stack(cards: [C], isAdditional: Bool = false) -> some View {
+        VStack(spacing: -140){
+            ForEach(cards){ card in
+                GeometryReader { geometry in
+                    let minY = geometry.bounds(of: .scrollView)?.minY
+                    let index = getIndex(Card: card)
+                    cardView(card)
+                        .matchedGeometryEffect(id: card.id, in: animation)
+                        .offset(y: localOffset(index: index, for: minY, isAdditional: isAdditional))
+                        .offset(y: transitionOffset(index: index, for: minY) )
+                }
+                .frame(height: height)
+                .padding(.horizontal)
+                .onTapGesture {
+                    withAnimation(.easeInOut(duration: 0.35)){
+                        self.currentCard = card
+                    }
+                }
+            }
+        }
+    }
+    
     private func transitionOffset(index: Int, for minY: CGFloat?, custom: Bool = false) -> CGFloat {
         guard let currentCard, showDetailCard else { return 0 }
         let cardIndex = custom ? index + cards.count : index
@@ -97,7 +87,8 @@ struct CardStack<C:Identifiable, CardView:View, Header: View, Footer: View>: Vie
         }
     }
     
-    private func localOffset(index: Int, for minY: CGFloat?) -> CGFloat {
+    private func localOffset(index: Int, for minY: CGFloat?, isAdditional: Bool = false) -> CGFloat {
+        guard !isAdditional else {return 0}
         let minY = minY ?? 0
 
         if offset.y > 0 { // scrolling items up

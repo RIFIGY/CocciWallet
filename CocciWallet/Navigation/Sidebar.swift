@@ -9,16 +9,18 @@ import SwiftUI
 
 
 struct Sidebar: View {
-    @Environment(Navigation.self) private var navigation
     #if os(iOS)
     @Environment(\.horizontalSizeClass) private var sizeClass
     #endif
     
-    @Bindable var wallet: Wallet
-//    @Binding var selected: Network?
-
+    @Binding var wallet: Wallet?
+    @Binding var network: Network?
+    
+    @Binding var showNewNetwork: Bool
+    @Binding var showWallets: Bool
+    @Binding var showSettings: Bool
+    
     var body: some View {
-        let navigation = Bindable(navigation)
         Group {
             #if os(iOS)
             iosContent
@@ -26,16 +28,8 @@ struct Sidebar: View {
             content
             #endif
         }
-        .sheet(isPresented: navigation.showWallets) {
-            NavigationStack {
-                SelectWalletView(selected: navigation.wallet)
-            }
-        }
-        .sheet(isPresented: navigation.showSettings) {
-            SettingsView(selection: navigation.wallet)
-        }
-        .sheet(isPresented: navigation.showNewNetwork) {
-            AddNetworkView(wallet: wallet)
+        .onChange(of: network) {_, newValue in
+            print("Sidebar \(newValue?.name ?? "null")")
         }
 
     }
@@ -44,32 +38,32 @@ struct Sidebar: View {
     var iosContent: some View {
         if UIDevice.current.userInterfaceIdiom == .pad {
             content
+        } else if let wallet {
+            NetworkCardStack(
+                wallet: wallet,
+                selected: $network,
+                showNewNetwork: $showNewNetwork,
+                showWallets: $showWallets,
+                showSettings: $showSettings
+            )
         } else {
-            NetworkCardStack(wallet: wallet)
+            AddWalletView {
+                self.wallet = $0
+            }
         }
     }
     
     @ViewBuilder
     var content: some View {
-        let navigation = Bindable(navigation)
-
-        NetworkList(networks: wallet.networks, showNewNetwork: navigation.showNewNetwork)
-            .navigationTitle(wallet.name + wallet.networks.count.description)
-            #if os(macOS)
-            .navigationSplitViewColumnWidth(min: 200, ideal: 200, max: 300)
-            #endif
-            .toolbar {
-                ToolbarItem(placement: .automatic) {
-                    Button("Wallets", systemImage: "wallet.pass") {
-                        self.navigation.showWallets = true
-                    }
+        if let wallet {
+            NetworkList(networks: wallet.networks, selected: $network, showNewNetwork: $showNewNetwork)
+                .navigationTitle(wallet.name + wallet.networks.count.description)
+                .sheet(isPresented: $showNewNetwork) {
+                    AddNetworkView(wallet: wallet)
                 }
-                ToolbarItem(placement: .automatic) {
-                    Button("Settings", systemImage: "gearshape") {
-                        self.navigation.showSettings = true
-                    }
-                }
-            }
+        } else {
+            ContentUnavailableView("Select a Wallet", systemImage: "triangle")
+        }
     }
 }
 

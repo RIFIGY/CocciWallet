@@ -13,8 +13,8 @@ import OSLog
 @Observable
 class Navigation {
     private let logger = Logger(subsystem: "app.rifigy.CocciWallet.Navigation", category: "navigation")
-    var wallet: Wallet?
-    var network: Network?
+//    var wallet: Wallet?
+//    var network: Network?
     
     var panel: Panel? = Panel.network
 
@@ -33,18 +33,18 @@ class Navigation {
         path.removeLast(count ?? path.count)
     }
     
-    func select(_ wallet: Wallet?) {
-        withAnimation {
-            self.wallet = wallet
-//            self.network = wallet?.networks.first
-        }
-    }
+//    func select(_ wallet: Wallet?) {
+//        withAnimation {
+////            self.wallet = wallet
+////            self.network = wallet?.networks.first
+//        }
+//    }
     
-    func select(_ network: Network?) {
-        withAnimation {
-            self.network = network
-        }
-    }
+//    func select(_ network: Network?) {
+//        withAnimation {
+////            self.network = network
+//        }
+//    }
     
     func onOpenURL(_ url: URL) {
         logger.log("Received URL: \(url, privacy: .public)")

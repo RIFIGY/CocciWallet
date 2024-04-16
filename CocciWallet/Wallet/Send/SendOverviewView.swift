@@ -11,18 +11,16 @@ import BigInt
 
 struct SendOverviewView: View {
     @AppStorage(AppStorageKeys.selectedCurrency) private var currency = "usd"
-    @Environment(NetworkManager.self) private var network
     @Environment(PriceModel.self) private var priceModel
 
     @Bindable var model: SendViewModel
     
     let timer = Timer.publish(every: 5, on: .main, in: .common).autoconnect()
 
+    let chain: Int
+    let from: String
     
-    
-    var evm: Network { model.evm }
-    var from: String { model.address }
-    var decimals: UInt8 { model.decimals }
+    var decimals: UInt8
         
     
     let gasDisplayUnit: Double = 1e9
@@ -42,7 +40,7 @@ struct SendOverviewView: View {
         guard let amount = model.amount else {return nil}
         if model.amountIsInCrypto {
             return amount.bigValue(decimals: decimals)
-        } else if let price = priceModel.price(chain: model.evm.chain, currency: currency) {
+        } else if let price {
             return (amount / price).bigValue(decimals: decimals)
         } else {
             return nil
@@ -60,14 +58,14 @@ struct SendOverviewView: View {
         }
 
     }
-    var price: Double? { priceModel.price(chain: model.evm.chain, currency: currency) }
+    var price: Double? { priceModel.price(chain: chain, currency: currency) }
 
     
     var body: some View {
         Form {
             
             Section("From"){
-                Text(model.address)
+                Text(from)
             }
             
             Section("To") {
@@ -133,17 +131,17 @@ struct SendOverviewView: View {
     }
     
     private func updateGasInfo() async {
-        guard let client = network.getClient(chain: evm.chain) else {return}
-        await model.fetchGas(client: client)
-        await model.fetchGasEstimate(value: value, client: client)
+//        guard let client = network.getClient(chain: evm.chain) else {return}
+//        await model.fetchGas(client: client)
+//        await model.fetchGasEstimate(value: value, client: client)
     }
     
     @State private var isSending = false
     
     private func send() {
         isSending = true
-        guard let value = value else {isSending = false;return}
-        guard let client = network.getClient(chain: evm.chain) else {return}
+//        guard let value = value else {isSending = false;return}
+//        guard let client = network.getClient(chain: evm.chain) else {return}
         Task {
 //            do {
 //                let account = try await manager.getAccount(for: model.address, password: "")

@@ -16,7 +16,7 @@ typealias WalletGenerator = PrivateKeyGenerator<Web3Kit.EthereumAccount>
 struct AddWalletView: View {
     @Environment(\.dismiss) private var dismiss
     @Environment(\.modelContext) private var context
-    @Environment(Navigation.self) private var navigation
+    
     var generator: WalletGenerator = WalletGenerator(storage: KeychainSwift.shared)
     
     var created: (Wallet) -> Void = {_ in }

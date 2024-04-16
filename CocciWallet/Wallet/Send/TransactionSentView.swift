@@ -11,7 +11,6 @@ import Web3Kit
 
 fileprivate typealias Cell = TransactionInfoCell
 struct TransactionSentView: View {
-    @Environment(NetworkManager.self) private var network
     @Environment(\.dismiss) private var dismiss
     
     @Bindable var model: SendViewModel

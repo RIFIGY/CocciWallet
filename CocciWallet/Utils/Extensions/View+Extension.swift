@@ -155,3 +155,14 @@ extension View {
         #endif
     }
 }
+
+extension View {
+    func systembackground() -> some View {
+        self
+        #if os(iOS)
+        .background(Color(uiColor: .systemGroupedBackground))
+        #else
+        .background(.quaternary.opacity(0.5))
+        #endif
+    }
+}
